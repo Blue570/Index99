@@ -1,0 +1,128 @@
+extends Node
+
+# ============================================================
+# INDEX 99 COLOR PALETTE
+# ============================================================
+#
+# All interface colors should eventually come from this file.
+# Avoid scattering hard-coded colors throughout other scripts.
+
+
+# Desktop and application surfaces
+const DESKTOP_BACKGROUND := Color("#263F4A")
+const WINDOW_BACKGROUND := Color("#C0C0C0")
+const PANEL_BACKGROUND := Color("#D6D6D6")
+const CONTENT_BACKGROUND := Color("#ECECEC")
+const SUNKEN_BACKGROUND := Color("#FFFFFF")
+
+
+# Title bars and primary accents
+const TITLE_BAR_ACTIVE := Color("#17365D")
+const TITLE_BAR_INACTIVE := Color("#59697A")
+const TITLE_BAR_BORDER := Color("#0B1D35")
+const ACCENT_BLUE := Color("#285E9A")
+const ACCENT_BLUE_LIGHT := Color("#D8E8F7")
+
+
+# Text
+const TEXT_PRIMARY := Color("#202020")
+const TEXT_SECONDARY := Color("#555555")
+const TEXT_DISABLED := Color("#808080")
+const TEXT_LIGHT := Color("#FFFFFF")
+const LINK_BLUE := Color("#0000CC")
+
+
+# Status colors
+const STATUS_SUCCESS := Color("#2F8F46")
+const STATUS_WARNING := Color("#C58A13")
+const STATUS_ERROR := Color("#B33A3A")
+const STATUS_INFORMATION := Color("#285E9A")
+
+
+# Retro border colors
+const BORDER_HIGHLIGHT := Color("#FFFFFF")
+const BORDER_LIGHT := Color("#DFDFDF")
+const BORDER_DARK := Color("#808080")
+const BORDER_SHADOW := Color("#404040")
+
+
+# Charts
+const CHART_GRID := Color("#C8C8C8")
+const CHART_LINE_BLUE := Color("#285E9A")
+const CHART_LINE_GREEN := Color("#2F8F46")
+const CHART_LINE_AMBER := Color("#C58A13")
+
+
+# ============================================================
+# FONT SIZES
+# ============================================================
+
+const FONT_SIZE_SMALL := 12
+const FONT_SIZE_NORMAL := 14
+const FONT_SIZE_TITLE := 18
+const FONT_SIZE_SECTION_HEADER := 16
+const FONT_SIZE_LARGE_VALUE := 24
+
+
+# ============================================================
+# STANDARD SPACING
+# ============================================================
+
+const SPACING_TINY := 2
+const SPACING_SMALL := 4
+const SPACING_NORMAL := 8
+const SPACING_LARGE := 12
+const SPACING_SECTION := 16
+
+
+# ============================================================
+# STYLE FACTORIES
+# ============================================================
+
+func create_base_panel_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = WINDOW_BACKGROUND
+
+	style.border_color = BORDER_SHADOW
+	style.set_border_width_all(2)
+
+	style.content_margin_left = 4.0
+	style.content_margin_top = 4.0
+	style.content_margin_right = 4.0
+	style.content_margin_bottom = 4.0
+
+	style.corner_radius_top_left = 0
+	style.corner_radius_top_right = 0
+	style.corner_radius_bottom_left = 0
+	style.corner_radius_bottom_right = 0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_title_bar_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = TITLE_BAR_ACTIVE
+
+	style.border_color = TITLE_BAR_BORDER
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 2
+
+	style.content_margin_left = 8.0
+	style.content_margin_top = 4.0
+	style.content_margin_right = 8.0
+	style.content_margin_bottom = 4.0
+
+	style.corner_radius_top_left = 0
+	style.corner_radius_top_right = 0
+	style.corner_radius_bottom_left = 0
+	style.corner_radius_bottom_right = 0
+
+	style.anti_aliasing = false
+
+	return style

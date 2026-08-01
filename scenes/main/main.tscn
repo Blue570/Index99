@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://dofby76nlcjvw"]
 
+[ext_resource type="Script" uid="uid://b41cu2sfdcohy" path="res://scripts/core/main.gd" id="1_hyk8p"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_87c53"]
 bg_color = Color(0.09019608, 0.21176471, 0.3647059, 1)
 
@@ -22,6 +24,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_hyk8p")
 
 [node name="DesktopBackground" type="ColorRect" parent="." unique_id=631199313]
 layout_mode = 1
@@ -56,7 +59,6 @@ layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/TitleBar" unique_id=2133026006]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_87c53")
 text = "Index 99 - Internal Search Console"
 horizontal_alignment = 1
