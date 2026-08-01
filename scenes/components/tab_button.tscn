@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://cfoop710hprex"]
+
+[ext_resource type="Script" uid="uid://n4qwkbp10ovh" path="res://scenes/components/tab_button.gd" id="1_ornq8"]
+
+[node name="TabButton" type="Button" unique_id=1006026683]
+custom_minimum_size = Vector2(132, 38)
+offset_right = 8.0
+offset_bottom = 8.0
+toggle_mode = true
+text = "Dashboard"
+script = ExtResource("1_ornq8")

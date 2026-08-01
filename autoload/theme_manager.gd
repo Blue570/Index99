@@ -238,3 +238,103 @@ func create_window_button_pressed_style(
 	style.anti_aliasing = false
 
 	return style
+	
+func create_tab_bar_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = PANEL_BACKGROUND
+	style.border_color = BORDER_DARK
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 4.0
+	style.content_margin_top = 3.0
+	style.content_margin_right = 4.0
+	style.content_margin_bottom = 3.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_tab_inactive_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = WINDOW_BACKGROUND
+	style.border_color = BORDER_DARK
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 10.0
+	style.content_margin_top = 5.0
+	style.content_margin_right = 10.0
+	style.content_margin_bottom = 5.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_tab_hover_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = BORDER_LIGHT
+	style.border_color = ACCENT_BLUE
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 10.0
+	style.content_margin_top = 5.0
+	style.content_margin_right = 10.0
+	style.content_margin_bottom = 5.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_tab_active_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = CONTENT_BACKGROUND
+	style.border_color = ACCENT_BLUE
+
+	style.border_width_left = 1
+	style.border_width_top = 3
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+
+	style.content_margin_left = 10.0
+	style.content_margin_top = 4.0
+	style.content_margin_right = 10.0
+	style.content_margin_bottom = 5.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_tab_focus_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = Color(0.0, 0.0, 0.0, 0.0)
+	style.border_color = ACCENT_BLUE
+	style.set_border_width_all(2)
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_page_background_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = CONTENT_BACKGROUND
+	style.border_color = BORDER_DARK
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 12.0
+	style.content_margin_top = 12.0
+	style.content_margin_right = 12.0
+	style.content_margin_bottom = 12.0
+
+	style.anti_aliasing = false
+
+	return style

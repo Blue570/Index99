@@ -2,9 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b41cu2sfdcohy" path="res://scripts/core/main.gd" id="1_hyk8p"]
 [ext_resource type="PackedScene" uid="uid://cbyp0d7lppnrq" path="res://scenes/components/resource_display.tscn" id="2_iuonh"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3yynl"]
-bg_color = Color(0.7647059, 0.7647059, 0.7647059, 1)
+[ext_resource type="PackedScene" uid="uid://cfoop710hprex" path="res://scenes/components/tab_button.tscn" id="3_k2fmo"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
@@ -146,15 +144,37 @@ value_color = Color(0.77254903, 0.5411765, 0.07450981, 1)
 [node name="TabBar" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=888486731]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_3yynl")
 
-[node name="TabPlaceholderLabel" type="Label" parent="MainApplicationWindow/MainLayout/TabBar" unique_id=284303777]
+[node name="TabRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/TabBar" unique_id=882290953]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
-theme_override_font_sizes/font_size = 14
-text = "Dashboard     Crawler     Index     Servers     Research     Ranking Lab     Ads     Analytics     Releases"
-horizontal_alignment = 1
-vertical_alignment = 1
+theme_override_constants/separation = 2
+
+[node name="DashboardTab" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1006026683 instance=ExtResource("3_k2fmo")]
+layout_mode = 2
+
+[node name="CrawlerTab" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1376960732 instance=ExtResource("3_k2fmo")]
+layout_mode = 2
+tab_id = &"crawler"
+tab_text = "Crawler"
+
+[node name="IndexTab" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=583557641 instance=ExtResource("3_k2fmo")]
+layout_mode = 2
+tab_id = &"index"
+tab_text = "Index"
+
+[node name="ServersTab" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1514586991 instance=ExtResource("3_k2fmo")]
+layout_mode = 2
+tab_id = &"servers"
+tab_text = "Servers"
+
+[node name="ResearchTab" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1248724406 instance=ExtResource("3_k2fmo")]
+layout_mode = 2
+tab_id = &"research"
+tab_text = "Research"
+
+[node name="TabFill" type="Control" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1482285346]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="PageArea" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=2019311367]
 custom_minimum_size = Vector2(0, 300)
@@ -162,11 +182,85 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_6gwxi")
 
-[node name="PagePlaceholderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea" unique_id=75404204]
+[node name="PageStack" type="Control" parent="MainApplicationWindow/MainLayout/PageArea" unique_id=1338226068]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.2509804, 0.2509804, 0.2509804, 1)
-theme_override_font_sizes/font_size = 24
-text = "Dashboard Content Area"
+
+[node name="DashboardPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=374740521]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DashboardPageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage" unique_id=1023382922]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Dashboard"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CrawlerPageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage" unique_id=297882267]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Crawler"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="IndexPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=945400770]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="IndexPageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage" unique_id=863458677]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Index"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ServersPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=367586922]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ServersPageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage" unique_id=849623432]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Servers"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResearchPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=1928910644]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ResearchPageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage" unique_id=1356095986]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Research"
 horizontal_alignment = 1
 vertical_alignment = 1
 
