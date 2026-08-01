@@ -7,9 +7,6 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uwgr2"]
-bg_color = Color(0.8392157, 0.8392157, 0.8392157, 1)
-
 [node name="Main" type="Control" unique_id=514529652]
 layout_mode = 3
 anchors_preset = 15
@@ -265,14 +262,93 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="BackgroundJobsBar" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=1989258494]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_uwgr2")
 
-[node name="BackgroundJobsLabel" type="Label" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar" unique_id=2009014850]
+[node name="JobsLayout" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar" unique_id=1606303151]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
-theme_override_font_sizes/font_size = 14
-text = "Background Jobs: None"
-horizontal_alignment = 1
+theme_override_constants/separation = 6
+
+[node name="JobsTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout" unique_id=776861417]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_vertical = 1
+text = "BACKGROUND JOBS"
 vertical_alignment = 1
+
+[node name="CrawlerJobIndicator" type="PanelContainer" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout" unique_id=1977342606]
+custom_minimum_size = Vector2(132, 28)
+layout_mode = 2
+
+[node name="CrawlerIndicatorRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/CrawlerJobIndicator" unique_id=194200681]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="CrawlerStatusLight" type="ColorRect" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/CrawlerJobIndicator/CrawlerIndicatorRow" unique_id=158145232]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(0.18431373, 0.56078434, 0.27450982, 1)
+
+[node name="CrawlerStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/CrawlerJobIndicator/CrawlerIndicatorRow" unique_id=2120364082]
+layout_mode = 2
+text = "Crawler: Running"
+vertical_alignment = 1
+
+[node name="IndexerJobIndicator" type="PanelContainer" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout" unique_id=2079042648]
+custom_minimum_size = Vector2(132, 28)
+layout_mode = 2
+
+[node name="IndexerIndicatorRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/IndexerJobIndicator" unique_id=114517660]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="IndexerStatusLight" type="ColorRect" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/IndexerJobIndicator/IndexerIndicatorRow" unique_id=993719479]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+
+[node name="IndexerStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/IndexerJobIndicator/IndexerIndicatorRow" unique_id=917853875]
+layout_mode = 2
+text = "Idle"
+vertical_alignment = 1
+
+[node name="ResearchJobIndicator" type="PanelContainer" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout" unique_id=1923673673]
+custom_minimum_size = Vector2(132, 28)
+layout_mode = 2
+
+[node name="ResearchIndicatorRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/ResearchJobIndicator" unique_id=664511272]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="ResearchStatusLight" type="ColorRect" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/ResearchJobIndicator/ResearchIndicatorRow" unique_id=1315104590]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(0.77254903, 0.5411765, 0.07450981, 1)
+
+[node name="ResearchStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/ResearchJobIndicator/ResearchIndicatorRow" unique_id=688992214]
+layout_mode = 2
+text = "Queued"
+vertical_alignment = 1
+
+[node name="JobsSpacer" type="Control" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout" unique_id=1462917428]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CurrentJobLabel" type="Label" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout" unique_id=1516472090]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Indexing batch 0042"
+vertical_alignment = 1
+
+[node name="JobProgress" type="ProgressBar" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout" unique_id=1577645621]
+custom_minimum_size = Vector2(240, 22)
+layout_mode = 2
+size_flags_vertical = 4
+step = 1.0
+value = 42.0

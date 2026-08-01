@@ -338,3 +338,74 @@ func create_page_background_style() -> StyleBoxFlat:
 	style.anti_aliasing = false
 
 	return style
+	
+func create_background_jobs_bar_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = Color("#C6C6C6")
+	style.border_color = BORDER_DARK
+
+	style.border_width_left = 1
+	style.border_width_top = 2
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+
+	style.content_margin_left = 6.0
+	style.content_margin_top = 5.0
+	style.content_margin_right = 6.0
+	style.content_margin_bottom = 5.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_job_indicator_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = Color("#DADADA")
+	style.border_color = BORDER_DARK
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 6.0
+	style.content_margin_top = 3.0
+	style.content_margin_right = 6.0
+	style.content_margin_bottom = 3.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_job_progress_background_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = Color("#FFFFFF")
+	style.border_color = BORDER_SHADOW
+	style.set_border_width_all(1)
+
+	style.corner_radius_top_left = 0
+	style.corner_radius_top_right = 0
+	style.corner_radius_bottom_left = 0
+	style.corner_radius_bottom_right = 0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_job_progress_fill_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = ACCENT_BLUE
+	style.border_color = TITLE_BAR_BORDER
+	style.set_border_width_all(1)
+
+	style.corner_radius_top_left = 0
+	style.corner_radius_top_right = 0
+	style.corner_radius_bottom_left = 0
+	style.corner_radius_bottom_right = 0
+
+	style.anti_aliasing = false
+
+	return style

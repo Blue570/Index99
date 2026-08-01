@@ -176,11 +176,86 @@ var current_page_id: StringName = &""
 	) as PanelContainer
 )
 
+@onready var background_jobs_bar: PanelContainer = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+)
+
+@onready var jobs_layout: HBoxContainer = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout
+)
+
+@onready var jobs_title_label: Label = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/JobsTitleLabel
+)
+
+@onready var crawler_job_indicator: PanelContainer = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/CrawlerJobIndicator
+)
+
+@onready var crawler_status_light: ColorRect = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/CrawlerJobIndicator
+	/CrawlerIndicatorRow/CrawlerStatusLight
+)
+
+@onready var crawler_status_label: Label = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/CrawlerJobIndicator
+	/CrawlerIndicatorRow/CrawlerStatusLabel
+)
+
+@onready var indexer_job_indicator: PanelContainer = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/IndexerJobIndicator
+)
+
+@onready var indexer_status_light: ColorRect = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/IndexerJobIndicator
+	/IndexerIndicatorRow/IndexerStatusLight
+)
+
+@onready var indexer_status_label: Label = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/IndexerJobIndicator
+	/IndexerIndicatorRow/IndexerStatusLabel
+)
+
+@onready var research_job_indicator: PanelContainer = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/ResearchJobIndicator
+)
+
+@onready var research_status_light: ColorRect = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/ResearchJobIndicator
+	/ResearchIndicatorRow/ResearchStatusLight
+)
+
+@onready var research_status_label: Label = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/ResearchJobIndicator
+	/ResearchIndicatorRow/ResearchStatusLabel
+)
+
+@onready var current_job_label: Label = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/CurrentJobLabel
+)
+
+@onready var job_progress: ProgressBar = (
+	$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	/JobsLayout/JobProgress
+)
+
 
 func _ready() -> void:
 	apply_theme_foundation()
 	connect_title_bar_buttons()
 	setup_tabs()
+	setup_placeholder_jobs()
 	open_page(DEFAULT_PAGE_ID)
 
 
@@ -277,9 +352,139 @@ func apply_theme_foundation() -> void:
 			"panel",
 			ThemeManager.create_page_background_style()
 		)
-
+		
+	apply_background_jobs_theme()
 	apply_window_button_styles()
 
+func apply_background_jobs_theme() -> void:
+	background_jobs_bar.add_theme_stylebox_override(
+		"panel",
+		ThemeManager.create_background_jobs_bar_style()
+	)
+
+	jobs_layout.add_theme_constant_override(
+		"separation",
+		6
+	)
+
+	jobs_title_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_PRIMARY
+	)
+
+	jobs_title_label.add_theme_font_size_override(
+		"font_size",
+		ThemeManager.FONT_SIZE_SMALL
+	)
+
+	var indicator_panels: Array[PanelContainer] = [
+		crawler_job_indicator,
+		indexer_job_indicator,
+		research_job_indicator
+	]
+
+	for indicator: PanelContainer in indicator_panels:
+		indicator.add_theme_stylebox_override(
+			"panel",
+			ThemeManager.create_job_indicator_style()
+		)
+
+	var indicator_labels: Array[Label] = [
+		crawler_status_label,
+		indexer_status_label,
+		research_status_label
+	]
+
+	for indicator_label: Label in indicator_labels:
+		indicator_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.TEXT_PRIMARY
+		)
+
+		indicator_label.add_theme_font_size_override(
+			"font_size",
+			ThemeManager.FONT_SIZE_SMALL
+		)
+
+	current_job_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_SECONDARY
+	)
+
+	current_job_label.add_theme_font_size_override(
+		"font_size",
+		ThemeManager.FONT_SIZE_SMALL
+	)
+
+	job_progress.add_theme_stylebox_override(
+		"background",
+		ThemeManager.create_job_progress_background_style()
+	)
+
+	job_progress.add_theme_stylebox_override(
+		"fill",
+		ThemeManager.create_job_progress_fill_style()
+	)
+
+	job_progress.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_LIGHT
+	)
+
+	job_progress.add_theme_color_override(
+		"font_outline_color",
+		ThemeManager.TITLE_BAR_BORDER
+	)
+
+	job_progress.add_theme_constant_override(
+		"outline_size",
+		1
+	)
+
+	job_progress.add_theme_font_size_override(
+		"font_size",
+		ThemeManager.FONT_SIZE_SMALL
+	)
+	
+func setup_placeholder_jobs() -> void:
+	set_job_indicator(
+		crawler_status_light,
+		crawler_status_label,
+		"Crawler: Running",
+		ThemeManager.STATUS_SUCCESS
+	)
+
+	set_job_indicator(
+		indexer_status_light,
+		indexer_status_label,
+		"Indexer: Idle",
+		ThemeManager.TEXT_DISABLED
+	)
+
+	set_job_indicator(
+		research_status_light,
+		research_status_label,
+		"Research: Queued",
+		ThemeManager.STATUS_WARNING
+	)
+
+	current_job_label.text = "Indexing batch 0042"
+
+	job_progress.min_value = 0.0
+	job_progress.max_value = 100.0
+	job_progress.step = 1.0
+	job_progress.value = 42.0
+	job_progress.show_percentage = true
+	job_progress.indeterminate = false
+	
+func set_job_indicator(
+	status_light: ColorRect,
+	status_label: Label,
+	label_text: String,
+	status_color: Color
+) -> void:
+	status_light.color = status_color
+	status_label.text = label_text
 
 func apply_window_button_styles() -> void:
 	var standard_buttons: Array[Button] = [
