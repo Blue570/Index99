@@ -53,6 +53,13 @@ const CHART_LINE_GREEN := Color("#2F8F46")
 const CHART_LINE_AMBER := Color("#C58A13")
 
 
+# Values
+const RESOURCE_VALUE_BLUE := Color("#285E9A")
+const RESOURCE_VALUE_GREEN := Color("#2F8F46")
+const RESOURCE_VALUE_AMBER := Color("#C58A13")
+const RESOURCE_VALUE_RED := Color("#B33A3A")
+
+
 # ============================================================
 # FONT SIZES
 # ============================================================
@@ -122,6 +129,111 @@ func create_title_bar_style() -> StyleBoxFlat:
 	style.corner_radius_top_right = 0
 	style.corner_radius_bottom_left = 0
 	style.corner_radius_bottom_right = 0
+
+	style.anti_aliasing = false
+
+	return style
+	
+func create_resource_bar_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = PANEL_BACKGROUND
+	style.border_color = BORDER_DARK
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 6.0
+	style.content_margin_top = 5.0
+	style.content_margin_right = 6.0
+	style.content_margin_bottom = 5.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_resource_display_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = Color("#E4E4E4")
+	style.border_color = BORDER_DARK
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 6.0
+	style.content_margin_top = 4.0
+	style.content_margin_right = 6.0
+	style.content_margin_bottom = 4.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_resource_icon_style(accent_color: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = accent_color
+	style.border_color = TITLE_BAR_BORDER
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 2.0
+	style.content_margin_top = 2.0
+	style.content_margin_right = 2.0
+	style.content_margin_bottom = 2.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_window_button_normal_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = WINDOW_BACKGROUND
+	style.border_color = BORDER_SHADOW
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 4.0
+	style.content_margin_top = 2.0
+	style.content_margin_right = 4.0
+	style.content_margin_bottom = 2.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_window_button_hover_style(
+	danger: bool = false
+) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = STATUS_ERROR if danger else BORDER_LIGHT
+	style.border_color = BORDER_HIGHLIGHT
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 4.0
+	style.content_margin_top = 2.0
+	style.content_margin_right = 4.0
+	style.content_margin_bottom = 2.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_window_button_pressed_style(
+	danger: bool = false
+) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = Color("#7E2727") if danger else BORDER_DARK
+	style.border_color = BORDER_SHADOW
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 5.0
+	style.content_margin_top = 3.0
+	style.content_margin_right = 3.0
+	style.content_margin_bottom = 1.0
 
 	style.anti_aliasing = false
 

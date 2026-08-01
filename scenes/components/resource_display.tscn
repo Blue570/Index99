@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://cbyp0d7lppnrq"]
+
+[ext_resource type="Script" uid="uid://crhf4ngsmnej4" path="res://scripts/components/resource_display.gd" id="1_e2tm8"]
+
+[node name="ResourceDisplay" type="PanelContainer" unique_id=235679136]
+custom_minimum_size = Vector2(170, 42)
+offset_right = 40.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+script = ExtResource("1_e2tm8")
+
+[node name="Content" type="HBoxContainer" parent="." unique_id=475761968]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="IconFrame" type="PanelContainer" parent="Content" unique_id=1186071792]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+
+[node name="IconLabel" type="Label" parent="Content/IconFrame" unique_id=698340390]
+layout_mode = 2
+text = "$"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TextColumn" type="VBoxContainer" parent="Content" unique_id=565648566]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="NameLabel" type="Label" parent="Content/TextColumn" unique_id=1163429892]
+layout_mode = 2
+text = "Resource"
+vertical_alignment = 1
+
+[node name="ValueLabel" type="Label" parent="Content/TextColumn" unique_id=865570025]
+layout_mode = 2
+text = "0"
+vertical_alignment = 1
