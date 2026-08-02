@@ -250,13 +250,164 @@ var current_page_id: StringName = &""
 	/JobsLayout/JobProgress
 )
 
+@onready var revenue_display: ResourceDisplay = get_node(
+	"MainApplicationWindow/MainLayout/ResourceBar/"
+	+ "ResourceRow/RevenueDisplay"
+) as ResourceDisplay
+
+@onready var users_display: ResourceDisplay = get_node(
+	"MainApplicationWindow/MainLayout/ResourceBar/"
+	+ "ResourceRow/UsersDisplay"
+) as ResourceDisplay
+
+@onready var indexed_pages_display: ResourceDisplay = get_node(
+	"MainApplicationWindow/MainLayout/ResourceBar/"
+	+ "ResourceRow/IndexedPagesDisplay"
+) as ResourceDisplay
+
+@onready var reputation_display: ResourceDisplay = get_node(
+	"MainApplicationWindow/MainLayout/ResourceBar/"
+	+ "ResourceRow/ReputationDisplay"
+) as ResourceDisplay
+
+@onready var server_load_display: ResourceDisplay = get_node(
+	"MainApplicationWindow/MainLayout/ResourceBar/"
+	+ "ResourceRow/ServerLoadDisplay"
+) as ResourceDisplay
+
 
 func _ready() -> void:
 	apply_theme_foundation()
 	connect_title_bar_buttons()
 	setup_tabs()
 	setup_placeholder_jobs()
+	
+	setup_game_state_connections()
+	refresh_resource_displays()
+	
 	open_page(DEFAULT_PAGE_ID)
+	
+	
+func setup_game_state_connections() -> void:
+	if not GameState.revenue_changed.is_connected(
+		_on_revenue_changed
+	):
+		GameState.revenue_changed.connect(
+			_on_revenue_changed
+		)
+
+	if not GameState.active_users_changed.is_connected(
+		_on_active_users_changed
+	):
+		GameState.active_users_changed.connect(
+			_on_active_users_changed
+		)
+
+	if not GameState.indexed_pages_changed.is_connected(
+		_on_indexed_pages_changed
+	):
+		GameState.indexed_pages_changed.connect(
+			_on_indexed_pages_changed
+		)
+
+	if not GameState.reputation_changed.is_connected(
+		_on_reputation_changed
+	):
+		GameState.reputation_changed.connect(
+			_on_reputation_changed
+		)
+
+	if not GameState.server_load_changed.is_connected(
+		_on_server_load_changed
+	):
+		GameState.server_load_changed.connect(
+			_on_server_load_changed
+		)
+		
+func refresh_resource_displays() -> void:
+	_on_revenue_changed(GameState.revenue)
+	_on_active_users_changed(GameState.active_users)
+	_on_indexed_pages_changed(GameState.indexed_pages)
+	_on_reputation_changed(GameState.reputation)
+	_on_server_load_changed(GameState.server_load)
+	
+func _on_revenue_changed(new_value: float) -> void:
+	revenue_display.set_display_value(
+		format_money(new_value)
+	)
+
+
+func _on_active_users_changed(new_value: int) -> void:
+	users_display.set_display_value(
+		format_whole_number(new_value)
+	)
+
+
+func _on_indexed_pages_changed(new_value: int) -> void:
+	indexed_pages_display.set_display_value(
+		format_whole_number(new_value)
+	)
+
+
+func _on_reputation_changed(new_value: float) -> void:
+	reputation_display.set_display_value(
+		"%.1f" % new_value
+	)
+
+
+func _on_server_load_changed(new_value: float) -> void:
+	server_load_display.set_display_value(
+		format_percentage(new_value)
+	)
+	
+func format_money(value: float) -> String:
+	var safe_value: float = maxf(value, 0.0)
+	var total_cents: int = roundi(safe_value * 100.0)
+
+	var whole_dollars: int = floori(
+		float(total_cents) / 100.0
+	)
+
+	var cents: int = total_cents % 100
+
+	return "$%s.%02d" % [
+		format_whole_number(whole_dollars),
+		cents
+	]
+	
+func format_whole_number(value: int) -> String:
+	var number_text: String = str(
+		maxi(value, 0)
+	)
+
+	var formatted_text: String = ""
+
+	while number_text.length() > 3:
+		var split_index: int = (
+			number_text.length() - 3
+		)
+
+		formatted_text = (
+			","
+			+ number_text.substr(split_index, 3)
+			+ formatted_text
+		)
+
+		number_text = number_text.substr(
+			0,
+			split_index
+		)
+
+	return number_text + formatted_text
+	
+func format_percentage(value: float) -> String:
+	var safe_value: float = clampf(
+		value,
+		0.0,
+		100.0
+	)
+
+	return "%d%%" % roundi(safe_value)
 
 
 func apply_theme_foundation() -> void:
@@ -650,3 +801,4 @@ func _on_maximize_button_pressed() -> void:
 
 func _on_close_button_pressed() -> void:
 	get_tree().quit()
+	
