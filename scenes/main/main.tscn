@@ -808,12 +808,323 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CrawlerPageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage" unique_id=297882267]
+[node name="CrawlerMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage" unique_id=764551735]
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "Crawler"
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="CrawlerPageLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin" unique_id=990319618]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CrawlerPageHeader" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout" unique_id=1793509558]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CrawlerPageTitleLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageHeader" unique_id=1755044603]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="CrawlerPageTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageHeader/CrawlerPageTitleLayout" unique_id=881569741]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Web Crawler"
+vertical_alignment = 1
+
+[node name="CrawlerPageSubtitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageHeader/CrawlerPageTitleLayout" unique_id=304290008]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 12
+text = "Configure crawl jobs and monitor indexing activity"
+vertical_alignment = 1
+
+[node name="CrawlerHeaderSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageHeader" unique_id=1650251103]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CrawlerPageStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageHeader" unique_id=551960935]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+theme_override_font_sizes/font_size = 12
+text = "CRAWLER OFFLINE"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="CrawlerPageBody" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout" unique_id=2138554637]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="CrawlerLeftColumn" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody" unique_id=1922868301]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+theme_override_constants/separation = 10
+
+[node name="CrawlerControlPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn" unique_id=256051415 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+size_flags_vertical = 3
+section_title = "Crawler Control"
+status_text = "OFFLINE"
+show_status = true
+status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+minimum_panel_height = 145.0
+
+[node name="CrawlerControlLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(256051415, 287423228) index="0" unique_id=475909883]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 7
+
+[node name="CrawlerControlStatusRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout" unique_id=1239567445]
+layout_mode = 2
+
+[node name="CrawlerControlStatusNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerControlStatusRow" unique_id=2057578556]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Current Status"
+vertical_alignment = 1
+
+[node name="CrawlerControlStatusValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerControlStatusRow" unique_id=1566591202]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Offline"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="CrawlerControlRateRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout" unique_id=1763211449]
+layout_mode = 2
+
+[node name="CrawlerControlRateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerControlRateRow" unique_id=1397468742]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Crawler Rate"
+vertical_alignment = 1
+
+[node name="CrawlerControlRateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerControlRateRow" unique_id=1292074460]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "1 page/sec"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="CrawlerControlSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout" unique_id=1597397761]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CrawlerButtonsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout" unique_id=556687566]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StartCrawlerButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerButtonsRow" unique_id=301407035]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Start Crawler"
+
+[node name="PauseCrawlerButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerButtonsRow" unique_id=1519573621]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "Pause Crawler"
+
+[node name="CurrentCrawlJobPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn" unique_id=1953031972 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+section_title = "Current Crawl Job"
+status_text = "IDLE"
+show_status = true
+status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+minimum_panel_height = 225.0
+
+[node name="CurrentCrawlJobLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1953031972, 287423228) index="0" unique_id=618552502]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="CurrentJobTargetRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout" unique_id=2124280341]
+layout_mode = 2
+
+[node name="CurrentJobTargetNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout/CurrentJobTargetRow" unique_id=2106500980]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Target"
+
+[node name="CurrentJobTargetValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout/CurrentJobTargetRow" unique_id=2137778753]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+text = "No active target"
+horizontal_alignment = 2
+
+[node name="CurrentJobStateRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout" unique_id=1460212095]
+layout_mode = 2
+
+[node name="CurrentJobStateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout/CurrentJobStateRow" unique_id=920139898]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Job State"
+
+[node name="CurrentJobStateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout/CurrentJobStateRow" unique_id=107716071]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+text = "Idle"
+horizontal_alignment = 2
+
+[node name="CurrentJobProgressHeadingLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout" unique_id=740154301]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "JOB PROGRESS"
+
+[node name="CurrentJobProgressBar" type="ProgressBar" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout" unique_id=835831724]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+size_flags_vertical = 1
+step = 1.0
+
+[node name="CurrentJobProcessedRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout" unique_id=1908815672]
+layout_mode = 2
+
+[node name="CurrentJobProcessedNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout/CurrentJobProcessedRow" unique_id=1486541146]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pages Processed"
+
+[node name="CurrentJobProcessedValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout/CurrentJobProcessedRow" unique_id=1643420252]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "0"
+horizontal_alignment = 2
+
+[node name="CurrentJobRemainingRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout" unique_id=774555275]
+layout_mode = 2
+
+[node name="CurrentJobRemainingNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout/CurrentJobRemainingRow" unique_id=1544814092]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pages Remaining"
+
+[node name="CurrentJobRemainingValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout/CurrentJobRemainingRow" unique_id=1989793868]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "100"
+horizontal_alignment = 2
+
+[node name="CrawlerRightColumn" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody" unique_id=315063844]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="CrawlerStatisticsPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn" unique_id=512034689 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+size_flags_vertical = 3
+section_title = "Crawler Statistics"
+status_text = "LIVE"
+show_status = true
+minimum_panel_height = 175.0
+
+[node name="CrawlerStatisticsLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(512034689, 287423228) index="0" unique_id=388258125]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 7
+
+[node name="StatisticsIndexedPagesRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout" unique_id=1089804746]
+layout_mode = 2
+
+[node name="StatisticsIndexedPagesNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout/StatisticsIndexedPagesRow" unique_id=1701730325]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Indexed Pages"
+
+[node name="StatisticsIndexedPagesValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout/StatisticsIndexedPagesRow" unique_id=530085195]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "0"
+horizontal_alignment = 2
+
+[node name="StatisticsCrawlerRateRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout" unique_id=291819429]
+layout_mode = 2
+
+[node name="StatisticsCrawlerRateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout/StatisticsCrawlerRateRow" unique_id=70004789]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Crawler Rate"
+
+[node name="StatisticsCrawlerRateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout/StatisticsCrawlerRateRow" unique_id=507714671]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "1 page/sec"
+horizontal_alignment = 2
+
+[node name="StatisticsActiveUsersRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout" unique_id=1604046102]
+layout_mode = 2
+
+[node name="StatisticsActiveUsersNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout/StatisticsActiveUsersRow" unique_id=1100880213]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Active Users"
+
+[node name="StatisticsActiveUsersValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout/StatisticsActiveUsersRow" unique_id=1011679062]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "10"
+horizontal_alignment = 2
+
+[node name="StatisticsServerLoadRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout" unique_id=1156956991]
+layout_mode = 2
+
+[node name="StatisticsServerLoadNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout/StatisticsServerLoadRow" unique_id=2118710526]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Server Load"
+
+[node name="StatisticsServerLoadValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerStatisticsLayout/StatisticsServerLoadRow" unique_id=2097214401]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "0%"
+horizontal_alignment = 2
+
+[node name="CrawlQueuePanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn" unique_id=698738578 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+size_flags_vertical = 3
+section_title = "Crawl Queue"
+status_text = "EMPTY"
+show_status = true
+status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+minimum_panel_height = 175.0
+
+[node name="CrawlQueueLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(698738578, 287423228) index="0" unique_id=375009246]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="CrawlQueueCountRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout" unique_id=2129662910]
+layout_mode = 2
+
+[node name="CrawlQueueCountNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout/CrawlQueueCountRow" unique_id=879927163]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Queued Jobs"
+
+[node name="CrawlQueueCountValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout/CrawlQueueCountRow" unique_id=1055888846]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "0"
+horizontal_alignment = 2
+
+[node name="CrawlQueueSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout" unique_id=2050741137]
+layout_mode = 2
+
+[node name="CrawlQueueEmptyLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout" unique_id=1918427405]
+layout_mode = 2
+size_flags_vertical = 3
+text = "No crawl jobs are waiting."
 horizontal_alignment = 1
 vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="IndexPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=945400770]
 visible = false
@@ -961,3 +1272,7 @@ value = 42.0
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel"]
