@@ -409,3 +409,67 @@ func create_job_progress_fill_style() -> StyleBoxFlat:
 	style.anti_aliasing = false
 
 	return style
+	
+func create_section_panel_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = WINDOW_BACKGROUND
+	style.border_color = BORDER_SHADOW
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 2.0
+	style.content_margin_top = 2.0
+	style.content_margin_right = 2.0
+	style.content_margin_bottom = 2.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_section_header_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = TITLE_BAR_INACTIVE
+	style.border_color = TITLE_BAR_BORDER
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 8.0
+	style.content_margin_top = 4.0
+	style.content_margin_right = 6.0
+	style.content_margin_bottom = 4.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_section_content_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = SUNKEN_BACKGROUND
+	style.border_color = BORDER_DARK
+	style.set_border_width_all(1)
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_status_badge_style(
+	badge_color: Color = ACCENT_BLUE
+) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = badge_color
+	style.border_color = TITLE_BAR_BORDER
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 5.0
+	style.content_margin_top = 2.0
+	style.content_margin_right = 5.0
+	style.content_margin_bottom = 2.0
+
+	style.anti_aliasing = false
+
+	return style

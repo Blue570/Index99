@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://b41cu2sfdcohy" path="res://scripts/core/main.gd" id="1_hyk8p"]
 [ext_resource type="PackedScene" uid="uid://cbyp0d7lppnrq" path="res://scenes/components/resource_display.tscn" id="2_iuonh"]
 [ext_resource type="PackedScene" uid="uid://cfoop710hprex" path="res://scenes/components/tab_button.tscn" id="3_k2fmo"]
+[ext_resource type="PackedScene" uid="uid://e2d0iq6wxrof" path="res://scenes/components/section_panel.tscn" id="4_l3cfh"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
@@ -190,12 +191,114 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DashboardPageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage" unique_id=1023382922]
+[node name="DashboardScroll" type="ScrollContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage" unique_id=623989285]
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "Dashboard"
-horizontal_alignment = 1
+horizontal_scroll_mode = 0
+
+[node name="DashboardMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll" unique_id=1124618246]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="DashboardLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin" unique_id=934398585]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="DashboardHeader" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout" unique_id=93750289]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DashboardTitleBlock" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardHeader" unique_id=1205424426]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="DashboardTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardHeader/DashboardTitleBlock" unique_id=911646658]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
+theme_override_font_sizes/font_size = 22
+text = "Network Overview"
 vertical_alignment = 1
+
+[node name="DashboardSubtitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardHeader/DashboardTitleBlock" unique_id=570049283]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 12
+text = "Search network activity and infrastructure summary"
+vertical_alignment = 1
+
+[node name="DashboardHeaderSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardHeader" unique_id=1199286456]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DashboardStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardHeader" unique_id=531808562]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.18431373, 0.56078434, 0.27450982, 1)
+theme_override_font_sizes/font_size = 12
+text = "SYSTEM ONLINE"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="OverviewRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout" unique_id=439886025]
+custom_minimum_size = Vector2(0, 130)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TrafficOverview" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow" unique_id=847923036 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+section_title = "Traffic Overview"
+status_text = "LIVE"
+show_status = true
+status_color = Color(0.18431373, 0.56078434, 0.27450982, 1)
+
+[node name="CrawlerOverview" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow" unique_id=1728367714 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+section_title = "Crawler Status"
+status_text = "OFFLINE"
+show_status = true
+status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+
+[node name="ServerOverview" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow" unique_id=1665114066 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+section_title = "Server Health"
+status_text = "NORMAL"
+show_status = true
+
+[node name="DashboardColumns" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout" unique_id=1541815340]
+custom_minimum_size = Vector2(0, 250)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="LeftColumn" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns" unique_id=1727838917]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+theme_override_constants/separation = 10
+
+[node name="LeftColumnFoundation" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn" unique_id=1434293501 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+size_flags_vertical = 3
+section_title = "Primary Dashboard Area"
+status_text = "Off"
+minimum_panel_height = 250.0
+
+[node name="RightColumn" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns" unique_id=1769557496]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="RightColumnFoundation" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn" unique_id=1905603068 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+size_flags_vertical = 3
+section_title = "Status & Objectives"
+status_text = "Off"
+minimum_panel_height = 250.0
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
 visible = false

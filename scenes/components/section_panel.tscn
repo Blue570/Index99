@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://e2d0iq6wxrof"]
+
+[ext_resource type="Script" uid="uid://c817ya7qqdesh" path="res://scripts/components/section_panel.gd" id="1_7xs4s"]
+
+[node name="SectionPanel" type="PanelContainer" unique_id=847923036]
+custom_minimum_size = Vector2(220, 120)
+offset_right = 40.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+script = ExtResource("1_7xs4s")
+
+[node name="PanelLayout" type="VBoxContainer" parent="." unique_id=352174754]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="SectionHeader" type="PanelContainer" parent="PanelLayout" unique_id=342722135]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="PanelLayout/SectionHeader" unique_id=2138811020]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TitleLabel" type="Label" parent="PanelLayout/SectionHeader/HeaderRow" unique_id=2146474755]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Section"
+vertical_alignment = 1
+
+[node name="HeaderSpacer" type="Control" parent="PanelLayout/SectionHeader/HeaderRow" unique_id=714669724]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StatusBadge" type="PanelContainer" parent="PanelLayout/SectionHeader/HeaderRow" unique_id=1996448693]
+custom_minimum_size = Vector2(60, 20)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="StatusLabel" type="Label" parent="PanelLayout/SectionHeader/HeaderRow/StatusBadge" unique_id=286947012]
+layout_mode = 2
+text = "STATUS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ContentPanel" type="PanelContainer" parent="PanelLayout" unique_id=114680111]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ContentMargin" type="MarginContainer" parent="PanelLayout/ContentPanel" unique_id=1013116615]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="ContentContainer" type="VBoxContainer" parent="PanelLayout/ContentPanel/ContentMargin" unique_id=287423228]
+layout_mode = 2
+theme_override_constants/separation = 6
