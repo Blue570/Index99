@@ -447,9 +447,14 @@ func create_section_header_style() -> StyleBoxFlat:
 func create_section_content_style() -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 
-	style.bg_color = SUNKEN_BACKGROUND
+	style.bg_color = CONTENT_BACKGROUND
 	style.border_color = BORDER_DARK
 	style.set_border_width_all(1)
+
+	style.content_margin_left = 0.0
+	style.content_margin_top = 0.0
+	style.content_margin_right = 0.0
+	style.content_margin_bottom = 0.0
 
 	style.anti_aliasing = false
 

@@ -53,6 +53,7 @@ func _ready() -> void:
 
 	apply_component_theme()
 	refresh_display()
+	print("SectionPanel theme applied: ", section_title)
 
 
 func apply_component_theme() -> void:
