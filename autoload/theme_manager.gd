@@ -473,3 +473,83 @@ func create_status_badge_style(
 	style.anti_aliasing = false
 
 	return style
+	
+func create_dashboard_inset_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = Color("#F4F4F4")
+	style.border_color = BORDER_DARK
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 6.0
+	style.content_margin_top = 6.0
+	style.content_margin_right = 6.0
+	style.content_margin_bottom = 6.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_dashboard_metric_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = Color("#E8E8E8")
+	style.border_color = BORDER_LIGHT
+	style.set_border_width_all(1)
+
+	style.content_margin_left = 6.0
+	style.content_margin_top = 4.0
+	style.content_margin_right = 6.0
+	style.content_margin_bottom = 4.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_dashboard_event_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = Color("#F2F2F2")
+	style.border_color = BORDER_LIGHT
+
+	style.border_width_left = 0
+	style.border_width_top = 0
+	style.border_width_right = 0
+	style.border_width_bottom = 1
+
+	style.content_margin_left = 6.0
+	style.content_margin_top = 5.0
+	style.content_margin_right = 6.0
+	style.content_margin_bottom = 5.0
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_dashboard_progress_background_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = Color("#FFFFFF")
+	style.border_color = BORDER_SHADOW
+	style.set_border_width_all(1)
+
+	style.anti_aliasing = false
+
+	return style
+
+
+func create_dashboard_progress_fill_style(
+	fill_color: Color = ACCENT_BLUE
+) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+
+	style.bg_color = fill_color
+	style.border_color = TITLE_BAR_BORDER
+	style.set_border_width_all(1)
+
+	style.anti_aliasing = false
+
+	return style
