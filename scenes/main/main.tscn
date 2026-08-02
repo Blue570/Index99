@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://b41cu2sfdcohy" path="res://scripts/core/main.gd" id="1_hyk8p"]
 [ext_resource type="PackedScene" uid="uid://cbyp0d7lppnrq" path="res://scenes/components/resource_display.tscn" id="2_iuonh"]
 [ext_resource type="PackedScene" uid="uid://cfoop710hprex" path="res://scenes/components/tab_button.tscn" id="3_k2fmo"]
+[ext_resource type="Script" uid="uid://ym5imyiwd2jr" path="res://scripts/dashboard_page.gd" id="4_6q06x"]
 [ext_resource type="PackedScene" uid="uid://e2d0iq6wxrof" path="res://scenes/components/section_panel.tscn" id="4_l3cfh"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
@@ -190,6 +191,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("4_6q06x")
 
 [node name="DashboardMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage" unique_id=1124618246]
 layout_mode = 2
@@ -270,49 +272,72 @@ custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="SearchesTodayMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=692916447]
+[node name="RevenueMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=692916447]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SearchesTodayMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/SearchesTodayMetricPanel" unique_id=1720116628]
+[node name="RevenueMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/RevenueMetricPanel" unique_id=1720116628]
 layout_mode = 2
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="SearchesTodayValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/SearchesTodayMetricPanel/SearchesTodayMetricLayout" unique_id=1522506854]
+[node name="RevenueValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/RevenueMetricPanel/RevenueMetricLayout" unique_id=1522506854]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "0"
+theme_override_font_sizes/font_size = 16
+text = "$0.00"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SearchesTodayNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/SearchesTodayMetricPanel/SearchesTodayMetricLayout" unique_id=2064731538]
+[node name="RevenueNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/RevenueMetricPanel/RevenueMetricLayout" unique_id=2064731538]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
-text = "Searches Today"
+theme_override_font_sizes/font_size = 10
+text = "Revenue"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NewUsersMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=1258287311]
+[node name="ActiveUsersMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=1258287311]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="NewUsersMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/NewUsersMetricPanel" unique_id=160512470]
+[node name="ActiveUsersMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/ActiveUsersMetricPanel" unique_id=160512470]
 layout_mode = 2
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="NewUsersValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/NewUsersMetricPanel/NewUsersMetricLayout" unique_id=1504392257]
+[node name="ActiveUsersValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/ActiveUsersMetricPanel/ActiveUsersMetricLayout" unique_id=1504392257]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 15
 text = "10"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NewUsersNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/NewUsersMetricPanel/NewUsersMetricLayout" unique_id=1394697625]
+[node name="ActiveUsersNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/ActiveUsersMetricPanel/ActiveUsersMetricLayout" unique_id=1394697625]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "New Users"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="IndexedPagesMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=1564514768]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="IndexedPagesMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/IndexedPagesMetricPanel" unique_id=333465309]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="IndexedPagesValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/IndexedPagesMetricPanel/IndexedPagesMetricLayout" unique_id=1235474255]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="IndexedPagesNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/IndexedPagesMetricPanel/IndexedPagesMetricLayout" unique_id=1776124508]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Indexed Pages"
 horizontal_alignment = 1
 vertical_alignment = 1
 
