@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 ThemeManager="*uid://dqbjwre656mbv"
+GameState="*uid://17or4m1j820a"
 
 [display]
 
