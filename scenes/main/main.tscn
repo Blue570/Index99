@@ -191,11 +191,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DashboardScroll" type="ScrollContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage" unique_id=623989285]
-layout_mode = 2
-horizontal_scroll_mode = 0
-
-[node name="DashboardMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll" unique_id=1124618246]
+[node name="DashboardMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage" unique_id=1124618246]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -204,39 +200,39 @@ theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="DashboardLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin" unique_id=934398585]
+[node name="DashboardLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin" unique_id=934398585]
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="DashboardHeader" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout" unique_id=93750289]
+[node name="DashboardHeader" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout" unique_id=93750289]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="DashboardTitleBlock" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardHeader" unique_id=1205424426]
+[node name="DashboardTitleBlock" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardHeader" unique_id=1205424426]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="DashboardTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardHeader/DashboardTitleBlock" unique_id=911646658]
+[node name="DashboardTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardHeader/DashboardTitleBlock" unique_id=911646658]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
 theme_override_font_sizes/font_size = 22
 text = "Network Overview"
 vertical_alignment = 1
 
-[node name="DashboardSubtitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardHeader/DashboardTitleBlock" unique_id=570049283]
+[node name="DashboardSubtitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardHeader/DashboardTitleBlock" unique_id=570049283]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 12
 text = "Search network activity and infrastructure summary"
 vertical_alignment = 1
 
-[node name="DashboardHeaderSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardHeader" unique_id=1199286456]
+[node name="DashboardHeaderSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardHeader" unique_id=1199286456]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="DashboardStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardHeader" unique_id=531808562]
+[node name="DashboardStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardHeader" unique_id=531808562]
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.18431373, 0.56078434, 0.27450982, 1)
@@ -245,18 +241,18 @@ text = "SYSTEM ONLINE"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="OverviewRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout" unique_id=439886025]
-custom_minimum_size = Vector2(0, 180)
+[node name="OverviewRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout" unique_id=439886025]
+custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="OverviewLeftGroup" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow" unique_id=725696911]
+[node name="OverviewLeftGroup" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow" unique_id=725696911]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 theme_override_constants/separation = 8
 
-[node name="TrafficOverview" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup" unique_id=847923036 instance=ExtResource("4_l3cfh")]
+[node name="TrafficOverview" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup" unique_id=847923036 instance=ExtResource("4_l3cfh")]
 layout_mode = 2
 section_title = "Traffic Overview"
 status_text = "LIVE"
@@ -264,80 +260,80 @@ show_status = true
 status_color = Color(0.18431373, 0.56078434, 0.27450982, 1)
 minimum_panel_height = 170.0
 
-[node name="TrafficOverviewLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(847923036, 287423228) index="0" unique_id=1751482519]
+[node name="TrafficOverviewLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(847923036, 287423228) index="0" unique_id=1751482519]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 6
 
-[node name="TrafficMetricsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout" unique_id=1922121618]
+[node name="TrafficMetricsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout" unique_id=1922121618]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="SearchesTodayMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=692916447]
+[node name="SearchesTodayMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=692916447]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SearchesTodayMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/SearchesTodayMetricPanel" unique_id=1720116628]
+[node name="SearchesTodayMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/SearchesTodayMetricPanel" unique_id=1720116628]
 layout_mode = 2
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="SearchesTodayValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/SearchesTodayMetricPanel/SearchesTodayMetricLayout" unique_id=1522506854]
+[node name="SearchesTodayValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/SearchesTodayMetricPanel/SearchesTodayMetricLayout" unique_id=1522506854]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SearchesTodayNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/SearchesTodayMetricPanel/SearchesTodayMetricLayout" unique_id=2064731538]
+[node name="SearchesTodayNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/SearchesTodayMetricPanel/SearchesTodayMetricLayout" unique_id=2064731538]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "Searches Today"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NewUsersMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=1258287311]
+[node name="NewUsersMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=1258287311]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="NewUsersMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/NewUsersMetricPanel" unique_id=160512470]
+[node name="NewUsersMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/NewUsersMetricPanel" unique_id=160512470]
 layout_mode = 2
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="NewUsersValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/NewUsersMetricPanel/NewUsersMetricLayout" unique_id=1504392257]
+[node name="NewUsersValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/NewUsersMetricPanel/NewUsersMetricLayout" unique_id=1504392257]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "10"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NewUsersNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/NewUsersMetricPanel/NewUsersMetricLayout" unique_id=1394697625]
+[node name="NewUsersNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/NewUsersMetricPanel/NewUsersMetricLayout" unique_id=1394697625]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "New Users"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="TrafficChartPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout" unique_id=1814254029]
+[node name="TrafficChartPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout" unique_id=1814254029]
 custom_minimum_size = Vector2(0, 65)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="TrafficChartLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficChartPanel" unique_id=89352997]
+[node name="TrafficChartLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficChartPanel" unique_id=89352997]
 layout_mode = 2
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="TrafficChartTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficChartPanel/TrafficChartLayout" unique_id=1184645242]
+[node name="TrafficChartTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficChartPanel/TrafficChartLayout" unique_id=1184645242]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "24-HOUR TRAFFIC TREND"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="TrafficChartPlaceholderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficChartPanel/TrafficChartLayout" unique_id=455916174]
+[node name="TrafficChartPlaceholderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficChartPanel/TrafficChartLayout" unique_id=455916174]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 12
@@ -345,7 +341,7 @@ text = "Chart data unavailable"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CrawlerOverview" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup" unique_id=1728367714 instance=ExtResource("4_l3cfh")]
+[node name="CrawlerOverview" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup" unique_id=1728367714 instance=ExtResource("4_l3cfh")]
 layout_mode = 2
 section_title = "Crawler Status"
 status_text = "OFFLINE"
@@ -353,22 +349,22 @@ show_status = true
 status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
 minimum_panel_height = 170.0
 
-[node name="CrawlerOverviewLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1728367714, 287423228) index="0" unique_id=1258924223]
+[node name="CrawlerOverviewLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1728367714, 287423228) index="0" unique_id=1258924223]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 6
 
-[node name="CrawlerStatusRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout" unique_id=2074535069]
+[node name="CrawlerStatusRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout" unique_id=2074535069]
 layout_mode = 2
 
-[node name="CrawlerStatusNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerStatusRow" unique_id=710324279]
+[node name="CrawlerStatusNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerStatusRow" unique_id=710324279]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 14
 text = "Status"
 vertical_alignment = 1
 
-[node name="CrawlerStatusValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerStatusRow" unique_id=747527464]
+[node name="CrawlerStatusValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerStatusRow" unique_id=747527464]
 custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
@@ -376,16 +372,16 @@ text = "Offline"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="CrawlerRateRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout" unique_id=760170004]
+[node name="CrawlerRateRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout" unique_id=760170004]
 layout_mode = 2
 
-[node name="CrawlerRateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerRateRow" unique_id=489576806]
+[node name="CrawlerRateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerRateRow" unique_id=489576806]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 12
 text = "Crawl Rate"
 
-[node name="CrawlerRateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerRateRow" unique_id=62112105]
+[node name="CrawlerRateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerRateRow" unique_id=62112105]
 custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
@@ -393,112 +389,112 @@ text = "0 pages/sec"
 horizontal_alignment = 2
 autowrap_mode = 3
 
-[node name="CrawlerQueueRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout" unique_id=156915569]
+[node name="CrawlerQueueRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout" unique_id=156915569]
 layout_mode = 2
 
-[node name="CrawlerQueueNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerQueueRow" unique_id=573293111]
+[node name="CrawlerQueueNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerQueueRow" unique_id=573293111]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Queue"
 
-[node name="CrawlerQueueValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerQueueRow" unique_id=241778457]
+[node name="CrawlerQueueValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerQueueRow" unique_id=241778457]
 custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 text = "0 jobs"
 horizontal_alignment = 2
 
-[node name="CrawlerTargetRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout" unique_id=1438091313]
+[node name="CrawlerTargetRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout" unique_id=1438091313]
 layout_mode = 2
 
-[node name="CrawlerTargetNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerTargetRow" unique_id=2057788698]
+[node name="CrawlerTargetNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerTargetRow" unique_id=2057788698]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Current Target"
 
-[node name="CrawlerTargetValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerTargetRow" unique_id=1079672287]
+[node name="CrawlerTargetValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerOverviewLayout/CrawlerTargetRow" unique_id=1079672287]
 custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 text = "None"
 horizontal_alignment = 2
 
-[node name="ServerOverview" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow" unique_id=1665114066 instance=ExtResource("4_l3cfh")]
+[node name="ServerOverview" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow" unique_id=1665114066 instance=ExtResource("4_l3cfh")]
 layout_mode = 2
 section_title = "Server Health"
 status_text = "NORMAL"
 show_status = true
 minimum_panel_height = 170.0
 
-[node name="ServerOverviewLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1665114066, 287423228) index="0" unique_id=259875248]
+[node name="ServerOverviewLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1665114066, 287423228) index="0" unique_id=259875248]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 6
 
-[node name="ServerLoadRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=1076269385]
+[node name="ServerLoadRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=1076269385]
 layout_mode = 2
 
-[node name="ServerLoadNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerLoadRow" unique_id=318245604]
+[node name="ServerLoadNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerLoadRow" unique_id=318245604]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Server Load"
 vertical_alignment = 1
 
-[node name="ServerLoadValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerLoadRow" unique_id=323961012]
+[node name="ServerLoadValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerLoadRow" unique_id=323961012]
 custom_minimum_size = Vector2(45, 0)
 layout_mode = 2
 text = "0%"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="ServerLoadProgress" type="ProgressBar" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=359731657]
+[node name="ServerLoadProgress" type="ProgressBar" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=359731657]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 size_flags_vertical = 1
 step = 1.0
 show_percentage = false
 
-[node name="ServerCapacityRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=1677934963]
+[node name="ServerCapacityRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=1677934963]
 layout_mode = 2
 
-[node name="ServerCapacityNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerCapacityRow" unique_id=1927070923]
+[node name="ServerCapacityNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerCapacityRow" unique_id=1927070923]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 12
 text = "Capacity"
 
-[node name="ServerCapacityValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerCapacityRow" unique_id=29698620]
+[node name="ServerCapacityValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerCapacityRow" unique_id=29698620]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "100%"
 horizontal_alignment = 2
 
-[node name="ServerHealthRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=2026463988]
+[node name="ServerHealthRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=2026463988]
 layout_mode = 2
 
-[node name="ServerHealthNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerHealthRow" unique_id=1396160412]
+[node name="ServerHealthNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerHealthRow" unique_id=1396160412]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Health"
 
-[node name="ServerHealthValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerHealthRow" unique_id=482362]
+[node name="ServerHealthValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerHealthRow" unique_id=482362]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
 text = "Normal"
 horizontal_alignment = 2
 
-[node name="DashboardColumns" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout" unique_id=1541815340]
-custom_minimum_size = Vector2(0, 430)
+[node name="DashboardColumns" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout" unique_id=1541815340]
+custom_minimum_size = Vector2(0, 220)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="LeftColumn" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns" unique_id=1727838917]
+[node name="LeftColumn" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns" unique_id=1727838917]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 theme_override_constants/separation = 10
 
-[node name="SearchActivityPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn" unique_id=1722737378 instance=ExtResource("4_l3cfh")]
+[node name="SearchActivityPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn" unique_id=1722737378 instance=ExtResource("4_l3cfh")]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
@@ -506,95 +502,95 @@ section_title = "Search Activity"
 status_text = "NO DATA"
 show_status = true
 status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
-minimum_panel_height = 240.0
+minimum_panel_height = 135.0
 
-[node name="SearchActivityLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1722737378, 287423228) index="0" unique_id=1015722229]
+[node name="SearchActivityLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1722737378, 287423228) index="0" unique_id=1015722229]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="SearchMetricsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout" unique_id=1987934225]
+[node name="SearchMetricsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout" unique_id=1987934225]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="QueriesMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow" unique_id=1310739896]
+[node name="QueriesMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow" unique_id=1310739896]
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="QueriesMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/QueriesMetricPanel" unique_id=1788220154]
+[node name="QueriesMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/QueriesMetricPanel" unique_id=1788220154]
 layout_mode = 2
 
-[node name="QueriesValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/QueriesMetricPanel/QueriesMetricLayout" unique_id=1562882602]
+[node name="QueriesValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/QueriesMetricPanel/QueriesMetricLayout" unique_id=1562882602]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "0"
 horizontal_alignment = 1
 
-[node name="QueriesNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/QueriesMetricPanel/QueriesMetricLayout" unique_id=1288456673]
+[node name="QueriesNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/QueriesMetricPanel/QueriesMetricLayout" unique_id=1288456673]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "Queries / Min"
 horizontal_alignment = 1
 
-[node name="ResponseMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow" unique_id=1011933074]
+[node name="ResponseMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow" unique_id=1011933074]
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ResponseMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ResponseMetricPanel" unique_id=1463463744]
+[node name="ResponseMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ResponseMetricPanel" unique_id=1463463744]
 layout_mode = 2
 
-[node name="ResponseValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ResponseMetricPanel/ResponseMetricLayout" unique_id=317484081]
+[node name="ResponseValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ResponseMetricPanel/ResponseMetricLayout" unique_id=317484081]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "0 ms"
 horizontal_alignment = 1
 
-[node name="ResponseNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ResponseMetricPanel/ResponseMetricLayout" unique_id=795568464]
+[node name="ResponseNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ResponseMetricPanel/ResponseMetricLayout" unique_id=795568464]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "Avg. Response"
 horizontal_alignment = 1
 
-[node name="ClickRateMetric" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow" unique_id=73736466]
+[node name="ClickRateMetric" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow" unique_id=73736466]
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ClickRateMetricPanel" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ClickRateMetric" unique_id=1711567121]
+[node name="ClickRateMetricPanel" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ClickRateMetric" unique_id=1711567121]
 layout_mode = 2
 
-[node name="ClickRateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ClickRateMetric/ClickRateMetricPanel" unique_id=1629826349]
+[node name="ClickRateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ClickRateMetric/ClickRateMetricPanel" unique_id=1629826349]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "0.0%"
 horizontal_alignment = 1
 
-[node name="ClickRateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ClickRateMetric/ClickRateMetricPanel" unique_id=622500736]
+[node name="ClickRateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ClickRateMetric/ClickRateMetricPanel" unique_id=622500736]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "Click Rate"
 horizontal_alignment = 1
 
-[node name="SearchActivityChartPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout" unique_id=60048406]
+[node name="SearchActivityChartPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout" unique_id=60048406]
 custom_minimum_size = Vector2(0, 125)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="SearchActivityChartLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchActivityChartPanel" unique_id=2034447522]
+[node name="SearchActivityChartLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchActivityChartPanel" unique_id=2034447522]
 layout_mode = 2
 alignment = 1
 
-[node name="SearchActivityChartTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchActivityChartPanel/SearchActivityChartLayout" unique_id=1700196233]
+[node name="SearchActivityChartTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchActivityChartPanel/SearchActivityChartLayout" unique_id=1700196233]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "SEARCH VOLUME - LAST 60 MINUTES"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SearchActivityChartPlaceholderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchActivityChartPanel/SearchActivityChartLayout" unique_id=502727065]
+[node name="SearchActivityChartPlaceholderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchActivityChartPanel/SearchActivityChartLayout" unique_id=502727065]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 14
@@ -602,156 +598,156 @@ text = "Activity chart placeholder"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RecentEventsPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn" unique_id=1748567952 instance=ExtResource("4_l3cfh")]
+[node name="RecentEventsPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn" unique_id=1748567952 instance=ExtResource("4_l3cfh")]
 layout_mode = 2
 size_flags_vertical = 3
 section_title = "Recent Events"
 status_text = "3 ENTRIES"
 show_status = true
-minimum_panel_height = 180.0
+minimum_panel_height = 90.0
 
-[node name="RecentEventsLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1748567952, 287423228) index="0" unique_id=1415526488]
+[node name="RecentEventsLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1748567952, 287423228) index="0" unique_id=1415526488]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 2
 
-[node name="EventRow1Panel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout" unique_id=48222378]
+[node name="EventRow1Panel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout" unique_id=48222378]
 custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
 
-[node name="EventRow1Layout" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow1Panel" unique_id=70975810]
+[node name="EventRow1Layout" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow1Panel" unique_id=70975810]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="Event1TimeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow1Panel/EventRow1Layout" unique_id=390621393]
+[node name="Event1TimeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow1Panel/EventRow1Layout" unique_id=390621393]
 custom_minimum_size = Vector2(45, 0)
 layout_mode = 2
 text = "00:00"
 vertical_alignment = 1
 
-[node name="Event1TypeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow1Panel/EventRow1Layout" unique_id=1812576145]
+[node name="Event1TypeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow1Panel/EventRow1Layout" unique_id=1812576145]
 custom_minimum_size = Vector2(65, 0)
 layout_mode = 2
 text = "SYSTEM"
 vertical_alignment = 1
 
-[node name="Event1MessageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow1Panel/EventRow1Layout" unique_id=191764962]
+[node name="Event1MessageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow1Panel/EventRow1Layout" unique_id=191764962]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Index 99 console initialized"
 vertical_alignment = 1
 
-[node name="EventRow2Panel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout" unique_id=1615743162]
+[node name="EventRow2Panel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout" unique_id=1615743162]
 custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
 
-[node name="EventRow2Layout" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow2Panel" unique_id=957157748]
+[node name="EventRow2Layout" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow2Panel" unique_id=957157748]
 layout_mode = 2
 
-[node name="Event2TimeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow2Panel/EventRow2Layout" unique_id=1691498550]
+[node name="Event2TimeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow2Panel/EventRow2Layout" unique_id=1691498550]
 custom_minimum_size = Vector2(45, 0)
 layout_mode = 2
 text = "00:00"
 vertical_alignment = 1
 
-[node name="Event2TypeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow2Panel/EventRow2Layout" unique_id=372693246]
+[node name="Event2TypeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow2Panel/EventRow2Layout" unique_id=372693246]
 custom_minimum_size = Vector2(65, 0)
 layout_mode = 2
 text = "CRAWLER"
 vertical_alignment = 1
 
-[node name="Event2MessageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow2Panel/EventRow2Layout" unique_id=776329688]
+[node name="Event2MessageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow2Panel/EventRow2Layout" unique_id=776329688]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Crawler service is currently offline."
 vertical_alignment = 1
 
-[node name="EventRow3Panel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout" unique_id=407437745]
+[node name="EventRow3Panel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout" unique_id=407437745]
 custom_minimum_size = Vector2(34, 0)
 layout_mode = 2
 
-[node name="EventRow3Layout" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow3Panel" unique_id=817769340]
+[node name="EventRow3Layout" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow3Panel" unique_id=817769340]
 layout_mode = 2
 
-[node name="Event3TimeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow3Panel/EventRow3Layout" unique_id=2074816918]
+[node name="Event3TimeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow3Panel/EventRow3Layout" unique_id=2074816918]
 custom_minimum_size = Vector2(45, 0)
 layout_mode = 2
 text = "00:00"
 vertical_alignment = 1
 
-[node name="Event3TypeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow3Panel/EventRow3Layout" unique_id=548040473]
+[node name="Event3TypeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow3Panel/EventRow3Layout" unique_id=548040473]
 custom_minimum_size = Vector2(65, 0)
 layout_mode = 2
 text = "INDEX"
 vertical_alignment = 1
 
-[node name="Event3MessageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow3Panel/EventRow3Layout" unique_id=960578566]
+[node name="Event3MessageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/RecentEventsLayout/EventRow3Panel/EventRow3Layout" unique_id=960578566]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "No pages have been indexed."
 vertical_alignment = 1
 
-[node name="RightColumn" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns" unique_id=1769557496]
+[node name="RightColumn" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns" unique_id=1769557496]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="CurrentObjectivePanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn" unique_id=570147225 instance=ExtResource("4_l3cfh")]
+[node name="CurrentObjectivePanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn" unique_id=570147225 instance=ExtResource("4_l3cfh")]
 layout_mode = 2
 size_flags_vertical = 3
 section_title = "Current Objective"
 status_text = "ACTIVE"
 show_status = true
 status_color = Color(0.77254903, 0.5411765, 0.07450981, 1)
-minimum_panel_height = 430.0
+minimum_panel_height = 220.0
 
-[node name="CurrentObjectiveLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(570147225, 287423228) index="0" unique_id=1124873688]
+[node name="CurrentObjectiveLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(570147225, 287423228) index="0" unique_id=1124873688]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="ObjectiveNumberLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1971355889]
+[node name="ObjectiveNumberLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1971355889]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "OBJECTIVE 01"
 
-[node name="ObjectiveTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=205842125]
+[node name="ObjectiveTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=205842125]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Index 100 pages"
 autowrap_mode = 3
 
-[node name="ObjectiveDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1964427412]
+[node name="ObjectiveDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1964427412]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "Start the crawler and build the first searchable collection of public web pages."
 autowrap_mode = 3
 
-[node name="ObjectiveSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1042202574]
+[node name="ObjectiveSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1042202574]
 layout_mode = 2
 
-[node name="ObjectiveProgressHeadingLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=924553478]
+[node name="ObjectiveProgressHeadingLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=924553478]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "PROGRESS"
 
-[node name="ObjectiveProgressBar" type="ProgressBar" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=274196494]
+[node name="ObjectiveProgressBar" type="ProgressBar" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=274196494]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 step = 1.0
 show_percentage = false
 
-[node name="ObjectiveProgressValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1237455342]
+[node name="ObjectiveProgressValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1237455342]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "0 / 100 Pages"
 horizontal_alignment = 2
 
-[node name="ObjectiveSpacer" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1022099331]
+[node name="ObjectiveSpacer" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1022099331]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ObjectiveRewardLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=57986588]
+[node name="ObjectiveRewardLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=57986588]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "Reward: +0.5 Reputation"
@@ -912,9 +908,9 @@ size_flags_vertical = 4
 step = 1.0
 value = 42.0
 
-[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview"]
-[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview"]
-[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview"]
-[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel"]
-[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel"]
-[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardScroll/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/RecentEventsPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel"]
