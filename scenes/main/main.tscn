@@ -11,6 +11,38 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7xs4s"]
+bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kx6tm"]
+bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hujxm"]
+bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yyfjg"]
+bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+
 [node name="Main" type="Control" unique_id=514529652]
 layout_mode = 3
 anchors_preset = 15
@@ -277,6 +309,7 @@ theme_override_constants/separation = 6
 [node name="RevenueMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=692916447]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_7xs4s")
 
 [node name="RevenueMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/RevenueMetricPanel" unique_id=1720116628]
 layout_mode = 2
@@ -300,6 +333,7 @@ vertical_alignment = 1
 [node name="ActiveUsersMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=1258287311]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_7xs4s")
 
 [node name="ActiveUsersMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/ActiveUsersMetricPanel" unique_id=160512470]
 layout_mode = 2
@@ -323,6 +357,7 @@ vertical_alignment = 1
 [node name="IndexedPagesMetricPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow" unique_id=1564514768]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_7xs4s")
 
 [node name="IndexedPagesMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/IndexedPagesMetricPanel" unique_id=333465309]
 layout_mode = 2
@@ -347,6 +382,7 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(0, 65)
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_7xs4s")
 
 [node name="TrafficChartLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficChartPanel" unique_id=89352997]
 layout_mode = 2
@@ -561,6 +597,7 @@ theme_override_constants/separation = 6
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_kx6tm")
 
 [node name="QueriesMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/QueriesMetricPanel" unique_id=1788220154]
 layout_mode = 2
@@ -581,6 +618,7 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_hujxm")
 
 [node name="ResponseMetricLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ResponseMetricPanel" unique_id=1463463744]
 layout_mode = 2
@@ -601,6 +639,7 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_yyfjg")
 
 [node name="ClickRateMetricPanel" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchMetricsRow/ClickRateMetric" unique_id=1711567121]
 layout_mode = 2
@@ -621,6 +660,7 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 125)
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_7xs4s")
 
 [node name="SearchActivityChartLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/LeftColumn/SearchActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SearchActivityLayout/SearchActivityChartPanel" unique_id=2034447522]
 layout_mode = 2
