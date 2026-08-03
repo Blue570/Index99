@@ -199,11 +199,11 @@ var current_page_id: StringName = &""
 	/CrawlerIndicatorRow/CrawlerStatusLight
 )
 
-@onready var crawler_status_label: Label = (
-	$MainApplicationWindow/MainLayout/BackgroundJobsBar
-	/JobsLayout/CrawlerJobIndicator
-	/CrawlerIndicatorRow/CrawlerStatusLabel
-)
+#@onready var crawler_status_label: Label = (
+	#$MainApplicationWindow/MainLayout/BackgroundJobsBar
+	#/JobsLayout/CrawlerJobIndicator
+	#/CrawlerIndicatorRow/CrawlerStatusLabel
+#)
 
 @onready var indexer_job_indicator: PanelContainer = (
 	$MainApplicationWindow/MainLayout/BackgroundJobsBar
@@ -555,7 +555,7 @@ func apply_background_jobs_theme() -> void:
 		)
 
 	var indicator_labels: Array[Label] = [
-		crawler_status_label,
+		crawler_job_label,
 		indexer_status_label,
 		research_status_label
 	]
@@ -614,7 +614,7 @@ func apply_background_jobs_theme() -> void:
 func setup_placeholder_jobs() -> void:
 	set_job_indicator(
 		crawler_status_light,
-		crawler_status_label,
+		crawler_job_label,
 		"Crawler: Running",
 		ThemeManager.STATUS_SUCCESS
 	)
