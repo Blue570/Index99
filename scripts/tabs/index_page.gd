@@ -4,6 +4,27 @@ const MAX_INDEX_ACTIVITY_ENTRIES: int = 5
 
 var index_activity_history: Array[Dictionary] = []
 
+const CATEGORY_TECHNOLOGY: StringName = &"technology"
+const CATEGORY_BUSINESS: StringName = &"business"
+const CATEGORY_ENTERTAINMENT: StringName = &"entertainment"
+const CATEGORY_GENERAL: StringName = &"general"
+
+const CATEGORY_ORDER: Array[StringName] = [
+	CATEGORY_TECHNOLOGY,
+	CATEGORY_BUSINESS,
+	CATEGORY_ENTERTAINMENT,
+	CATEGORY_GENERAL
+]
+
+var category_page_counts: Dictionary = {
+	CATEGORY_TECHNOLOGY: 0,
+	CATEGORY_BUSINESS: 0,
+	CATEGORY_ENTERTAINMENT: 0,
+	CATEGORY_GENERAL: 0
+}
+
+var next_category_index: int = 0
+
 
 # -------------------------------------------------------------------
 # Page header
@@ -128,6 +149,47 @@ var index_activity_history: Array[Dictionary] = []
 	+ "IndexActivityEntries/IndexActivityEmptyLabel"
 ) as Label
 
+# -------------------------------------------------------------------
+# Content Categories
+# -------------------------------------------------------------------
+
+@onready var index_categories_panel: SectionPanel = get_node(
+	"IndexMargin/IndexPageLayout/IndexDetailsRow/"
+	+ "IndexCategoriesPanel"
+) as SectionPanel
+
+@onready var technology_category_value_label: Label = get_node(
+	"IndexMargin/IndexPageLayout/IndexDetailsRow/"
+	+ "IndexCategoriesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/IndexCategoriesLayout/"
+	+ "TechnologyCategoryRow/"
+	+ "TechnologyCategoryValueLabel"
+) as Label
+
+@onready var business_category_value_label: Label = get_node(
+	"IndexMargin/IndexPageLayout/IndexDetailsRow/"
+	+ "IndexCategoriesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/IndexCategoriesLayout/"
+	+ "BusinessCategoryRow/"
+	+ "BusinessCategoryValueLabel"
+) as Label
+
+@onready var entertainment_category_value_label: Label = get_node(
+	"IndexMargin/IndexPageLayout/IndexDetailsRow/"
+	+ "IndexCategoriesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/IndexCategoriesLayout/"
+	+ "EntertainmentCategoryRow/"
+	+ "EntertainmentCategoryValueLabel"
+) as Label
+
+@onready var general_category_value_label: Label = get_node(
+	"IndexMargin/IndexPageLayout/IndexDetailsRow/"
+	+ "IndexCategoriesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/IndexCategoriesLayout/"
+	+ "GeneralCategoryRow/"
+	+ "GeneralCategoryValueLabel"
+) as Label
+
 
 # -------------------------------------------------------------------
 # Setup
@@ -136,6 +198,8 @@ var index_activity_history: Array[Dictionary] = []
 func _ready() -> void:
 	connect_game_state_signals()
 	connect_crawler_manager_signals()
+	
+	initialize_content_categories()
 	refresh_index_page()
 
 
@@ -181,6 +245,51 @@ func connect_game_state_signals() -> void:
 		GameState.crawler_rate_changed.connect(
 			_on_crawler_rate_changed
 		)
+		
+func initialize_content_categories() -> void:
+	reset_content_categories()
+
+	if GameState.indexed_pages > 0:
+		distribute_pages_to_categories(
+			GameState.indexed_pages
+		)
+
+	refresh_content_category_display()
+	
+func reset_content_categories() -> void:
+	category_page_counts[CATEGORY_TECHNOLOGY] = 0
+	category_page_counts[CATEGORY_BUSINESS] = 0
+	category_page_counts[CATEGORY_ENTERTAINMENT] = 0
+	category_page_counts[CATEGORY_GENERAL] = 0
+
+	next_category_index = 0
+	
+func distribute_pages_to_categories(
+	pages_added: int
+) -> void:
+	if pages_added <= 0:
+		return
+
+	for _page_number in range(pages_added):
+		var category_id: StringName = (
+			CATEGORY_ORDER[next_category_index]
+		)
+
+		var current_count: int = int(
+			category_page_counts.get(
+				category_id,
+				0
+			)
+		)
+
+		category_page_counts[category_id] = (
+			current_count + 1
+		)
+
+		next_category_index += 1
+
+		if next_category_index >= CATEGORY_ORDER.size():
+			next_category_index = 0
 
 
 func connect_crawler_manager_signals() -> void:
@@ -374,6 +483,9 @@ func _on_crawler_tick_completed(
 ) -> void:
 	if pages_added <= 0:
 		return
+		
+	distribute_pages_to_categories(pages_added)
+	refresh_content_category_display()
 
 	var time_text: String = get_current_time_text()
 
@@ -623,6 +735,141 @@ func create_activity_label(
 	)
 
 	return activity_label
+	
+func refresh_content_category_display() -> void:
+	var total_pages: int = get_total_category_pages()
+
+	var technology_pages: int = int(
+		category_page_counts.get(
+			CATEGORY_TECHNOLOGY,
+			0
+		)
+	)
+
+	var business_pages: int = int(
+		category_page_counts.get(
+			CATEGORY_BUSINESS,
+			0
+		)
+	)
+
+	var entertainment_pages: int = int(
+		category_page_counts.get(
+			CATEGORY_ENTERTAINMENT,
+			0
+		)
+	)
+
+	var general_pages: int = int(
+		category_page_counts.get(
+			CATEGORY_GENERAL,
+			0
+		)
+	)
+
+	technology_category_value_label.text = (
+		format_category_value(
+			technology_pages,
+			total_pages
+		)
+	)
+
+	business_category_value_label.text = (
+		format_category_value(
+			business_pages,
+			total_pages
+		)
+	)
+
+	entertainment_category_value_label.text = (
+		format_category_value(
+			entertainment_pages,
+			total_pages
+		)
+	)
+
+	general_category_value_label.text = (
+		format_category_value(
+			general_pages,
+			total_pages
+		)
+	)
+
+	index_categories_panel.set_status(
+		get_category_panel_status_text(total_pages),
+		get_category_panel_status_color(total_pages)
+	)
+	
+func get_total_category_pages() -> int:
+	return (
+		int(
+			category_page_counts.get(
+				CATEGORY_TECHNOLOGY,
+				0
+			)
+		)
+		+ int(
+			category_page_counts.get(
+				CATEGORY_BUSINESS,
+				0
+			)
+		)
+		+ int(
+			category_page_counts.get(
+				CATEGORY_ENTERTAINMENT,
+				0
+			)
+		)
+		+ int(
+			category_page_counts.get(
+				CATEGORY_GENERAL,
+				0
+			)
+		)
+	)
+	
+func format_category_value(
+	category_pages: int,
+	total_pages: int
+) -> String:
+	var percentage: float = 0.0
+
+	if total_pages > 0:
+		percentage = (
+			float(category_pages)
+			/ float(total_pages)
+			* 100.0
+		)
+
+	var page_word: String = (
+		"page"
+		if category_pages == 1
+		else "pages"
+	)
+
+	return "%s %s - %d%%" % [
+		format_whole_number(category_pages),
+		page_word,
+		roundi(percentage)
+	]
+	
+func get_category_panel_status_text(
+	total_pages: int
+) -> String:
+	if total_pages == 1:
+		return "1 PAGE"
+
+	return "%s PAGES" % format_whole_number(
+		total_pages
+	)
+	
+func get_category_panel_status_color(
+	total_pages: int
+) -> Color:
+	if total_pages <= 0:
+		return ThemeManager.TEXT_DISABLED
+
+	return ThemeManager.STATUS_INFORMATION
 
 
 # -------------------------------------------------------------------
