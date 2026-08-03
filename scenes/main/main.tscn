@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://ym5imyiwd2jr" path="res://scripts/tabs/dashboard_page.gd" id="4_6q06x"]
 [ext_resource type="PackedScene" uid="uid://e2d0iq6wxrof" path="res://scenes/components/section_panel.tscn" id="4_l3cfh"]
 [ext_resource type="Script" uid="uid://ckgps5y2xuknd" path="res://scripts/tabs/crawler_page.gd" id="6_ow5a4"]
+[ext_resource type="Script" uid="uid://cc4fl2orgeyr1" path="res://scripts/tabs/index_page.gd" id="7_hujxm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
@@ -1136,6 +1137,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("7_hujxm")
 
 [node name="IndexMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage" unique_id=2131294694]
 layout_mode = 2
@@ -1178,11 +1180,9 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="IndexPageStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexPageHeader/IndexHeaderSpacer" unique_id=1876055451]
+[node name="IndexPageStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexPageHeader" unique_id=1876055451]
 custom_minimum_size = Vector2(130, 0)
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+layout_mode = 2
 theme_override_colors/font_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
 theme_override_font_sizes/font_size = 12
 text = "INDEX IDLE"
@@ -1190,12 +1190,13 @@ horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="IndexOverviewRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout" unique_id=2139323582]
-custom_minimum_size = Vector2(0, 150)
+custom_minimum_size = Vector2(0, 185)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
 [node name="IndexOverviewPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow" unique_id=261828314 instance=ExtResource("4_l3cfh")]
+custom_minimum_size = Vector2(220, 185)
 layout_mode = 2
 size_flags_stretch_ratio = 2.0
 section_title = "Index Overview"
@@ -1265,7 +1266,40 @@ layout_mode = 2
 text = "No activity yet"
 horizontal_alignment = 2
 
+[node name="IndexActiveUsersRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout" unique_id=2138581116]
+layout_mode = 2
+
+[node name="IndexActiveUsersNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexActiveUsersRow" unique_id=1371201711]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Active Users"
+vertical_alignment = 1
+
+[node name="IndexActiveUsersValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexActiveUsersRow" unique_id=1332488212]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+text = "10"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="IndexReputationRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout" unique_id=142872942]
+layout_mode = 2
+
+[node name="IndexReputationNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexReputationRow" unique_id=695154658]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Reputation"
+vertical_alignment = 1
+
+[node name="IndexReputationValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexReputationRow" unique_id=732664815]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+text = "1.0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
 [node name="IndexHealthPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow" unique_id=52795425 instance=ExtResource("4_l3cfh")]
+custom_minimum_size = Vector2(220, 185)
 layout_mode = 2
 section_title = "Index Health"
 status_text = "IDLE"
