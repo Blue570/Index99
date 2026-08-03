@@ -52,6 +52,7 @@ func _ready() -> void:
 	)
 
 	apply_component_theme()
+	apply_content_text_theme(content_container)
 	refresh_display()
 	print("SectionPanel theme applied: ", section_title)
 
@@ -182,3 +183,61 @@ func hide_status() -> void:
 
 func get_content_container() -> VBoxContainer:
 	return content_container
+	
+func apply_content_text_theme(root_node: Node) -> void:
+	for child in root_node.get_children():
+		if child is Label:
+			var label: Label = child as Label
+
+			label.add_theme_color_override(
+				"font_color",
+				ThemeManager.TEXT_PRIMARY
+			)
+
+		elif child is Button:
+			var button: Button = child as Button
+
+			button.add_theme_color_override(
+				"font_color",
+				ThemeManager.TEXT_PRIMARY
+			)
+
+			button.add_theme_color_override(
+				"font_hover_color",
+				ThemeManager.TEXT_PRIMARY
+			)
+
+			button.add_theme_color_override(
+				"font_pressed_color",
+				ThemeManager.TEXT_PRIMARY
+			)
+
+			button.add_theme_color_override(
+				"font_hover_pressed_color",
+				ThemeManager.TEXT_PRIMARY
+			)
+
+			button.add_theme_color_override(
+				"font_focus_color",
+				ThemeManager.TEXT_PRIMARY
+			)
+
+			button.add_theme_color_override(
+				"font_disabled_color",
+				ThemeManager.TEXT_DISABLED
+			)
+
+		elif child is ProgressBar:
+			var progress_bar: ProgressBar = child as ProgressBar
+
+			progress_bar.add_theme_color_override(
+				"font_color",
+				ThemeManager.TEXT_PRIMARY
+			)
+
+			progress_bar.add_theme_color_override(
+				"font_outline_color",
+				Color.TRANSPARENT
+			)
+
+		apply_content_text_theme(child)
