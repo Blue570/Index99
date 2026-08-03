@@ -189,10 +189,9 @@ var current_page_id: StringName = &""
 	/JobsLayout/JobsTitleLabel
 )
 
-@onready var crawler_job_indicator: PanelContainer = (
-	$MainApplicationWindow/MainLayout/BackgroundJobsBar
-	/JobsLayout/CrawlerJobIndicator
-)
+#@onready var crawler_job_indicator: PanelContainer = (
+	#/JobsLayout/CrawlerJobIndicator
+#)
 
 @onready var crawler_status_light: ColorRect = (
 	$MainApplicationWindow/MainLayout/BackgroundJobsBar
@@ -275,12 +274,27 @@ var current_page_id: StringName = &""
 	+ "ResourceRow/ServerLoadDisplay"
 ) as ResourceDisplay
 
+@onready var crawler_job_indicator: PanelContainer = get_node(
+	"MainApplicationWindow/MainLayout/BackgroundJobsBar/"
+	+ "JobsLayout/CrawlerJobIndicator"
+) as PanelContainer
+
+@onready var crawler_job_label: Label = get_node(
+	"MainApplicationWindow/MainLayout/BackgroundJobsBar/"
+	+ "JobsLayout/CrawlerJobIndicator/CrawlerJobLabel"
+) as Label
+
+
+
 
 func _ready() -> void:
 	apply_theme_foundation()
 	connect_title_bar_buttons()
 	setup_tabs()
 	setup_placeholder_jobs()
+	
+	setup_background_jobs_connections()
+	refresh_background_jobs_bar()
 	
 	setup_game_state_connections()
 	refresh_resource_displays()
@@ -802,3 +816,153 @@ func _on_maximize_button_pressed() -> void:
 func _on_close_button_pressed() -> void:
 	get_tree().quit()
 	
+func setup_background_jobs_connections() -> void:
+	if not CrawlerManager.crawler_state_changed.is_connected(
+		_on_background_crawler_state_changed
+	):
+		CrawlerManager.crawler_state_changed.connect(
+			_on_background_crawler_state_changed
+		)
+
+	if not CrawlerManager.crawler_progress_changed.is_connected(
+		_on_background_crawler_progress_changed
+	):
+		CrawlerManager.crawler_progress_changed.connect(
+			_on_background_crawler_progress_changed
+		)
+
+	if not CrawlerManager.crawl_job_completed.is_connected(
+		_on_background_crawl_job_completed
+	):
+		CrawlerManager.crawl_job_completed.connect(
+			_on_background_crawl_job_completed
+		)
+		
+func refresh_background_jobs_bar() -> void:
+	var pages_processed: int = (
+		CrawlerManager.current_job_pages
+	)
+
+	var target_pages: int = (
+		CrawlerManager.CURRENT_JOB_TARGET_PAGES
+	)
+
+	var progress_percent: float = (
+		CrawlerManager.get_progress_percent()
+	)
+
+	var job_complete: bool = (
+		pages_processed >= target_pages
+	)
+
+	job_progress.min_value = 0.0
+	job_progress.max_value = 100.0
+	job_progress.step = 1.0
+	job_progress.show_percentage = true
+	job_progress.value = progress_percent
+
+	if job_complete:
+		show_background_crawler_complete(
+			pages_processed
+		)
+
+	elif GameState.crawler_running:
+		show_background_crawler_running(
+			pages_processed,
+			target_pages
+		)
+
+	elif pages_processed > 0:
+		show_background_crawler_paused(
+			pages_processed,
+			target_pages
+		)
+
+	else:
+		show_background_crawler_idle()
+	
+func show_background_crawler_idle() -> void:
+	crawler_job_label.text = "Crawler: Idle"
+
+	crawler_job_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_DISABLED
+	)
+
+	current_job_label.text = "No active background job"
+	job_progress.value = 0.0
+
+
+func show_background_crawler_running(
+	pages_processed: int,
+	target_pages: int
+) -> void:
+	crawler_job_label.text = "Crawler: Running"
+
+	crawler_job_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_SUCCESS
+	)
+
+	current_job_label.text = (
+		"Crawling public web pages — %d / %d pages"
+		% [
+			pages_processed,
+			target_pages
+		]
+	)
+
+
+func show_background_crawler_paused(
+	pages_processed: int,
+	target_pages: int
+) -> void:
+	crawler_job_label.text = "Crawler: Paused"
+
+	crawler_job_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_WARNING
+	)
+
+	current_job_label.text = (
+		"Crawler paused — %d / %d pages"
+		% [
+			pages_processed,
+			target_pages
+		]
+	)
+
+
+func show_background_crawler_complete(
+	pages_processed: int
+) -> void:
+	crawler_job_label.text = "Crawler: Complete"
+
+	crawler_job_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_SUCCESS
+	)
+
+	current_job_label.text = (
+		"Crawl complete — %d pages indexed"
+		% pages_processed
+	)
+
+	job_progress.value = 100.0
+	
+func _on_background_crawler_state_changed(
+	_is_running: bool
+) -> void:
+	refresh_background_jobs_bar()
+
+
+func _on_background_crawler_progress_changed(
+	_pages_processed: int,
+	_target_pages: int,
+	_progress_percent: float
+) -> void:
+	refresh_background_jobs_bar()
+
+
+func _on_background_crawl_job_completed() -> void:
+	refresh_background_jobs_bar()

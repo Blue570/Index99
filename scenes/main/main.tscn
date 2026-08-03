@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://cfoop710hprex" path="res://scenes/components/tab_button.tscn" id="3_k2fmo"]
 [ext_resource type="Script" uid="uid://ym5imyiwd2jr" path="res://scripts/dashboard_page.gd" id="4_6q06x"]
 [ext_resource type="PackedScene" uid="uid://e2d0iq6wxrof" path="res://scenes/components/section_panel.tscn" id="4_l3cfh"]
+[ext_resource type="Script" uid="uid://ckgps5y2xuknd" path="res://scripts/tabs/crawler_page.gd" id="6_ow5a4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
@@ -807,6 +808,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("6_ow5a4")
 
 [node name="CrawlerMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage" unique_id=764551735]
 layout_mode = 2
@@ -1193,6 +1195,13 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(132, 28)
 layout_mode = 2
 
+[node name="CrawlerJobLabel" type="Label" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/CrawlerJobIndicator" unique_id=1112593405]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Crawler: Idle"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="CrawlerIndicatorRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/CrawlerJobIndicator" unique_id=194200681]
 layout_mode = 2
 theme_override_constants/separation = 5
@@ -1205,6 +1214,7 @@ mouse_filter = 2
 color = Color(0.18431373, 0.56078434, 0.27450982, 1)
 
 [node name="CrawlerStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout/CrawlerJobIndicator/CrawlerIndicatorRow" unique_id=2120364082]
+visible = false
 layout_mode = 2
 text = "Crawler: Running"
 vertical_alignment = 1
