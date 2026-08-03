@@ -291,7 +291,7 @@ func _on_server_load_changed(new_value: float) -> void:
 
 	server_load_progress.value = safe_load
 
-	if safe_load >= 90.0:
+	if safe_load >= 100.0:
 		server_health_value_label.text = "Critical"
 
 		server_overview.set_status(
@@ -299,7 +299,7 @@ func _on_server_load_changed(new_value: float) -> void:
 			ThemeManager.STATUS_ERROR
 		)
 
-	elif safe_load >= 75.0:
+	elif safe_load >= 90.0:
 		server_health_value_label.text = "Warning"
 
 		server_overview.set_status(

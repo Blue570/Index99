@@ -298,7 +298,9 @@ func _on_crawl_job_completed() -> void:
 # Crawler page status
 # -------------------------------------------------------------------
 
-func update_crawler_state(is_running: bool) -> void:
+func update_crawler_state(
+	is_running: bool
+) -> void:
 	var pages_processed: int = (
 		CrawlerManager.current_job_pages
 	)
@@ -313,10 +315,23 @@ func update_crawler_state(is_running: bool) -> void:
 
 	if job_complete:
 		show_completed_state()
+
+	elif CrawlerManager.paused_for_overload:
+		show_overloaded_state()
+
+	elif (
+		is_running
+		and GameState.server_load
+		>= CrawlerManager.SERVER_LOAD_WARNING_THRESHOLD
+	):
+		show_warning_state()
+
 	elif is_running:
 		show_running_state()
+
 	elif pages_processed > 0:
 		show_paused_state()
+
 	else:
 		show_ready_state()
 
@@ -427,6 +442,80 @@ func show_completed_state() -> void:
 	start_crawler_button.text = "Job Complete"
 	start_crawler_button.disabled = true
 	pause_crawler_button.disabled = true
+	
+func show_warning_state() -> void:
+	crawler_page_status_label.text = (
+		"SERVER LOAD WARNING"
+	)
+
+	crawler_page_status_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_WARNING
+	)
+
+	crawler_control_status_value_label.text = (
+		"Running — High Load"
+	)
+
+	current_job_state_value_label.text = (
+		"Running"
+	)
+
+	current_job_target_value_label.text = (
+		"Public Web Seed List"
+	)
+
+	crawler_control_panel.set_status(
+		"WARNING",
+		ThemeManager.STATUS_WARNING
+	)
+
+	current_crawl_job_panel.set_status(
+		"RUNNING",
+		ThemeManager.STATUS_WARNING
+	)
+
+	start_crawler_button.text = "Crawler Running"
+	start_crawler_button.disabled = true
+
+	pause_crawler_button.disabled = false
+	
+func show_overloaded_state() -> void:
+	crawler_page_status_label.text = (
+		"CRAWLER AUTO-PAUSED"
+	)
+
+	crawler_page_status_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_ERROR
+	)
+
+	crawler_control_status_value_label.text = (
+		"Server Overload"
+	)
+
+	current_job_state_value_label.text = (
+		"Cooling Down"
+	)
+
+	current_job_target_value_label.text = (
+		"Public Web Seed List"
+	)
+
+	crawler_control_panel.set_status(
+		"OVERLOAD",
+		ThemeManager.STATUS_ERROR
+	)
+
+	current_crawl_job_panel.set_status(
+		"PAUSED",
+		ThemeManager.STATUS_ERROR
+	)
+
+	start_crawler_button.text = "Cooling Down"
+	start_crawler_button.disabled = true
+
+	pause_crawler_button.disabled = true
 
 
 # -------------------------------------------------------------------
@@ -484,9 +573,15 @@ func _on_active_users_changed(new_value: int) -> void:
 	)
 
 
-func _on_server_load_changed(new_value: float) -> void:
+func _on_server_load_changed(
+	new_value: float
+) -> void:
 	statistics_server_load_value_label.text = (
 		format_percentage(new_value)
+	)
+
+	update_crawler_state(
+		GameState.crawler_running
 	)
 
 

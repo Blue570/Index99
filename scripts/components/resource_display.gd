@@ -79,6 +79,17 @@ func set_display_value(new_value: String) -> void:
 
 	if is_node_ready():
 		value_label.text = display_value
+		
+func set_display_value_color(
+	new_color: Color
+) -> void:
+	if not is_node_ready():
+		return
+
+	value_label.add_theme_color_override(
+		"font_color",
+		new_color
+	)
 
 
 func configure(

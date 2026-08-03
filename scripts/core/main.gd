@@ -369,10 +369,29 @@ func _on_reputation_changed(new_value: float) -> void:
 	)
 
 
-func _on_server_load_changed(new_value: float) -> void:
+func _on_server_load_changed(
+	new_value: float
+) -> void:
 	server_load_display.set_display_value(
 		format_percentage(new_value)
 	)
+
+	server_load_display.set_display_value_color(
+		get_server_load_display_color(new_value)
+	)
+
+	refresh_background_jobs_bar()
+	
+func get_server_load_display_color(
+	server_load_value: float
+) -> Color:
+	if server_load_value >= 100.0:
+		return ThemeManager.RESOURCE_VALUE_RED
+
+	if server_load_value >= 90.0:
+		return ThemeManager.RESOURCE_VALUE_AMBER
+
+	return ThemeManager.RESOURCE_VALUE_BLUE
 	
 func format_money(value: float) -> String:
 	var safe_value: float = maxf(value, 0.0)
@@ -609,6 +628,42 @@ func apply_background_jobs_theme() -> void:
 	job_progress.add_theme_font_size_override(
 		"font_size",
 		ThemeManager.FONT_SIZE_SMALL
+	)
+	
+func show_background_crawler_warning(
+	pages_processed: int,
+	target_pages: int,
+	server_load_value: float
+) -> void:
+	crawler_job_label.text = "Crawler: Warning"
+
+	crawler_job_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_WARNING
+	)
+
+	current_job_label.text = (
+		"High server load: %d%% — %d / %d pages"
+		% [
+			roundi(server_load_value),
+			pages_processed,
+			target_pages
+		]
+	)
+	
+func show_background_crawler_overloaded(
+	server_load_value: float
+) -> void:
+	crawler_job_label.text = "Crawler: Auto-Paused"
+
+	crawler_job_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_ERROR
+	)
+
+	current_job_label.text = (
+		"Server overload: %d%% — cooling down"
+		% roundi(server_load_value)
 	)
 	
 func setup_placeholder_jobs() -> void:
@@ -864,6 +919,22 @@ func refresh_background_jobs_bar() -> void:
 	if job_complete:
 		show_background_crawler_complete(
 			pages_processed
+		)
+
+	elif CrawlerManager.paused_for_overload:
+		show_background_crawler_overloaded(
+			GameState.server_load
+		)
+
+	elif (
+		GameState.crawler_running
+		and GameState.server_load
+		>= CrawlerManager.SERVER_LOAD_WARNING_THRESHOLD
+	):
+		show_background_crawler_warning(
+			pages_processed,
+			target_pages,
+			GameState.server_load
 		)
 
 	elif GameState.crawler_running:
