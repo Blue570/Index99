@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://b41cu2sfdcohy" path="res://scripts/core/main.gd" id="1_hyk8p"]
 [ext_resource type="PackedScene" uid="uid://cbyp0d7lppnrq" path="res://scenes/components/resource_display.tscn" id="2_iuonh"]
 [ext_resource type="PackedScene" uid="uid://cfoop710hprex" path="res://scenes/components/tab_button.tscn" id="3_k2fmo"]
-[ext_resource type="Script" uid="uid://ym5imyiwd2jr" path="res://scripts/dashboard_page.gd" id="4_6q06x"]
+[ext_resource type="Script" uid="uid://ym5imyiwd2jr" path="res://scripts/tabs/dashboard_page.gd" id="4_6q06x"]
 [ext_resource type="PackedScene" uid="uid://e2d0iq6wxrof" path="res://scenes/components/section_panel.tscn" id="4_l3cfh"]
 [ext_resource type="Script" uid="uid://ckgps5y2xuknd" path="res://scripts/tabs/crawler_page.gd" id="6_ow5a4"]
 
@@ -186,6 +186,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_6gwxi")
 layout_mode = 2
 
 [node name="DashboardPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=374740521]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1129,7 +1130,6 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="IndexPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=945400770]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1137,12 +1137,337 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="IndexPageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage" unique_id=863458677]
+[node name="IndexMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage" unique_id=2131294694]
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "Index"
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="IndexPageLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin" unique_id=523231580]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="IndexPageHeader" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout" unique_id=815932978]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="IndexPageTitleBlock" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexPageHeader" unique_id=1360593647]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="IndexPageTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexPageHeader/IndexPageTitleBlock" unique_id=1777688343]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
+theme_override_font_sizes/font_size = 22
+text = "Search Index"
+vertical_alignment = 1
+
+[node name="IndexPageSubtitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexPageHeader/IndexPageTitleBlock" unique_id=1336998180]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 12
+text = "Review indexed content, health, categories, and recent activity"
+vertical_alignment = 1
+
+[node name="IndexHeaderSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexPageHeader" unique_id=355021931]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="IndexPageStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexPageHeader/IndexHeaderSpacer" unique_id=1876055451]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+theme_override_font_sizes/font_size = 12
+text = "INDEX IDLE"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="IndexOverviewRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout" unique_id=2139323582]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="IndexOverviewPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow" unique_id=261828314 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+size_flags_stretch_ratio = 2.0
+section_title = "Index Overview"
+status_text = "IDLE"
+show_status = true
+status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+minimum_panel_height = 150.0
+
+[node name="IndexOverviewLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(261828314, 287423228) index="0" unique_id=792939073]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="IndexTotalPagesRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout" unique_id=1713546472]
+layout_mode = 2
+
+[node name="IndexTotalPagesNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexTotalPagesRow" unique_id=1742894389]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Total Indexed Pages"
+
+[node name="IndexTotalPagesValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexTotalPagesRow" unique_id=676524007]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+text = "0"
+horizontal_alignment = 2
+
+[node name="IndexCurrentJobRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout" unique_id=1448866525]
+layout_mode = 2
+
+[node name="IndexCurrentJobNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexCurrentJobRow" unique_id=1129228908]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Current Crawl Job"
+
+[node name="IndexCurrentJobValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexCurrentJobRow" unique_id=213560500]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+text = "0 / 100 pages"
+horizontal_alignment = 2
+
+[node name="IndexCrawlerRateRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout" unique_id=1306345158]
+layout_mode = 2
+
+[node name="IndexCrawlerRateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexCrawlerRateRow" unique_id=156082430]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Crawler Rate"
+
+[node name="IndexCrawlerRateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexCrawlerRateRow" unique_id=1946072228]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+text = "1 page/sec"
+horizontal_alignment = 2
+
+[node name="IndexLastUpdateRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout" unique_id=1855753614]
+layout_mode = 2
+
+[node name="IndexLastUpdateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexLastUpdateRow" unique_id=1957495368]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Last Index Update"
+
+[node name="IndexLastUpdateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexOverviewLayout/IndexLastUpdateRow" unique_id=1628259161]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+text = "No activity yet"
+horizontal_alignment = 2
+
+[node name="IndexHealthPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow" unique_id=52795425 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+section_title = "Index Health"
+status_text = "IDLE"
+show_status = true
+status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+minimum_panel_height = 150.0
+
+[node name="IndexHealthLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(52795425, 287423228) index="0" unique_id=1895261985]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="IndexStatusRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout" unique_id=1344933332]
+layout_mode = 2
+
+[node name="IndexStatusNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout/IndexStatusRow" unique_id=1256702392]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Index Status"
+
+[node name="IndexStatusValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout/IndexStatusRow" unique_id=2143968498]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Idle"
+horizontal_alignment = 2
+
+[node name="IndexCrawlerStatusRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout" unique_id=1034611601]
+layout_mode = 2
+
+[node name="IndexCrawlerStatusNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout/IndexCrawlerStatusRow" unique_id=1295275210]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Crawler"
+
+[node name="IndexCrawlerStatusValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout/IndexCrawlerStatusRow" unique_id=861256826]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Offline"
+horizontal_alignment = 2
+
+[node name="IndexServerLoadRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout" unique_id=1897316917]
+layout_mode = 2
+
+[node name="IndexServerLoadNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout/IndexServerLoadRow" unique_id=1040233302]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Server Load"
+
+[node name="IndexServerLoadValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout/IndexServerLoadRow" unique_id=1213128386]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "0%"
+horizontal_alignment = 2
+
+[node name="IndexFreshnessRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout" unique_id=1144521044]
+layout_mode = 2
+
+[node name="IndexFreshnessNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout/IndexFreshnessRow" unique_id=468411572]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Data Freshness"
+
+[node name="IndexFreshnessValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexHealthLayout/IndexFreshnessRow" unique_id=533704312]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "No Data"
+horizontal_alignment = 2
+
+[node name="IndexDetailsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout" unique_id=2036785088]
+custom_minimum_size = Vector2(0, 190)
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.2
+theme_override_constants/separation = 10
+
+[node name="IndexCategoriesPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow" unique_id=121497045 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+section_title = "Content Categories"
+status_text = "0 PAGES"
+show_status = true
+status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+minimum_panel_height = 190.0
+
+[node name="IndexCategoriesLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(121497045, 287423228) index="0" unique_id=336148613]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="TechnologyCategoryRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout" unique_id=1279934379]
+layout_mode = 2
+
+[node name="TechnologyCategoryNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout/TechnologyCategoryRow" unique_id=25203669]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Technology"
+
+[node name="TechnologyCategoryValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout/TechnologyCategoryRow" unique_id=781396416]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+text = "0 pages - 0%"
+horizontal_alignment = 2
+
+[node name="BusinessCategoryRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout" unique_id=1955100498]
+layout_mode = 2
+
+[node name="BusinessCategoryNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout/BusinessCategoryRow" unique_id=1123350367]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Business"
+
+[node name="BusinessCategoryValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout/BusinessCategoryRow" unique_id=1654285219]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+text = "0 pages - 0%"
+horizontal_alignment = 2
+
+[node name="EntertainmentCategoryRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout" unique_id=628978588]
+layout_mode = 2
+
+[node name="EntertainmentCategoryNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout/EntertainmentCategoryRow" unique_id=1433412122]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Enterntainment"
+
+[node name="EntertainmentCategoryValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout/EntertainmentCategoryRow" unique_id=2113546257]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+text = "0 pages - 0%"
+horizontal_alignment = 2
+
+[node name="GeneralCategoryRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout" unique_id=502125392]
+layout_mode = 2
+
+[node name="GeneralCategoryNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout/GeneralCategoryRow" unique_id=1509731887]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "General"
+
+[node name="GeneralCategoryValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexCategoriesLayout/GeneralCategoryRow" unique_id=12469209]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+text = "0 pages - 0%"
+horizontal_alignment = 2
+
+[node name="IndexActivityPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow" unique_id=1454358319 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+size_flags_stretch_ratio = 2.0
+section_title = "Recent Index Activity"
+status_text = "EMPTY"
+show_status = true
+status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+minimum_panel_height = 190.0
+
+[node name="IndexActivityLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1454358319, 287423228) index="0" unique_id=699567252]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="IndexActivityHeaderRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexActivityLayout" unique_id=955871761]
+layout_mode = 2
+
+[node name="IndexActivityTimeHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexActivityLayout/IndexActivityHeaderRow" unique_id=1321681074]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Time"
+
+[node name="IndexActivityPagesHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexActivityLayout/IndexActivityHeaderRow" unique_id=789967363]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Pages"
+
+[node name="IndexActivityRateHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexActivityLayout/IndexActivityHeaderRow" unique_id=64482799]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Rate"
+horizontal_alignment = 2
+
+[node name="IndexActivityLoadHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexActivityLayout/IndexActivityHeaderRow" unique_id=1762380620]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Load"
+horizontal_alignment = 2
+
+[node name="IndexActivitySeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexActivityLayout" unique_id=546391131]
+layout_mode = 2
+
+[node name="IndexActivityEntries" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexActivityLayout" unique_id=1486947944]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="IndexActivityEmptyLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexActivityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/IndexActivityLayout/IndexActivityEntries" unique_id=589556746]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+text = "No index activity has been recorded."
 horizontal_alignment = 1
 vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="ServersPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=367586922]
 visible = false
@@ -1286,3 +1611,7 @@ value = 42.0
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexActivityPanel"]
