@@ -1,5 +1,9 @@
 extends PanelContainer
 
+const MAX_INDEX_ACTIVITY_ENTRIES: int = 5
+
+var index_activity_history: Array[Dictionary] = []
+
 
 # -------------------------------------------------------------------
 # Page header
@@ -102,6 +106,30 @@ extends PanelContainer
 
 
 # -------------------------------------------------------------------
+# Recent Index Activity
+# -------------------------------------------------------------------
+
+@onready var index_activity_panel: SectionPanel = get_node(
+	"IndexMargin/IndexPageLayout/IndexDetailsRow/"
+	+ "IndexActivityPanel"
+) as SectionPanel
+
+@onready var index_activity_entries: VBoxContainer = get_node(
+	"IndexMargin/IndexPageLayout/IndexDetailsRow/"
+	+ "IndexActivityPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/IndexActivityLayout/"
+	+ "IndexActivityEntries"
+) as VBoxContainer
+
+@onready var index_activity_empty_label: Label = get_node(
+	"IndexMargin/IndexPageLayout/IndexDetailsRow/"
+	+ "IndexActivityPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/IndexActivityLayout/"
+	+ "IndexActivityEntries/IndexActivityEmptyLabel"
+) as Label
+
+
+# -------------------------------------------------------------------
 # Setup
 # -------------------------------------------------------------------
 
@@ -169,6 +197,12 @@ func connect_crawler_manager_signals() -> void:
 		CrawlerManager.crawl_job_completed.connect(
 			_on_crawl_job_completed
 		)
+	if not CrawlerManager.crawler_tick_completed.is_connected(
+		_on_crawler_tick_completed
+	):
+		CrawlerManager.crawler_tick_completed.connect(
+			_on_crawler_tick_completed
+		)
 
 
 # -------------------------------------------------------------------
@@ -206,9 +240,23 @@ func refresh_index_page() -> void:
 		GameState.crawler_running
 	)
 
-	index_last_update_value_label.text = (
-		"No activity yet"
-	)
+	if index_activity_history.is_empty():
+		index_last_update_value_label.text = (
+			"No activity yet"
+		)
+	else:
+		var newest_entry: Dictionary = (
+			index_activity_history[0]
+		)
+
+		index_last_update_value_label.text = str(
+			newest_entry.get(
+				"time_text",
+				"No activity yet"
+			)
+		)
+
+	refresh_index_activity_display()
 
 
 # -------------------------------------------------------------------
@@ -318,6 +366,263 @@ func _on_crawl_job_completed() -> void:
 	)
 
 	update_index_status()
+	
+func _on_crawler_tick_completed(
+	pages_added: int,
+	_revenue_added: float,
+	_active_users_added: int
+) -> void:
+	if pages_added <= 0:
+		return
+
+	var time_text: String = get_current_time_text()
+
+	var activity_entry: Dictionary = {
+		"time_text": time_text,
+		"pages_added": pages_added,
+		"crawler_rate": GameState.crawler_rate,
+		"server_load": GameState.server_load
+	}
+
+	index_activity_history.push_front(
+		activity_entry
+	)
+
+	while (
+		index_activity_history.size()
+		> MAX_INDEX_ACTIVITY_ENTRIES
+	):
+		index_activity_history.pop_back()
+
+	index_last_update_value_label.text = time_text
+
+	refresh_index_activity_display()
+	
+func get_current_time_text() -> String:
+	var current_time: Dictionary = (
+		Time.get_time_dict_from_system()
+	)
+
+	var hour_24: int = int(
+		current_time.get("hour", 0)
+	)
+
+	var minute: int = int(
+		current_time.get("minute", 0)
+	)
+
+	var period_text: String = (
+		"AM"
+		if hour_24 < 12
+		else "PM"
+	)
+
+	var hour_12: int = hour_24 % 12
+
+	if hour_12 == 0:
+		hour_12 = 12
+
+	return "%d:%02d %s" % [
+		hour_12,
+		minute,
+		period_text
+	]
+	
+func refresh_index_activity_display() -> void:
+	clear_generated_activity_rows()
+
+	if index_activity_history.is_empty():
+		index_activity_empty_label.visible = true
+
+		index_activity_panel.set_status(
+			"EMPTY",
+			ThemeManager.TEXT_DISABLED
+		)
+
+		return
+
+	index_activity_empty_label.visible = false
+
+	for activity_index in range(
+		index_activity_history.size()
+	):
+		var activity_entry: Dictionary = (
+			index_activity_history[activity_index]
+		)
+
+		var activity_row: HBoxContainer = (
+			create_index_activity_row(
+				activity_entry,
+				activity_index
+			)
+		)
+
+		index_activity_entries.add_child(
+			activity_row
+		)
+
+	var entry_count: int = (
+		index_activity_history.size()
+	)
+
+	var status_text: String
+
+	if entry_count == 1:
+		status_text = "1 ENTRY"
+	else:
+		status_text = "%d ENTRIES" % entry_count
+
+	index_activity_panel.set_status(
+		status_text,
+		ThemeManager.STATUS_INFORMATION
+	)
+	
+func clear_generated_activity_rows() -> void:
+	for child in index_activity_entries.get_children():
+		if child == index_activity_empty_label:
+			continue
+
+		index_activity_entries.remove_child(
+			child
+		)
+
+		child.queue_free()
+		
+func create_index_activity_row(
+	activity_entry: Dictionary,
+	activity_index: int
+) -> HBoxContainer:
+	var activity_row := HBoxContainer.new()
+
+	activity_row.name = (
+		"IndexActivityRow_%d"
+		% (activity_index + 1)
+	)
+
+	activity_row.custom_minimum_size.y = 22.0
+
+	activity_row.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
+	activity_row.add_theme_constant_override(
+		"separation",
+		8
+	)
+
+	var time_text: String = str(
+		activity_entry.get(
+			"time_text",
+			"--:--"
+		)
+	)
+
+	var pages_added: int = int(
+		activity_entry.get(
+			"pages_added",
+			0
+		)
+	)
+
+	var crawler_rate: float = float(
+		activity_entry.get(
+			"crawler_rate",
+			0.0
+		)
+	)
+
+	var server_load: float = float(
+		activity_entry.get(
+			"server_load",
+			0.0
+		)
+	)
+
+	var pages_text: String
+
+	if pages_added == 1:
+		pages_text = "+1 page"
+	else:
+		pages_text = "+%d pages" % pages_added
+
+	var time_label: Label = create_activity_label(
+		time_text,
+		90.0,
+		false,
+		HORIZONTAL_ALIGNMENT_LEFT
+	)
+
+	var pages_label: Label = create_activity_label(
+		pages_text,
+		0.0,
+		true,
+		HORIZONTAL_ALIGNMENT_LEFT
+	)
+
+	var rate_label: Label = create_activity_label(
+		format_crawler_rate(crawler_rate),
+		110.0,
+		false,
+		HORIZONTAL_ALIGNMENT_RIGHT
+	)
+
+	var load_label: Label = create_activity_label(
+		format_percentage(server_load),
+		80.0,
+		false,
+		HORIZONTAL_ALIGNMENT_RIGHT
+	)
+
+	activity_row.add_child(time_label)
+	activity_row.add_child(pages_label)
+	activity_row.add_child(rate_label)
+	activity_row.add_child(load_label)
+
+	return activity_row
+	
+func create_activity_label(
+	label_text: String,
+	minimum_width: float,
+	should_expand: bool,
+	text_alignment: HorizontalAlignment
+) -> Label:
+	var activity_label := Label.new()
+
+	activity_label.text = label_text
+	activity_label.custom_minimum_size.x = minimum_width
+
+	activity_label.vertical_alignment = (
+		VERTICAL_ALIGNMENT_CENTER
+	)
+
+	activity_label.horizontal_alignment = (
+		text_alignment
+	)
+
+	activity_label.size_flags_vertical = (
+		Control.SIZE_FILL
+	)
+
+	if should_expand:
+		activity_label.size_flags_horizontal = (
+			Control.SIZE_EXPAND_FILL
+		)
+	else:
+		activity_label.size_flags_horizontal = (
+			Control.SIZE_FILL
+		)
+
+	activity_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_PRIMARY
+	)
+
+	activity_label.add_theme_font_size_override(
+		"font_size",
+		ThemeManager.FONT_SIZE_SMALL
+	)
+
+	return activity_label
 
 
 # -------------------------------------------------------------------
