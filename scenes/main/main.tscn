@@ -1171,6 +1171,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="IndexPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=945400770]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1544,7 +1545,6 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="ServersPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=367586922]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1552,12 +1552,442 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ServersPageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage" unique_id=849623432]
+[node name="ServersMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage" unique_id=1599485489]
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "Servers"
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ServersPageLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin" unique_id=132753386]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ServersPageHeader" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout" unique_id=252372426]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ServersPageTitleBlock" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServersPageHeader" unique_id=1252877771]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ServersPageTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServersPageHeader/ServersPageTitleBlock" unique_id=426107770]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
+theme_override_font_sizes/font_size = 22
+text = "Server Management"
+vertical_alignment = 1
+
+[node name="ServersPageSubtitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServersPageHeader/ServersPageTitleBlock" unique_id=2044563828]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 12
+text = "Monitor infrastructure, cooling, capacity, and upgrades"
+vertical_alignment = 1
+
+[node name="ServersHeaderSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServersPageHeader" unique_id=1453008470]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ServersPageStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServersPageHeader" unique_id=204355519]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.18431373, 0.56078434, 0.27450982, 1)
+theme_override_font_sizes/font_size = 12
+text = "SYSTEM STABLE"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="ServerStatusRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout" unique_id=782670401]
+custom_minimum_size = Vector2(0, 210)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="ServerOverviewPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow" unique_id=2129579204 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+section_title = "Server Overview"
+status_text = "NORMAL"
+show_status = true
+minimum_panel_height = 210.0
+
+[node name="ServerOverviewLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(2129579204, 287423228) index="0" unique_id=642060356]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 7
+
+[node name="ServerCurrentLoadRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=774307270]
+layout_mode = 2
+
+[node name="ServerCurrentLoadNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerCurrentLoadRow" unique_id=182709038]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Current Server Load"
+
+[node name="ServerCurrentLoadValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerCurrentLoadRow" unique_id=434046728]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "0%"
+horizontal_alignment = 2
+
+[node name="ServerLoadProgressBar" type="ProgressBar" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=801153460]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+step = 1.0
+show_percentage = false
+
+[node name="ServerCrawlerStateRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=1809244918]
+layout_mode = 2
+
+[node name="ServerCrawlerStateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerCrawlerStateRow" unique_id=378280587]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Crawler State"
+
+[node name="ServerCrawlerStateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerCrawlerStateRow" unique_id=1606477507]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Offline"
+horizontal_alignment = 2
+
+[node name="ServerWarningThresholdRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=715449682]
+layout_mode = 2
+
+[node name="ServerWarningThresholdNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerWarningThresholdRow" unique_id=28190492]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Warning Threshold"
+
+[node name="ServerWarningThresholdValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerWarningThresholdRow" unique_id=1663692111]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "90%"
+horizontal_alignment = 2
+
+[node name="ServerOverloadStateRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=1966237712]
+layout_mode = 2
+
+[node name="ServerOverloadStateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerOverloadStateRow" unique_id=1299423560]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Overload Stats"
+
+[node name="ServerOverloadStateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerOverloadStateRow" unique_id=1138755400]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Clear"
+horizontal_alignment = 2
+
+[node name="CoolingSystemPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow" unique_id=1993442995 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+section_title = "Cooling System"
+status_text = "IDLE"
+show_status = true
+status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+minimum_panel_height = 210.0
+
+[node name="CoolingSystemLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1993442995, 287423228) index="0" unique_id=152771727]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 7
+
+[node name="CoolingStatusRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CoolingSystemLayout" unique_id=1474434627]
+layout_mode = 2
+
+[node name="CoolingStatusNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CoolingSystemLayout/CoolingStatusRow" unique_id=2086716126]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cooling Status"
+
+[node name="CoolingStatusValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CoolingSystemLayout/CoolingStatusRow" unique_id=41073269]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Idle"
+horizontal_alignment = 2
+
+[node name="CoolingRateRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CoolingSystemLayout" unique_id=671574639]
+layout_mode = 2
+
+[node name="CoolingRateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CoolingSystemLayout/CoolingRateRow" unique_id=1632149897]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cooling Rate"
+
+[node name="CoolingRateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CoolingSystemLayout/CoolingRateRow" unique_id=688928784]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "5% / sec"
+horizontal_alignment = 2
+
+[node name="CoolingRecoveryTargetRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CoolingSystemLayout" unique_id=97330156]
+layout_mode = 2
+
+[node name="CoolingRecoveryTargetNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CoolingSystemLayout/CoolingRecoveryTargetRow" unique_id=1054884605]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Recovery Target"
+
+[node name="CoolingRecoveryTargetValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CoolingSystemLayout/CoolingRecoveryTargetRow" unique_id=1746649493]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Below 90%"
+horizontal_alignment = 2
+
+[node name="CoolingProgressHeadingLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CoolingSystemLayout" unique_id=1793353418]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "COOLING READINESS"
+
+[node name="CoolingProgressBar" type="ProgressBar" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CoolingSystemLayout" unique_id=625010022]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+step = 1.0
+value = 100.0
+
+[node name="ServerCapacityPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow" unique_id=805895076 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+section_title = "Server Capacity"
+status_text = "AVAILABLE"
+show_status = true
+minimum_panel_height = 210.0
+
+[node name="ServerCapacityLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(805895076, 287423228) index="0" unique_id=209795506]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 7
+
+[node name="ServerSafeCapacityRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerCapacityLayout" unique_id=1491504536]
+layout_mode = 2
+
+[node name="ServerSafeCapacityNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerCapacityLayout/ServerSafeCapacityRow" unique_id=1231752938]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Safe Load Limit"
+
+[node name="ServerSafeCapacityValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerCapacityLayout/ServerSafeCapacityRow" unique_id=900566325]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "100%"
+horizontal_alignment = 2
+
+[node name="ServerUsedCapacityRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerCapacityLayout" unique_id=744093538]
+layout_mode = 2
+
+[node name="ServerUsedCapacityNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerCapacityLayout/ServerUsedCapacityRow" unique_id=1213499968]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Capacity Used"
+
+[node name="ServerUsedCapacityValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerCapacityLayout/ServerUsedCapacityRow" unique_id=302212502]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "0%"
+horizontal_alignment = 2
+
+[node name="ServerAvailableCapacityRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerCapacityLayout" unique_id=711081304]
+layout_mode = 2
+
+[node name="ServerAvailableCapacityNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerCapacityLayout/ServerAvailableCapacityRow" unique_id=82529726]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Capacity Available"
+
+[node name="ServerAvailableCapacityValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerCapacityLayout/ServerAvailableCapacityRow" unique_id=1511448726]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "100%"
+horizontal_alignment = 2
+
+[node name="ServerCapacityHeadingLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerCapacityLayout" unique_id=768676988]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "CURRENT CAPACITY"
+
+[node name="ServerCapacityProgressBar" type="ProgressBar" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerCapacityLayout" unique_id=690756649]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+step = 1.0
+
+[node name="ServerManagementRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout" unique_id=505060937]
+custom_minimum_size = Vector2(0, 250)
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.35
+theme_override_constants/separation = 10
+
+[node name="ServerUpgradesPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow" unique_id=1969847666 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+size_flags_stretch_ratio = 2.0
+section_title = "Server Upgrades"
+status_text = "3 UPGRADES"
+show_status = true
+minimum_panel_height = 250.0
+
+[node name="ServerUpgradesLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1969847666, 287423228) index="0" unique_id=891626075]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="ServerUpgradeHeaderRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout" unique_id=769475778]
+layout_mode = 2
+
+[node name="ServerUpgradeNameHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/ServerUpgradeHeaderRow" unique_id=150940049]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "Upgrade"
+
+[node name="ServerUpgradeLevelHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/ServerUpgradeHeaderRow" unique_id=1199677954]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "Level"
+horizontal_alignment = 2
+
+[node name="ServerUpgradeCostHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/ServerUpgradeHeaderRow" unique_id=1440052600]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "Cost"
+horizontal_alignment = 2
+
+[node name="ServerUpgradeHeaderSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout" unique_id=1045858644]
+layout_mode = 2
+
+[node name="ImprovedCoolingUpgradeRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout" unique_id=1226897753]
+layout_mode = 2
+
+[node name="ImprovedCoolingUpgradeNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/ImprovedCoolingUpgradeRow" unique_id=1621474722]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Improved Cooling"
+
+[node name="ImprovedCoolingUpgradeLevelLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/ImprovedCoolingUpgradeRow" unique_id=1602833806]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Level 0"
+horizontal_alignment = 2
+
+[node name="ImprovedCoolingUpgradeCostLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/ImprovedCoolingUpgradeRow" unique_id=210975691]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "$100.00"
+horizontal_alignment = 2
+
+[node name="ImprovedCoolingDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout" unique_id=1099395166]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "Increases the rate at which server load decreases."
+
+[node name="ImprovedCoolingSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout" unique_id=1519002075]
+layout_mode = 2
+
+[node name="EfficientCrawlingUpgradeRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout" unique_id=1166568912]
+layout_mode = 2
+
+[node name="EfficientCrawlingUpgradeNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/EfficientCrawlingUpgradeRow" unique_id=978645277]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Efficient Crawling"
+
+[node name="EfficientCrawlingUpgradeLevelLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/EfficientCrawlingUpgradeRow" unique_id=1299281631]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Level 0"
+horizontal_alignment = 2
+
+[node name="EfficientCrawlingUpgradeCostLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/EfficientCrawlingUpgradeRow" unique_id=1596818506]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "$150.00"
+horizontal_alignment = 2
+
+[node name="EfficientCrawlingDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout" unique_id=1186793719]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "Reduces the server load generated by the crawler."
+
+[node name="EfficientCrawlingSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout" unique_id=77461569]
+layout_mode = 2
+
+[node name="LoadBufferingUpgradeRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout" unique_id=905257622]
+layout_mode = 2
+
+[node name="LoadBufferingUpgradeNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/LoadBufferingUpgradeRow" unique_id=1270350298]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Load Buffering"
+
+[node name="LoadBufferingUpgradeLevelLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/LoadBufferingUpgradeRow" unique_id=980142104]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Level 0"
+horizontal_alignment = 2
+
+[node name="LoadBufferingUpgradeCostLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout/LoadBufferingUpgradeRow" unique_id=528702141]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "$250.00"
+horizontal_alignment = 2
+
+[node name="LoadBufferingDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerUpgradesLayout" unique_id=1309017515]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "Increases the amount of load the system can safely manage."
+
+[node name="SystemEventsPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow" unique_id=1052159695 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+section_title = "System Events"
+status_text = "EMPTY"
+show_status = true
+status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+minimum_panel_height = 250.0
+
+[node name="SystemEventsLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/SystemEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(1052159695, 287423228) index="0" unique_id=874294255]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="SystemEventsSummaryRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/SystemEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SystemEventsLayout" unique_id=1524817158]
+layout_mode = 2
+
+[node name="SystemEventsSummaryNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/SystemEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SystemEventsLayout/SystemEventsSummaryRow" unique_id=824480317]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Recorded Events"
+
+[node name="SystemEventsSummaryValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/SystemEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SystemEventsLayout/SystemEventsSummaryRow" unique_id=884036103]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "0"
+horizontal_alignment = 2
+
+[node name="SystemEventsSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/SystemEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SystemEventsLayout" unique_id=828824750]
+layout_mode = 2
+
+[node name="SystemEventsEntries" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/SystemEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SystemEventsLayout" unique_id=39812378]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SystemEventsEmptyLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/SystemEventsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/SystemEventsLayout/SystemEventsEntries" unique_id=177024402]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+text = "No server events have been recorded."
 horizontal_alignment = 1
 vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="ResearchPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=1928910644]
 visible = false
@@ -1689,3 +2119,8 @@ value = 42.0
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexActivityPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/CoolingSystemPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerCapacityPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/ServerUpgradesPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerManagementRow/SystemEventsPanel"]
