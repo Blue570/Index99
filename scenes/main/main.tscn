@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://e2d0iq6wxrof" path="res://scenes/components/section_panel.tscn" id="4_l3cfh"]
 [ext_resource type="Script" uid="uid://ckgps5y2xuknd" path="res://scripts/tabs/crawler_page.gd" id="6_ow5a4"]
 [ext_resource type="Script" uid="uid://cc4fl2orgeyr1" path="res://scripts/tabs/index_page.gd" id="7_hujxm"]
+[ext_resource type="Script" uid="uid://ckpsxyajlcgtx" path="res://scripts/tabs/servers_page.gd" id="8_yyfjg"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
@@ -1551,6 +1552,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("8_yyfjg")
 
 [node name="ServersMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage" unique_id=1599485489]
 layout_mode = 2
@@ -1638,6 +1640,22 @@ custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 step = 1.0
 show_percentage = false
+
+[node name="ServerLoadGenerationRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=1192681056]
+layout_mode = 2
+
+[node name="ServerLoadGenerationNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerLoadGenerationRow" unique_id=2135776213]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Load Generation"
+vertical_alignment = 1
+
+[node name="ServerLoadGenerationValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout/ServerLoadGenerationRow" unique_id=664661023]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "0% / sec"
+horizontal_alignment = 2
+vertical_alignment = 1
 
 [node name="ServerCrawlerStateRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ServersPage/ServersMargin/ServersPageLayout/ServerStatusRow/ServerOverviewPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ServerOverviewLayout" unique_id=1809244918]
 layout_mode = 2
