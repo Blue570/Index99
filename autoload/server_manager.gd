@@ -27,6 +27,53 @@ const MAX_UPGRADE_LEVEL: int = 5
 
 
 # -------------------------------------------------------------------
+# Upgrade identifiers
+# -------------------------------------------------------------------
+
+const UPGRADE_COOLING_SPEED: StringName = &"cooling_speed"
+const UPGRADE_CRAWLER_EFFICIENCY: StringName = &"crawler_efficiency"
+const UPGRADE_MAXIMUM_SAFE_LOAD: StringName = &"maximum_safe_load"
+
+
+# -------------------------------------------------------------------
+# Upgrade costs
+# -------------------------------------------------------------------
+
+const COOLING_SPEED_COSTS: Array[float] = [
+	100.0,
+	175.0,
+	300.0,
+	500.0,
+	800.0
+]
+
+const CRAWLER_EFFICIENCY_COSTS: Array[float] = [
+	150.0,
+	250.0,
+	425.0,
+	700.0,
+	1100.0
+]
+
+const MAXIMUM_SAFE_LOAD_COSTS: Array[float] = [
+	250.0,
+	450.0,
+	800.0,
+	1400.0,
+	2300.0
+]
+
+
+# -------------------------------------------------------------------
+# Upgrade effects
+# -------------------------------------------------------------------
+
+const COOLING_SPEED_BONUS_PER_LEVEL: float = 1.0
+const CRAWLER_EFFICIENCY_BONUS_PER_LEVEL: float = 0.2
+const MAXIMUM_SAFE_LOAD_BONUS_PER_LEVEL: float = 5.0
+
+
+# -------------------------------------------------------------------
 # Current upgrade levels
 # -------------------------------------------------------------------
 
@@ -78,6 +125,13 @@ func increase_maximum_safe_load_level() -> bool:
 	)
 
 	return true
+	
+	
+signal server_upgrade_purchased(
+	upgrade_id: StringName,
+	new_level: int,
+	revenue_spent: float
+)
 
 
 # -------------------------------------------------------------------
@@ -174,3 +228,148 @@ func reset_upgrade_levels() -> void:
 	set_cooling_speed_level(0)
 	set_crawler_efficiency_level(0)
 	set_maximum_safe_load_level(0)
+	
+# -------------------------------------------------------------------
+# Upgrade costs
+# -------------------------------------------------------------------
+
+func get_cooling_speed_cost() -> float:
+	if is_cooling_speed_maxed():
+		return -1.0
+
+	return COOLING_SPEED_COSTS[
+		cooling_speed_level
+	]
+
+
+func get_crawler_efficiency_cost() -> float:
+	if is_crawler_efficiency_maxed():
+		return -1.0
+
+	return CRAWLER_EFFICIENCY_COSTS[
+		crawler_efficiency_level
+	]
+
+
+func get_maximum_safe_load_cost() -> float:
+	if is_maximum_safe_load_maxed():
+		return -1.0
+
+	return MAXIMUM_SAFE_LOAD_COSTS[
+		maximum_safe_load_level
+	]
+	
+# -------------------------------------------------------------------
+# Affordability
+# -------------------------------------------------------------------
+
+func can_afford_upgrade(
+	upgrade_cost: float
+) -> bool:
+	if upgrade_cost < 0.0:
+		return false
+
+	return (
+		GameState.revenue
+		>= upgrade_cost
+	)
+
+
+func spend_revenue(
+	amount: float
+) -> bool:
+	if amount <= 0.0:
+		return false
+
+	if GameState.revenue < amount:
+		return false
+
+	GameState.set_revenue(
+		GameState.revenue - amount
+	)
+
+	return true
+	
+# -------------------------------------------------------------------
+# Upgrade purchases
+# -------------------------------------------------------------------
+
+func purchase_cooling_speed() -> bool:
+	if is_cooling_speed_maxed():
+		return false
+
+	var upgrade_cost: float = (
+		get_cooling_speed_cost()
+	)
+
+	if not spend_revenue(upgrade_cost):
+		return false
+
+	if not increase_cooling_speed_level():
+		GameState.set_revenue(
+			GameState.revenue + upgrade_cost
+		)
+
+		return false
+
+	server_upgrade_purchased.emit(
+		UPGRADE_COOLING_SPEED,
+		cooling_speed_level,
+		upgrade_cost
+	)
+
+	return true
+
+
+func purchase_crawler_efficiency() -> bool:
+	if is_crawler_efficiency_maxed():
+		return false
+
+	var upgrade_cost: float = (
+		get_crawler_efficiency_cost()
+	)
+
+	if not spend_revenue(upgrade_cost):
+		return false
+
+	if not increase_crawler_efficiency_level():
+		GameState.set_revenue(
+			GameState.revenue + upgrade_cost
+		)
+
+		return false
+
+	server_upgrade_purchased.emit(
+		UPGRADE_CRAWLER_EFFICIENCY,
+		crawler_efficiency_level,
+		upgrade_cost
+	)
+
+	return true
+
+
+func purchase_maximum_safe_load() -> bool:
+	if is_maximum_safe_load_maxed():
+		return false
+
+	var upgrade_cost: float = (
+		get_maximum_safe_load_cost()
+	)
+
+	if not spend_revenue(upgrade_cost):
+		return false
+
+	if not increase_maximum_safe_load_level():
+		GameState.set_revenue(
+			GameState.revenue + upgrade_cost
+		)
+
+		return false
+
+	server_upgrade_purchased.emit(
+		UPGRADE_MAXIMUM_SAFE_LOAD,
+		maximum_safe_load_level,
+		upgrade_cost
+	)
+
+	return true

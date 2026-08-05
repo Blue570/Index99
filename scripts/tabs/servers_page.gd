@@ -145,13 +145,154 @@ extends PanelContainer
 
 
 # -------------------------------------------------------------------
+# Server Upgrades
+# -------------------------------------------------------------------
+
+@onready var server_upgrades_panel: SectionPanel = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel"
+) as SectionPanel
+
+
+# Improved Cooling
+
+@onready var improved_cooling_level_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "ImprovedCoolingUpgradeRow/"
+	+ "ImprovedCoolingUpgradeLevelLabel"
+) as Label
+
+@onready var improved_cooling_cost_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "ImprovedCoolingUpgradeRow/"
+	+ "ImprovedCoolingUpgradeCostLabel"
+) as Label
+
+@onready var improved_cooling_max_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "ImprovedCoolingUpgradeRow/"
+	+ "ImprovedCoolingUpgradeMaxLabel"
+) as Label
+
+@onready var improved_cooling_description_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "ImprovedCoolingDescriptionLabel"
+) as Label
+
+@onready var improved_cooling_purchase_button: Button = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "ImprovedCoolingUpgradeRow/"
+	+ "ImprovedCoolingPurchaseButton"
+) as Button
+
+
+# Efficient Crawling
+
+@onready var efficient_crawling_level_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "EfficientCrawlingUpgradeRow/"
+	+ "EfficientCrawlingUpgradeLevelLabel"
+) as Label
+
+@onready var efficient_crawling_cost_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "EfficientCrawlingUpgradeRow/"
+	+ "EfficientCrawlingUpgradeCostLabel"
+) as Label
+
+@onready var efficient_crawling_max_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "EfficientCrawlingUpgradeRow/"
+	+ "EfficientCrawlingUpgradeMaxLabel"
+) as Label
+
+@onready var efficient_crawling_description_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "EfficientCrawlingDescriptionLabel"
+) as Label
+
+@onready var efficient_crawling_purchase_button: Button = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "EfficientCrawlingUpgradeRow/"
+	+ "EfficientCrawlingPurchaseButton"
+) as Button
+
+
+# Load Buffering
+
+@onready var load_buffering_level_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "LoadBufferingUpgradeRow/"
+	+ "LoadBufferingUpgradeLevelLabel"
+) as Label
+
+@onready var load_buffering_cost_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "LoadBufferingUpgradeRow/"
+	+ "LoadBufferingUpgradeCostLabel"
+) as Label
+
+@onready var load_buffering_max_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "LoadBufferingUpgradeRow/"
+	+ "LoadBufferingUpgradeMaxLabel"
+) as Label
+
+@onready var load_buffering_description_label: Label = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "LoadBufferingDescriptionLabel"
+) as Label
+
+@onready var load_buffering_purchase_button: Button = get_node(
+	"ServersMargin/ServersPageLayout/ServerManagementRow/"
+	+ "ServerUpgradesPanel/PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/ServerUpgradesLayout/"
+	+ "LoadBufferingUpgradeRow/"
+	+ "LoadBufferingPurchaseButton"
+) as Button
+
+
+# -------------------------------------------------------------------
 # Setup
 # -------------------------------------------------------------------
 
 func _ready() -> void:
 	configure_progress_bars()
+
 	connect_game_state_signals()
+	connect_server_manager_signals()
+	connect_upgrade_buttons()
+
 	refresh_server_page()
+	refresh_server_upgrades()
 
 
 func configure_progress_bars() -> void:
@@ -184,6 +325,13 @@ func connect_game_state_signals() -> void:
 	):
 		GameState.crawler_state_changed.connect(
 			_on_crawler_state_changed
+		)
+		
+	if not GameState.revenue_changed.is_connected(
+		_on_revenue_changed
+	):
+		GameState.revenue_changed.connect(
+			_on_revenue_changed
 		)
 
 
@@ -533,4 +681,358 @@ func format_percentage(
 ) -> String:
 	return "%d%%" % roundi(
 		clampf(value, 0.0, 100.0)
+	)
+	
+func connect_server_manager_signals() -> void:
+	if not ServerManager.cooling_speed_level_changed.is_connected(
+		_on_cooling_speed_level_changed
+	):
+		ServerManager.cooling_speed_level_changed.connect(
+			_on_cooling_speed_level_changed
+		)
+
+	if not ServerManager.crawler_efficiency_level_changed.is_connected(
+		_on_crawler_efficiency_level_changed
+	):
+		ServerManager.crawler_efficiency_level_changed.connect(
+			_on_crawler_efficiency_level_changed
+		)
+
+	if not ServerManager.maximum_safe_load_level_changed.is_connected(
+		_on_maximum_safe_load_level_changed
+	):
+		ServerManager.maximum_safe_load_level_changed.connect(
+			_on_maximum_safe_load_level_changed
+		)
+		
+func connect_upgrade_buttons() -> void:
+	if not improved_cooling_purchase_button.pressed.is_connected(
+		_on_improved_cooling_purchase_pressed
+	):
+		improved_cooling_purchase_button.pressed.connect(
+			_on_improved_cooling_purchase_pressed
+		)
+
+	if not efficient_crawling_purchase_button.pressed.is_connected(
+		_on_efficient_crawling_purchase_pressed
+	):
+		efficient_crawling_purchase_button.pressed.connect(
+			_on_efficient_crawling_purchase_pressed
+		)
+
+	if not load_buffering_purchase_button.pressed.is_connected(
+		_on_load_buffering_purchase_pressed
+	):
+		load_buffering_purchase_button.pressed.connect(
+			_on_load_buffering_purchase_pressed
+		)
+		
+# -------------------------------------------------------------------
+# Upgrade callbacks
+# -------------------------------------------------------------------
+
+func _on_revenue_changed(
+	_new_revenue: float
+) -> void:
+	refresh_server_upgrades()
+
+
+func _on_cooling_speed_level_changed(
+	_new_level: int
+) -> void:
+	refresh_server_upgrades()
+
+
+func _on_crawler_efficiency_level_changed(
+	_new_level: int
+) -> void:
+	refresh_server_upgrades()
+
+
+func _on_maximum_safe_load_level_changed(
+	_new_level: int
+) -> void:
+	refresh_server_upgrades()
+	
+func _on_improved_cooling_purchase_pressed() -> void:
+	ServerManager.purchase_cooling_speed()
+	refresh_server_upgrades()
+
+
+func _on_efficient_crawling_purchase_pressed() -> void:
+	ServerManager.purchase_crawler_efficiency()
+	refresh_server_upgrades()
+
+
+func _on_load_buffering_purchase_pressed() -> void:
+	ServerManager.purchase_maximum_safe_load()
+	refresh_server_upgrades()
+	
+# -------------------------------------------------------------------
+# Upgrade display
+# -------------------------------------------------------------------
+
+func refresh_server_upgrades() -> void:
+	refresh_improved_cooling_upgrade()
+	refresh_efficient_crawling_upgrade()
+	refresh_load_buffering_upgrade()
+	refresh_upgrade_panel_status()
+	
+func refresh_improved_cooling_upgrade() -> void:
+	var current_level: int = (
+		ServerManager.cooling_speed_level
+	)
+
+	var is_maxed: bool = (
+		ServerManager.is_cooling_speed_maxed()
+	)
+
+	improved_cooling_level_label.text = (
+		"Level %d" % current_level
+	)
+
+	improved_cooling_max_label.text = (
+		"Level %d"
+		% ServerManager.MAX_UPGRADE_LEVEL
+	)
+
+	if is_maxed:
+		improved_cooling_cost_label.text = "—"
+
+		improved_cooling_description_label.text = (
+			"Maximum Effect: +%d%% cooling speed per second"
+			% roundi(
+				current_level
+				* ServerManager.COOLING_SPEED_BONUS_PER_LEVEL
+			)
+		)
+
+		configure_maxed_purchase_button(
+			improved_cooling_purchase_button
+		)
+
+		return
+
+	var upgrade_cost: float = (
+		ServerManager.get_cooling_speed_cost()
+	)
+
+	var next_level: int = current_level + 1
+
+	improved_cooling_cost_label.text = (
+		format_currency(upgrade_cost)
+	)
+
+	improved_cooling_description_label.text = (
+		"Next Effect: +%d%% cooling/sec "
+		+ "(total bonus: +%d%%)"
+	) % [
+		roundi(
+			ServerManager.COOLING_SPEED_BONUS_PER_LEVEL
+		),
+		roundi(
+			next_level
+			* ServerManager.COOLING_SPEED_BONUS_PER_LEVEL
+		)
+	]
+
+	configure_purchase_button(
+		improved_cooling_purchase_button,
+		upgrade_cost
+	)
+	
+func refresh_efficient_crawling_upgrade() -> void:
+	var current_level: int = (
+		ServerManager.crawler_efficiency_level
+	)
+
+	var is_maxed: bool = (
+		ServerManager.is_crawler_efficiency_maxed()
+	)
+
+	efficient_crawling_level_label.text = (
+		"Level %d" % current_level
+	)
+
+	efficient_crawling_max_label.text = (
+		"Level %d"
+		% ServerManager.MAX_UPGRADE_LEVEL
+	)
+
+	if is_maxed:
+		efficient_crawling_cost_label.text = "—"
+
+		efficient_crawling_description_label.text = (
+			"Maximum Effect: -%.1f%% server load generated per second"
+			% (
+				current_level
+				* ServerManager.CRAWLER_EFFICIENCY_BONUS_PER_LEVEL
+			)
+		)
+
+		configure_maxed_purchase_button(
+			efficient_crawling_purchase_button
+		)
+
+		return
+
+	var upgrade_cost: float = (
+		ServerManager.get_crawler_efficiency_cost()
+	)
+
+	var next_level: int = current_level + 1
+
+	efficient_crawling_cost_label.text = (
+		format_currency(upgrade_cost)
+	)
+
+	efficient_crawling_description_label.text = (
+		"Next Effect: -%.1f%% load/sec "
+		+ "(total reduction: -%.1f%%)"
+	) % [
+		ServerManager.CRAWLER_EFFICIENCY_BONUS_PER_LEVEL,
+		next_level
+		* ServerManager.CRAWLER_EFFICIENCY_BONUS_PER_LEVEL
+	]
+
+	configure_purchase_button(
+		efficient_crawling_purchase_button,
+		upgrade_cost
+	)
+	
+func refresh_load_buffering_upgrade() -> void:
+	var current_level: int = (
+		ServerManager.maximum_safe_load_level
+	)
+
+	var is_maxed: bool = (
+		ServerManager.is_maximum_safe_load_maxed()
+	)
+
+	load_buffering_level_label.text = (
+		"Level %d" % current_level
+	)
+
+	load_buffering_max_label.text = (
+		"Level %d"
+		% ServerManager.MAX_UPGRADE_LEVEL
+	)
+
+	if is_maxed:
+		load_buffering_cost_label.text = "—"
+
+		load_buffering_description_label.text = (
+			"Maximum Effect: +%d%% maximum safe server load"
+			% roundi(
+				current_level
+				* ServerManager.MAXIMUM_SAFE_LOAD_BONUS_PER_LEVEL
+			)
+		)
+
+		configure_maxed_purchase_button(
+			load_buffering_purchase_button
+		)
+
+		return
+
+	var upgrade_cost: float = (
+		ServerManager.get_maximum_safe_load_cost()
+	)
+
+	var next_level: int = current_level + 1
+
+	load_buffering_cost_label.text = (
+		format_currency(upgrade_cost)
+	)
+
+	load_buffering_description_label.text = (
+		"Next Effect: +%d%% safe load "
+		+ "(total bonus: +%d%%)"
+	) % [
+		roundi(
+			ServerManager.MAXIMUM_SAFE_LOAD_BONUS_PER_LEVEL
+		),
+		roundi(
+			next_level
+			* ServerManager.MAXIMUM_SAFE_LOAD_BONUS_PER_LEVEL
+		)
+	]
+
+	configure_purchase_button(
+		load_buffering_purchase_button,
+		upgrade_cost
+	)
+	
+func configure_purchase_button(
+	purchase_button: Button,
+	upgrade_cost: float
+) -> void:
+	var can_afford: bool = (
+		ServerManager.can_afford_upgrade(
+			upgrade_cost
+		)
+	)
+
+	purchase_button.text = "Purchase"
+	purchase_button.disabled = not can_afford
+
+	if can_afford:
+		purchase_button.tooltip_text = (
+			"Purchase this upgrade for %s."
+			% format_currency(upgrade_cost)
+		)
+	else:
+		purchase_button.tooltip_text = (
+			"Requires %s. Current revenue: %s."
+			% [
+				format_currency(upgrade_cost),
+				format_currency(GameState.revenue)
+			]
+		)
+		
+func configure_maxed_purchase_button(
+	purchase_button: Button
+) -> void:
+	purchase_button.text = "MAX"
+	purchase_button.disabled = true
+	purchase_button.tooltip_text = (
+		"This upgrade has reached its maximum level."
+	)
+	
+func refresh_upgrade_panel_status() -> void:
+	var maxed_upgrade_count: int = 0
+
+	if ServerManager.is_cooling_speed_maxed():
+		maxed_upgrade_count += 1
+
+	if ServerManager.is_crawler_efficiency_maxed():
+		maxed_upgrade_count += 1
+
+	if ServerManager.is_maximum_safe_load_maxed():
+		maxed_upgrade_count += 1
+
+	if maxed_upgrade_count >= 3:
+		server_upgrades_panel.set_status(
+			"ALL MAXED",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+		return
+
+	var available_upgrade_count: int = (
+		3 - maxed_upgrade_count
+	)
+
+	server_upgrades_panel.set_status(
+		"%d AVAILABLE"
+		% available_upgrade_count,
+		ThemeManager.STATUS_INFORMATION
+	)
+	
+func format_currency(
+	value: float
+) -> String:
+	return "$%.2f" % maxf(
+		value,
+		0.0
 	)
