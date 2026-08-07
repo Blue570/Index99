@@ -106,6 +106,66 @@ func create_server_load_timer() -> void:
 	server_load_timer.start()
 	
 # -------------------------------------------------------------------
+# Effective server values
+# -------------------------------------------------------------------
+
+func get_effective_cooling_rate() -> float:
+	return (
+		SERVER_LOAD_COOLING_PER_TICK
+		+ ServerManager.get_cooling_speed_bonus()
+	)
+
+
+func get_effective_server_load_generation() -> float:
+	var reduced_load: float = (
+		SERVER_LOAD_GAIN_PER_TICK
+		- ServerManager.get_crawler_efficiency_reduction()
+	)
+
+	return maxf(
+		reduced_load,
+		0.1
+	)
+
+
+func get_effective_maximum_safe_load() -> float:
+	return (
+		SERVER_LOAD_MAXIMUM
+		+ ServerManager.get_maximum_safe_load_bonus()
+	)
+
+
+func get_effective_warning_threshold() -> float:
+	var warning_ratio: float = (
+		SERVER_LOAD_WARNING_THRESHOLD
+		/ SERVER_LOAD_MAXIMUM
+	)
+
+	return (
+		get_effective_maximum_safe_load()
+		* warning_ratio
+	)
+
+
+func get_server_load_usage_percent(
+	load_value: float
+) -> float:
+	var maximum_safe_load: float = (
+		get_effective_maximum_safe_load()
+	)
+
+	if maximum_safe_load <= 0.0:
+		return 0.0
+
+	return clampf(
+		load_value
+		/ maximum_safe_load
+		* 100.0,
+		0.0,
+		100.0
+	)
+	
+# -------------------------------------------------------------------
 # Crawler controls
 # -------------------------------------------------------------------
 
@@ -113,7 +173,10 @@ func start_crawler() -> void:
 	if paused_for_overload:
 		return
 
-	if GameState.server_load >= SERVER_LOAD_MAXIMUM:
+	if (
+		GameState.server_load
+		>= get_effective_maximum_safe_load()
+	):
 		return
 
 	if current_job_pages >= CURRENT_JOB_TARGET_PAGES:
@@ -137,6 +200,17 @@ func pause_crawler() -> void:
 		and crawler_timer.is_stopped()
 	):
 		return
+
+	crawler_timer.stop()
+
+	GameState.set_crawler_running(false)
+
+	crawler_state_changed.emit(false)
+
+	emit_current_progress()
+	
+func pause_crawler_for_overload() -> void:
+	paused_for_overload = true
 
 	crawler_timer.stop()
 
@@ -250,38 +324,54 @@ func _on_server_load_timer_timeout() -> void:
 		decrease_server_load()
 		
 func increase_server_load() -> void:
-	var new_server_load: float = minf(
-		GameState.server_load
-		+ SERVER_LOAD_GAIN_PER_TICK,
-		SERVER_LOAD_MAXIMUM
+	var maximum_safe_load: float = (
+		get_effective_maximum_safe_load()
 	)
 
-	if new_server_load >= SERVER_LOAD_MAXIMUM:
-		paused_for_overload = true
+	var generated_load: float = (
+		get_effective_server_load_generation()
+	)
 
-	GameState.set_server_load(new_server_load)
+	var new_server_load: float = minf(
+		GameState.server_load + generated_load,
+		maximum_safe_load
+	)
 
-	if paused_for_overload:
-		pause_crawler()
+	GameState.set_server_load(
+		new_server_load
+	)
+
+	if new_server_load >= maximum_safe_load:
+		pause_crawler_for_overload()
 		
 func decrease_server_load() -> void:
 	if GameState.server_load <= 0.0:
+		if paused_for_overload:
+			paused_for_overload = false
+
 		return
 
-	var new_server_load: float = maxf(
+	var cooled_server_load: float = maxf(
 		GameState.server_load
-		- SERVER_LOAD_COOLING_PER_TICK,
+		- get_effective_cooling_rate(),
 		0.0
 	)
 
-	if (
+	var recovered_from_overload: bool = (
 		paused_for_overload
-		and new_server_load
-		< SERVER_LOAD_WARNING_THRESHOLD
-	):
+		and cooled_server_load
+		< get_effective_warning_threshold()
+	)
+
+	if recovered_from_overload:
 		paused_for_overload = false
 
-	GameState.set_server_load(new_server_load)
+	GameState.set_server_load(
+		cooled_server_load
+	)
+
+	if recovered_from_overload:
+		crawler_state_changed.emit(false)
 	
 # -------------------------------------------------------------------
 # Progress

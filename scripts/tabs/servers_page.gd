@@ -336,30 +336,34 @@ func connect_game_state_signals() -> void:
 
 
 func refresh_server_page() -> void:
+	var warning_threshold: float = (
+		CrawlerManager.get_effective_warning_threshold()
+	)
+
+	var maximum_safe_load: float = (
+		CrawlerManager.get_effective_maximum_safe_load()
+	)
+
+	var cooling_rate: float = (
+		CrawlerManager.get_effective_cooling_rate()
+	)
+
 	server_warning_threshold_value_label.text = (
-		format_percentage(
-			CrawlerManager.SERVER_LOAD_WARNING_THRESHOLD
-		)
+		format_load_value(warning_threshold)
 	)
 
 	server_safe_capacity_value_label.text = (
-		format_percentage(
-			CrawlerManager.SERVER_LOAD_MAXIMUM
-		)
+		format_load_value(maximum_safe_load)
 	)
 
 	cooling_rate_value_label.text = (
 		"%s / sec"
-		% format_percentage(
-			CrawlerManager.SERVER_LOAD_COOLING_PER_TICK
-		)
+		% format_load_value(cooling_rate)
 	)
 
 	cooling_recovery_target_value_label.text = (
 		"Below %s"
-		% format_percentage(
-			CrawlerManager.SERVER_LOAD_WARNING_THRESHOLD
-		)
+		% format_load_value(warning_threshold)
 	)
 
 	_on_server_load_changed(
@@ -377,36 +381,64 @@ func refresh_server_page() -> void:
 func _on_server_load_changed(
 	new_value: float
 ) -> void:
+	var maximum_safe_load: float = (
+		CrawlerManager.get_effective_maximum_safe_load()
+	)
+
 	var safe_load: float = clampf(
 		new_value,
 		0.0,
-		100.0
+		maximum_safe_load
 	)
 
 	var available_capacity: float = maxf(
-		100.0 - safe_load,
+		maximum_safe_load - safe_load,
 		0.0
 	)
 
-	var cooling_readiness: float = available_capacity
+	var used_capacity_percent: float = (
+		CrawlerManager.get_server_load_usage_percent(
+			safe_load
+		)
+	)
+
+	var cooling_readiness: float = maxf(
+		100.0 - used_capacity_percent,
+		0.0
+	)
 
 	server_current_load_value_label.text = (
-		format_percentage(safe_load)
+		format_load_value(safe_load)
 	)
 
 	server_used_capacity_value_label.text = (
-		format_percentage(safe_load)
+		format_percentage(
+			used_capacity_percent
+		)
 	)
 
 	server_available_capacity_value_label.text = (
-		format_percentage(available_capacity)
+		format_load_value(
+			available_capacity
+		)
 	)
 
-	server_load_progress_bar.value = safe_load
-	server_capacity_progress_bar.value = safe_load
-	cooling_progress_bar.value = cooling_readiness
+	server_load_progress_bar.value = (
+		used_capacity_percent
+	)
 
-	apply_server_load_text_color(safe_load)
+	server_capacity_progress_bar.value = (
+		used_capacity_percent
+	)
+
+	cooling_progress_bar.value = (
+		cooling_readiness
+	)
+
+	apply_server_load_text_color(
+		safe_load
+	)
+
 	update_server_page_status()
 	
 func _on_crawler_state_changed(
@@ -433,11 +465,14 @@ func get_crawler_state_text() -> String:
 	
 func update_load_generation_display() -> void:
 	if GameState.crawler_running:
+		var generated_load: float = (
+			CrawlerManager
+			.get_effective_server_load_generation()
+		)
+
 		server_load_generation_value_label.text = (
 			"+%s / sec"
-			% format_percentage(
-				CrawlerManager.SERVER_LOAD_GAIN_PER_TICK
-			)
+			% format_load_value(generated_load)
 		)
 	else:
 		server_load_generation_value_label.text = (
@@ -460,9 +495,17 @@ func update_server_page_status() -> void:
 func update_overload_display(
 	server_load: float
 ) -> void:
+	var warning_threshold: float = (
+		CrawlerManager.get_effective_warning_threshold()
+	)
+
+	var maximum_safe_load: float = (
+		CrawlerManager.get_effective_maximum_safe_load()
+	)
+
 	if (
 		CrawlerManager.paused_for_overload
-		or server_load >= 100.0
+		or server_load >= maximum_safe_load
 	):
 		server_overload_state_value_label.text = (
 			"Overloaded"
@@ -473,10 +516,7 @@ func update_overload_display(
 			ThemeManager.STATUS_ERROR
 		)
 
-	elif (
-		server_load
-		>= CrawlerManager.SERVER_LOAD_WARNING_THRESHOLD
-	):
+	elif server_load >= warning_threshold:
 		server_overload_state_value_label.text = (
 			"Warning"
 		)
@@ -487,7 +527,9 @@ func update_overload_display(
 		)
 
 	else:
-		server_overload_state_value_label.text = "Clear"
+		server_overload_state_value_label.text = (
+			"Clear"
+		)
 
 		server_overload_state_value_label.add_theme_color_override(
 			"font_color",
@@ -524,19 +566,24 @@ func update_cooling_display(
 func update_overview_display(
 	server_load: float
 ) -> void:
+	var warning_threshold: float = (
+		CrawlerManager.get_effective_warning_threshold()
+	)
+
+	var maximum_safe_load: float = (
+		CrawlerManager.get_effective_maximum_safe_load()
+	)
+
 	if (
 		CrawlerManager.paused_for_overload
-		or server_load >= 100.0
+		or server_load >= maximum_safe_load
 	):
 		server_overview_panel.set_status(
 			"CRITICAL",
 			ThemeManager.STATUS_ERROR
 		)
 
-	elif (
-		server_load
-		>= CrawlerManager.SERVER_LOAD_WARNING_THRESHOLD
-	):
+	elif server_load >= warning_threshold:
 		server_overview_panel.set_status(
 			"WARNING",
 			ThemeManager.STATUS_WARNING
@@ -557,16 +604,21 @@ func update_overview_display(
 func update_capacity_display(
 	server_load: float
 ) -> void:
-	if server_load >= 100.0:
+	var warning_threshold: float = (
+		CrawlerManager.get_effective_warning_threshold()
+	)
+
+	var maximum_safe_load: float = (
+		CrawlerManager.get_effective_maximum_safe_load()
+	)
+
+	if server_load >= maximum_safe_load:
 		server_capacity_panel.set_status(
 			"FULL",
 			ThemeManager.STATUS_ERROR
 		)
 
-	elif (
-		server_load
-		>= CrawlerManager.SERVER_LOAD_WARNING_THRESHOLD
-	):
+	elif server_load >= warning_threshold:
 		server_capacity_panel.set_status(
 			"LIMITED",
 			ThemeManager.STATUS_WARNING
@@ -581,9 +633,17 @@ func update_capacity_display(
 func update_page_header_display(
 	server_load: float
 ) -> void:
+	var warning_threshold: float = (
+		CrawlerManager.get_effective_warning_threshold()
+	)
+
+	var maximum_safe_load: float = (
+		CrawlerManager.get_effective_maximum_safe_load()
+	)
+
 	if (
 		CrawlerManager.paused_for_overload
-		or server_load >= 100.0
+		or server_load >= maximum_safe_load
 	):
 		servers_page_status_label.text = (
 			"SYSTEM OVERLOADED"
@@ -594,10 +654,7 @@ func update_page_header_display(
 			ThemeManager.STATUS_ERROR
 		)
 
-	elif (
-		server_load
-		>= CrawlerManager.SERVER_LOAD_WARNING_THRESHOLD
-	):
+	elif server_load >= warning_threshold:
 		servers_page_status_label.text = (
 			"HIGH LOAD WARNING"
 		)
@@ -661,13 +718,18 @@ func apply_server_load_text_color(
 func get_server_load_color(
 	server_load: float
 ) -> Color:
-	if server_load >= 100.0:
+	var warning_threshold: float = (
+		CrawlerManager.get_effective_warning_threshold()
+	)
+
+	var maximum_safe_load: float = (
+		CrawlerManager.get_effective_maximum_safe_load()
+	)
+
+	if server_load >= maximum_safe_load:
 		return ThemeManager.STATUS_ERROR
 
-	if (
-		server_load
-		>= CrawlerManager.SERVER_LOAD_WARNING_THRESHOLD
-	):
+	if server_load >= warning_threshold:
 		return ThemeManager.STATUS_WARNING
 
 	return ThemeManager.STATUS_INFORMATION
@@ -682,6 +744,26 @@ func format_percentage(
 	return "%d%%" % roundi(
 		clampf(value, 0.0, 100.0)
 	)
+	
+func format_load_value(
+	value: float
+) -> String:
+	var safe_value: float = maxf(
+		value,
+		0.0
+	)
+
+	var rounded_value: int = roundi(
+		safe_value
+	)
+
+	if is_equal_approx(
+		safe_value,
+		float(rounded_value)
+	):
+		return "%d%%" % rounded_value
+
+	return "%.1f%%" % safe_value
 	
 func connect_server_manager_signals() -> void:
 	if not ServerManager.cooling_speed_level_changed.is_connected(
@@ -741,18 +823,21 @@ func _on_cooling_speed_level_changed(
 	_new_level: int
 ) -> void:
 	refresh_server_upgrades()
+	refresh_server_page()
 
 
 func _on_crawler_efficiency_level_changed(
 	_new_level: int
 ) -> void:
 	refresh_server_upgrades()
+	refresh_server_page()
 
 
 func _on_maximum_safe_load_level_changed(
 	_new_level: int
 ) -> void:
 	refresh_server_upgrades()
+	refresh_server_page()
 	
 func _on_improved_cooling_purchase_pressed() -> void:
 	ServerManager.purchase_cooling_speed()

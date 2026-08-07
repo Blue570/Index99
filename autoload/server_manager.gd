@@ -218,6 +218,30 @@ func is_maximum_safe_load_maxed() -> bool:
 		maximum_safe_load_level
 		>= MAX_UPGRADE_LEVEL
 	)
+	
+# -------------------------------------------------------------------
+# Current upgrade effects
+# -------------------------------------------------------------------
+
+func get_cooling_speed_bonus() -> float:
+	return (
+		cooling_speed_level
+		* COOLING_SPEED_BONUS_PER_LEVEL
+	)
+
+
+func get_crawler_efficiency_reduction() -> float:
+	return (
+		crawler_efficiency_level
+		* CRAWLER_EFFICIENCY_BONUS_PER_LEVEL
+	)
+
+
+func get_maximum_safe_load_bonus() -> float:
+	return (
+		maximum_safe_load_level
+		* MAXIMUM_SAFE_LOAD_BONUS_PER_LEVEL
+	)
 
 
 # -------------------------------------------------------------------

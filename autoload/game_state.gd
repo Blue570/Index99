@@ -28,6 +28,8 @@ const STARTING_SERVER_LOAD: float = 0.0
 const STARTING_CRAWLER_RUNNING: bool = false
 const STARTING_CRAWLER_RATE: float = 1.0
 
+const SERVER_LOAD_STORAGE_LIMIT: float = 200.0
+
 
 # -------------------------------------------------------------------
 # Current values
@@ -91,7 +93,7 @@ func set_server_load(new_value: float) -> void:
 	var safe_value: float = clampf(
 		new_value,
 		0.0,
-		100.0
+		SERVER_LOAD_STORAGE_LIMIT
 	)
 
 	if is_equal_approx(server_load, safe_value):
