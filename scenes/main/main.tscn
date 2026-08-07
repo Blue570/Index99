@@ -1546,6 +1546,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="ServersPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=367586922]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2062,7 +2063,6 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="ResearchPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=1928910644]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2070,11 +2070,53 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ResearchPageLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage" unique_id=1356095986]
+[node name="ResearchMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage" unique_id=812223409]
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "Research"
-horizontal_alignment = 1
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ResearchPageLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin" unique_id=962472269]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ResearchPageHeader" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout" unique_id=1943439693]
+custom_minimum_size = Vector2(58, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ResearchPageTitleBlock" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchPageHeader" unique_id=1342236244]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ResearchPageTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchPageHeader/ResearchPageTitleBlock" unique_id=1856324685]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
+theme_override_font_sizes/font_size = 22
+text = "Research & Development"
+vertical_alignment = 1
+
+[node name="ResearchPageSubtitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchPageHeader/ResearchPageTitleBlock" unique_id=813308623]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 12
+text = "Develop new technologies and improve search operations"
+vertical_alignment = 1
+
+[node name="ResearchHeaderSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchPageHeader" unique_id=671572176]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ResearchPageStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchPageHeader" unique_id=1366331304]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+theme_override_font_sizes/font_size = 12
+text = "RESEARCH IDLE"
+horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="BackgroundJobsBar" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=1989258494]
