@@ -9,6 +9,11 @@ signal research_points_changed(
 	new_points: float
 )
 
+signal research_points_awarded(
+	amount: float,
+	source: String
+)
+
 signal research_upgrade_unlocked(
 	upgrade_id: StringName
 )
@@ -18,31 +23,26 @@ signal research_upgrade_level_changed(
 	new_level: int
 )
 
-signal research_points_awarded(
-	amount: float,
-	source: String
-)
-
 
 # -------------------------------------------------------------------
 # Upgrade identifiers
 # -------------------------------------------------------------------
 
-const UPGRADE_QUERY_OPTIMIZATION: StringName = (
-	&"query_optimization"
+const UPGRADE_CRAWLER_OPTIMIZATION: StringName = (
+	&"crawler_optimization"
 )
 
-const UPGRADE_CRAWLER_ALGORITHMS: StringName = (
-	&"crawler_algorithms"
+const UPGRADE_SEARCH_MONETIZATION: StringName = (
+	&"search_monetization"
 )
 
-const UPGRADE_DATA_COMPRESSION: StringName = (
-	&"data_compression"
+const UPGRADE_AUDIENCE_DISCOVERY: StringName = (
+	&"audience_discovery"
 )
 
 
 # -------------------------------------------------------------------
-# Upgrade levels
+# Upgrade limits
 # -------------------------------------------------------------------
 
 const MIN_UPGRADE_LEVEL: int = 0
@@ -54,45 +54,56 @@ const MAX_UPGRADE_LEVEL: int = 3
 # -------------------------------------------------------------------
 
 const UPGRADE_NAMES: Dictionary = {
-	UPGRADE_QUERY_OPTIMIZATION:
-		"Query Optimization",
+	UPGRADE_CRAWLER_OPTIMIZATION:
+		"Crawler Optimization",
 
-	UPGRADE_CRAWLER_ALGORITHMS:
-		"Crawler Algorithms",
+	UPGRADE_SEARCH_MONETIZATION:
+		"Search Monetization",
 
-	UPGRADE_DATA_COMPRESSION:
-		"Data Compression"
+	UPGRADE_AUDIENCE_DISCOVERY:
+		"Audience Discovery"
 }
 
 
 # -------------------------------------------------------------------
 # Upgrade costs
 #
-# Array position:
-# 0 = Cost to purchase Level 1
-# 1 = Cost to purchase Level 2
-# 2 = Cost to purchase Level 3
+# Position 0 = Level 1
+# Position 1 = Level 2
+# Position 2 = Level 3
 # -------------------------------------------------------------------
 
 const UPGRADE_COSTS: Dictionary = {
-	UPGRADE_QUERY_OPTIMIZATION: [
+	UPGRADE_CRAWLER_OPTIMIZATION: [
 		10.0,
 		20.0,
 		35.0
 	],
 
-	UPGRADE_CRAWLER_ALGORITHMS: [
+	UPGRADE_SEARCH_MONETIZATION: [
 		15.0,
 		30.0,
 		50.0
 	],
 
-	UPGRADE_DATA_COMPRESSION: [
-		25.0,
-		45.0,
-		70.0
+	UPGRADE_AUDIENCE_DISCOVERY: [
+		15.0,
+		30.0,
+		50.0
 	]
 }
+
+
+# -------------------------------------------------------------------
+# Upgrade effects
+# -------------------------------------------------------------------
+
+const CRAWLER_RATE_BONUS_PER_LEVEL: float = 0.25
+
+const REVENUE_BONUS_PERCENT_PER_LEVEL: float = 10.0
+
+const ACTIVE_USER_BONUS_PERCENT_PER_LEVEL: float = 10.0
+
 
 # -------------------------------------------------------------------
 # Research milestone rewards
@@ -115,6 +126,11 @@ const OBJECTIVE_COMPLETION_REWARD: float = 5.0
 
 var research_points: float = 0.0
 
+
+# -------------------------------------------------------------------
+# Milestone tracking
+# -------------------------------------------------------------------
+
 var next_indexed_page_milestone: int = (
 	INDEXED_PAGE_MILESTONE_INTERVAL
 )
@@ -127,26 +143,24 @@ var rewarded_objectives: Dictionary = {}
 
 
 # -------------------------------------------------------------------
-# Current upgrade levels
+# Upgrade levels
 # -------------------------------------------------------------------
 
 var upgrade_levels: Dictionary = {
-	UPGRADE_QUERY_OPTIMIZATION: 0,
-	UPGRADE_CRAWLER_ALGORITHMS: 0,
-	UPGRADE_DATA_COMPRESSION: 0
+	UPGRADE_CRAWLER_OPTIMIZATION: 0,
+	UPGRADE_SEARCH_MONETIZATION: 0,
+	UPGRADE_AUDIENCE_DISCOVERY: 0
 }
 
 
 # -------------------------------------------------------------------
 # Unlocked research
-#
-# These values match the temporary Research page.
 # -------------------------------------------------------------------
 
 var unlocked_upgrades: Dictionary = {
-	UPGRADE_QUERY_OPTIMIZATION: true,
-	UPGRADE_CRAWLER_ALGORITHMS: true,
-	UPGRADE_DATA_COMPRESSION: false
+	UPGRADE_CRAWLER_OPTIMIZATION: true,
+	UPGRADE_SEARCH_MONETIZATION: true,
+	UPGRADE_AUDIENCE_DISCOVERY: true
 }
 
 
@@ -164,7 +178,8 @@ func _ready() -> void:
 	print(
 		"ResearchManager loaded successfully."
 	)
-	
+
+
 # -------------------------------------------------------------------
 # Milestone setup
 # -------------------------------------------------------------------
@@ -183,7 +198,8 @@ func initialize_milestone_tracking() -> void:
 			ACTIVE_USER_MILESTONE_INTERVAL
 		)
 	)
-	
+
+
 func get_next_milestone(
 	current_value: int,
 	interval: int
@@ -200,6 +216,29 @@ func get_next_milestone(
 		(completed_intervals + 1)
 		* interval
 	)
+
+
+func connect_milestone_signals() -> void:
+	if not GameState.indexed_pages_changed.is_connected(
+		_on_indexed_pages_changed
+	):
+		GameState.indexed_pages_changed.connect(
+			_on_indexed_pages_changed
+		)
+
+	if not GameState.active_users_changed.is_connected(
+		_on_active_users_changed
+	):
+		GameState.active_users_changed.connect(
+			_on_active_users_changed
+		)
+
+	if not CrawlerManager.crawl_job_completed.is_connected(
+		_on_crawl_job_completed
+	):
+		CrawlerManager.crawl_job_completed.connect(
+			_on_crawl_job_completed
+		)
 
 
 # -------------------------------------------------------------------
@@ -236,22 +275,6 @@ func add_research_points(
 	set_research_points(
 		research_points + amount
 	)
-	
-func award_research_points(
-	amount: float,
-	source: String
-) -> void:
-	if amount <= 0.0:
-		return
-
-	add_research_points(
-		amount
-	)
-
-	research_points_awarded.emit(
-		amount,
-		source
-	)
 
 
 func spend_research_points(
@@ -268,91 +291,23 @@ func spend_research_points(
 	)
 
 	return true
-	
-# -------------------------------------------------------------------
-# Indexed-page milestones
-# -------------------------------------------------------------------
 
-func _on_indexed_pages_changed(
-	new_total: int
+
+func award_research_points(
+	amount: float,
+	source: String
 ) -> void:
-	while (
-		new_total
-		>= next_indexed_page_milestone
-	):
-		var milestone_reached: int = (
-			next_indexed_page_milestone
-		)
+	if amount <= 0.0:
+		return
 
-		award_research_points(
-			INDEXED_PAGE_MILESTONE_REWARD,
-			"Indexed %d Pages"
-			% milestone_reached
-		)
-
-		next_indexed_page_milestone += (
-			INDEXED_PAGE_MILESTONE_INTERVAL
-		)
-		
-# -------------------------------------------------------------------
-# Active-user milestones
-# -------------------------------------------------------------------
-
-func _on_active_users_changed(
-	new_total: int
-) -> void:
-	while (
-		new_total
-		>= next_active_user_milestone
-	):
-		var milestone_reached: int = (
-			next_active_user_milestone
-		)
-
-		award_research_points(
-			ACTIVE_USER_MILESTONE_REWARD,
-			"Reached %d Active Users"
-			% milestone_reached
-		)
-
-		next_active_user_milestone += (
-			ACTIVE_USER_MILESTONE_INTERVAL
-		)
-		
-# -------------------------------------------------------------------
-# Crawl-job milestones
-# -------------------------------------------------------------------
-
-func _on_crawl_job_completed() -> void:
-	award_research_points(
-		CRAWL_JOB_COMPLETION_REWARD,
-		"Crawl Job Completed"
-	)
-	
-# -------------------------------------------------------------------
-# Objective milestones
-# -------------------------------------------------------------------
-
-func award_objective_completion(
-	objective_id: StringName,
-	objective_name: String
-) -> bool:
-	if rewarded_objectives.has(
-		objective_id
-	):
-		return false
-
-	rewarded_objectives[
-		objective_id
-	] = true
-
-	award_research_points(
-		OBJECTIVE_COMPLETION_REWARD,
-		"Objective Complete: %s"
-		% objective_name
+	add_research_points(
+		amount
 	)
 
-	return true
+	research_points_awarded.emit(
+		amount,
+		source
+	)
 
 
 # -------------------------------------------------------------------
@@ -526,30 +481,126 @@ func increase_upgrade_level(
 	)
 
 	return true
-	
-func connect_milestone_signals() -> void:
-	if not GameState.indexed_pages_changed.is_connected(
-		_on_indexed_pages_changed
+
+
+# -------------------------------------------------------------------
+# Current upgrade effects
+# -------------------------------------------------------------------
+
+func get_crawler_optimization_bonus() -> float:
+	return (
+		get_upgrade_level(
+			UPGRADE_CRAWLER_OPTIMIZATION
+		)
+		* CRAWLER_RATE_BONUS_PER_LEVEL
+	)
+
+
+func get_search_monetization_bonus_percent() -> float:
+	return (
+		get_upgrade_level(
+			UPGRADE_SEARCH_MONETIZATION
+		)
+		* REVENUE_BONUS_PERCENT_PER_LEVEL
+	)
+
+
+func get_audience_discovery_bonus_percent() -> float:
+	return (
+		get_upgrade_level(
+			UPGRADE_AUDIENCE_DISCOVERY
+		)
+		* ACTIVE_USER_BONUS_PERCENT_PER_LEVEL
+	)
+
+
+# -------------------------------------------------------------------
+# Indexed-page milestones
+# -------------------------------------------------------------------
+
+func _on_indexed_pages_changed(
+	new_total: int
+) -> void:
+	while (
+		new_total
+		>= next_indexed_page_milestone
 	):
-		GameState.indexed_pages_changed.connect(
-			_on_indexed_pages_changed
+		var milestone_reached: int = (
+			next_indexed_page_milestone
 		)
 
-	if not GameState.active_users_changed.is_connected(
-		_on_active_users_changed
-	):
-		GameState.active_users_changed.connect(
-			_on_active_users_changed
+		award_research_points(
+			INDEXED_PAGE_MILESTONE_REWARD,
+			"Indexed %d Pages"
+			% milestone_reached
 		)
 
-	if not CrawlerManager.crawl_job_completed.is_connected(
-		_on_crawl_job_completed
-	):
-		CrawlerManager.crawl_job_completed.connect(
-			_on_crawl_job_completed
+		next_indexed_page_milestone += (
+			INDEXED_PAGE_MILESTONE_INTERVAL
 		)
-		
-		
+
+
+# -------------------------------------------------------------------
+# Active-user milestones
+# -------------------------------------------------------------------
+
+func _on_active_users_changed(
+	new_total: int
+) -> void:
+	while (
+		new_total
+		>= next_active_user_milestone
+	):
+		var milestone_reached: int = (
+			next_active_user_milestone
+		)
+
+		award_research_points(
+			ACTIVE_USER_MILESTONE_REWARD,
+			"Reached %d Active Users"
+			% milestone_reached
+		)
+
+		next_active_user_milestone += (
+			ACTIVE_USER_MILESTONE_INTERVAL
+		)
+
+
+# -------------------------------------------------------------------
+# Crawl-job milestone
+# -------------------------------------------------------------------
+
+func _on_crawl_job_completed() -> void:
+	award_research_points(
+		CRAWL_JOB_COMPLETION_REWARD,
+		"Crawl Job Completed"
+	)
+
+
+# -------------------------------------------------------------------
+# Objective milestone
+# -------------------------------------------------------------------
+
+func award_objective_completion(
+	objective_id: StringName,
+	objective_name: String
+) -> bool:
+	if rewarded_objectives.has(
+		objective_id
+	):
+		return false
+
+	rewarded_objectives[
+		objective_id
+	] = true
+
+	award_research_points(
+		OBJECTIVE_COMPLETION_REWARD,
+		"Objective Complete: %s"
+		% objective_name
+	)
+
+	return true
 
 
 # -------------------------------------------------------------------
@@ -560,32 +611,32 @@ func reset_research() -> void:
 	set_research_points(0.0)
 
 	set_upgrade_level(
-		UPGRADE_QUERY_OPTIMIZATION,
+		UPGRADE_CRAWLER_OPTIMIZATION,
 		0
 	)
 
 	set_upgrade_level(
-		UPGRADE_CRAWLER_ALGORITHMS,
+		UPGRADE_SEARCH_MONETIZATION,
 		0
 	)
 
 	set_upgrade_level(
-		UPGRADE_DATA_COMPRESSION,
+		UPGRADE_AUDIENCE_DISCOVERY,
 		0
 	)
 
 	unlocked_upgrades[
-		UPGRADE_QUERY_OPTIMIZATION
+		UPGRADE_CRAWLER_OPTIMIZATION
 	] = true
 
 	unlocked_upgrades[
-		UPGRADE_CRAWLER_ALGORITHMS
+		UPGRADE_SEARCH_MONETIZATION
 	] = true
 
 	unlocked_upgrades[
-		UPGRADE_DATA_COMPRESSION
-	] = false
-	
+		UPGRADE_AUDIENCE_DISCOVERY
+	] = true
+
 	rewarded_objectives.clear()
 
 	initialize_milestone_tracking()

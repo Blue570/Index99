@@ -2314,17 +2314,25 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 5
 
-[node name="AvailableResearchHeaderRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=1505378611]
+[node name="AvailableResearchHeaderRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=1705753391]
 layout_mode = 2
 
-[node name="AvailableResearchNameHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AvailableResearchHeaderRow" unique_id=1972614751]
+[node name="AvailableResearchNameHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AvailableResearchHeaderRow" unique_id=1425674355]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "Research Project"
+text = "Research Upgrade"
 
-[node name="AvailableResearchCostHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AvailableResearchHeaderRow" unique_id=360047624]
+[node name="AvailableResearchLevelHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AvailableResearchHeaderRow" unique_id=1592833282]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "Level"
+horizontal_alignment = 2
+
+[node name="AvailableResearchCostHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AvailableResearchHeaderRow" unique_id=166999349]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
@@ -2332,36 +2340,37 @@ theme_override_font_sizes/font_size = 11
 text = "Cost"
 horizontal_alignment = 2
 
-[node name="AvailableResearchTimeHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AvailableResearchHeaderRow" unique_id=1825971158]
-custom_minimum_size = Vector2(80, 0)
+[node name="AvailableResearchMaxHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AvailableResearchHeaderRow" unique_id=677346166]
+custom_minimum_size = Vector2(85, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "Time"
+text = "Maximum"
 horizontal_alignment = 2
 
-[node name="AvailableResearchStatusHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AvailableResearchHeaderRow" unique_id=736864656]
-custom_minimum_size = Vector2(90, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
-theme_override_font_sizes/font_size = 11
-text = "Statis"
-horizontal_alignment = 2
-
-[node name="AvailableResearchHeaderSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=1389762747]
+[node name="AvailableResearchHeaderSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=704799490]
 layout_mode = 2
 
-[node name="QueryOptimizationResearchRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=592408464]
+[node name="CrawlerOptimizationResearchRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=318066069]
 layout_mode = 2
 
-[node name="QueryOptimizationNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/QueryOptimizationResearchRow" unique_id=2136933568]
+[node name="CrawlerOptimizationNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/CrawlerOptimizationResearchRow" unique_id=35776524]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "Query Optimization"
+text = "Crawler Optimization"
+vertical_alignment = 1
 
-[node name="QueryOptimizationCostLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/QueryOptimizationResearchRow" unique_id=875476024]
+[node name="CrawlerOptimizationLevelLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/CrawlerOptimizationResearchRow" unique_id=696510441]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "Level 0"
+horizontal_alignment = 2
+
+[node name="CrawlerOptimizationCostLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/CrawlerOptimizationResearchRow" unique_id=447467353]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
@@ -2369,43 +2378,49 @@ theme_override_font_sizes/font_size = 11
 text = "10 RP"
 horizontal_alignment = 2
 
-[node name="QueryOptimizationTimeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/QueryOptimizationResearchRow" unique_id=406778515]
-custom_minimum_size = Vector2(80, 0)
+[node name="CrawlerOptimizationMaxLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/CrawlerOptimizationResearchRow" unique_id=1643159180]
+custom_minimum_size = Vector2(85, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "30 sec"
+text = "Level 3"
 horizontal_alignment = 2
 
-[node name="QueryOptimizationStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/QueryOptimizationResearchRow" unique_id=834159243]
-custom_minimum_size = Vector2(90, 0)
+[node name="CrawlerOptimizationCurrentEffectLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=973898711]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.18431373, 0.56078434, 0.27450982, 1)
+theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
 theme_override_font_sizes/font_size = 11
-text = "AVAILABLE"
-horizontal_alignment = 2
+text = "Current Effect: +0.00 pages/sec"
 
-[node name="QueryOptimizationDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=2094077009]
+[node name="CrawlerOptimizationNextEffectLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=589441259]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "Improves the crawler's ability to process search queries."
-autowrap_mode = 3
+text = "Next Effect: +0.25 pages/sec"
 
-[node name="QueryOptimizationSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=1622463467]
+[node name="CrawlerOptimizationSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=352668139]
 layout_mode = 2
 
-[node name="CrawlerAlgorithmsResearchRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=1896828787]
+[node name="SearchMonetizationResearchRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=1724803259]
 layout_mode = 2
 
-[node name="CrawlerAlgorithmsNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/CrawlerAlgorithmsResearchRow" unique_id=462480258]
+[node name="SearchMonetizationNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/SearchMonetizationResearchRow" unique_id=1076091339]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "Cralwer Algorithms"
+text = "Search Monetization"
+vertical_alignment = 1
 
-[node name="CrawlerAlgorithmsCostLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/CrawlerAlgorithmsResearchRow" unique_id=778486007]
+[node name="SearchMonetizationLevelLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/SearchMonetizationResearchRow" unique_id=1151240825]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "Level 0"
+horizontal_alignment = 2
+
+[node name="SearchMonetizationCostLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/SearchMonetizationResearchRow" unique_id=735703068]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
@@ -2413,72 +2428,75 @@ theme_override_font_sizes/font_size = 11
 text = "15 RP"
 horizontal_alignment = 2
 
-[node name="CrawlerAlgorithmsTimeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/CrawlerAlgorithmsResearchRow" unique_id=713556723]
-custom_minimum_size = Vector2(80, 0)
+[node name="SearchMonetizationMaxLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/SearchMonetizationResearchRow" unique_id=1523975664]
+custom_minimum_size = Vector2(85, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "45 sec"
+text = "Level 3"
 horizontal_alignment = 2
 
-[node name="CrawlerAlgorithmsStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/CrawlerAlgorithmsResearchRow" unique_id=1309018139]
-custom_minimum_size = Vector2(90, 0)
+[node name="SearchMonetizationCurrentEffectLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=1170716083]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.18431373, 0.56078434, 0.27450982, 1)
+theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
 theme_override_font_sizes/font_size = 11
-text = "AVAILABLE"
-horizontal_alignment = 2
+text = "+0% revenue per page"
 
-[node name="CrawlerAlgorithmsDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=928424968]
+[node name="SearchMonetizationNextEffectLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=1339596559]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "Increases the number of pages the crawler can index."
-autowrap_mode = 3
+text = "+10% revenue per page"
 
-[node name="CrawlerAlgorithmsSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=941264670]
+[node name="SearchMonetizationSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=803830055]
 layout_mode = 2
 
-[node name="DataCompressionResearchRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=956632520]
+[node name="AudienceDiscoveryResearchRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=1583933929]
 layout_mode = 2
 
-[node name="DataCompressionNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/DataCompressionResearchRow" unique_id=251279865]
+[node name="AudienceDiscoveryNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AudienceDiscoveryResearchRow" unique_id=194043087]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "Data Compression"
+text = "Audience Discovery"
+vertical_alignment = 1
 
-[node name="DataCompressionCostLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/DataCompressionResearchRow" unique_id=1904402880]
+[node name="AudienceDiscoveryLevelLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AudienceDiscoveryResearchRow" unique_id=867832232]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "25 RP"
+text = "Level 0"
 horizontal_alignment = 2
 
-[node name="DataCompressionTimeLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/DataCompressionResearchRow" unique_id=1780381140]
+[node name="AudienceDiscoveryCostLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AudienceDiscoveryResearchRow" unique_id=1758712653]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "60 sec"
+text = "15 RP"
 horizontal_alignment = 2
 
-[node name="DataCompressionStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/DataCompressionResearchRow" unique_id=23603051]
-custom_minimum_size = Vector2(90, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
-theme_override_font_sizes/font_size = 11
-text = "LOCKED"
-horizontal_alignment = 2
-
-[node name="DataCompressionDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=46589921]
+[node name="AudienceDiscoveryMaxLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout/AudienceDiscoveryResearchRow" unique_id=1816142274]
+custom_minimum_size = Vector2(85, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
 theme_override_font_sizes/font_size = 11
-text = "Reduces the server load required to store indexed pages."
-autowrap_mode = 3
+text = "Level 3"
+horizontal_alignment = 2
+
+[node name="AudienceDiscoveryCurrentEffectLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=791081768]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
+theme_override_font_sizes/font_size = 11
+text = "Current Effect: +0% active-user growth"
+
+[node name="AudienceDiscoveryNextEffectLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/AvailableResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/AvailableResearchLayout" unique_id=1411214846]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "Next Effect: +10% active-user growth"
 
 [node name="CompletedResearchPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow" unique_id=1635663566 instance=ExtResource("4_l3cfh")]
 layout_mode = 2
