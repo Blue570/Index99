@@ -18,6 +18,11 @@ signal research_upgrade_level_changed(
 	new_level: int
 )
 
+signal research_points_awarded(
+	amount: float,
+	source: String
+)
+
 
 # -------------------------------------------------------------------
 # Upgrade identifiers
@@ -89,12 +94,36 @@ const UPGRADE_COSTS: Dictionary = {
 	]
 }
 
+# -------------------------------------------------------------------
+# Research milestone rewards
+# -------------------------------------------------------------------
+
+const INDEXED_PAGE_MILESTONE_INTERVAL: int = 25
+const INDEXED_PAGE_MILESTONE_REWARD: float = 1.0
+
+const ACTIVE_USER_MILESTONE_INTERVAL: int = 25
+const ACTIVE_USER_MILESTONE_REWARD: float = 2.0
+
+const CRAWL_JOB_COMPLETION_REWARD: float = 3.0
+
+const OBJECTIVE_COMPLETION_REWARD: float = 5.0
+
 
 # -------------------------------------------------------------------
 # Research points
 # -------------------------------------------------------------------
 
 var research_points: float = 0.0
+
+var next_indexed_page_milestone: int = (
+	INDEXED_PAGE_MILESTONE_INTERVAL
+)
+
+var next_active_user_milestone: int = (
+	ACTIVE_USER_MILESTONE_INTERVAL
+)
+
+var rewarded_objectives: Dictionary = {}
 
 
 # -------------------------------------------------------------------
@@ -126,7 +155,51 @@ var unlocked_upgrades: Dictionary = {
 # -------------------------------------------------------------------
 
 func _ready() -> void:
-	print("ResearchManager loaded successfully.")
+	initialize_milestone_tracking()
+
+	call_deferred(
+		"connect_milestone_signals"
+	)
+
+	print(
+		"ResearchManager loaded successfully."
+	)
+	
+# -------------------------------------------------------------------
+# Milestone setup
+# -------------------------------------------------------------------
+
+func initialize_milestone_tracking() -> void:
+	next_indexed_page_milestone = (
+		get_next_milestone(
+			GameState.indexed_pages,
+			INDEXED_PAGE_MILESTONE_INTERVAL
+		)
+	)
+
+	next_active_user_milestone = (
+		get_next_milestone(
+			GameState.active_users,
+			ACTIVE_USER_MILESTONE_INTERVAL
+		)
+	)
+	
+func get_next_milestone(
+	current_value: int,
+	interval: int
+) -> int:
+	if interval <= 0:
+		return 0
+
+	var completed_intervals: int = floori(
+		float(current_value)
+		/ float(interval)
+	)
+
+	return (
+		(completed_intervals + 1)
+		* interval
+	)
 
 
 # -------------------------------------------------------------------
@@ -163,6 +236,22 @@ func add_research_points(
 	set_research_points(
 		research_points + amount
 	)
+	
+func award_research_points(
+	amount: float,
+	source: String
+) -> void:
+	if amount <= 0.0:
+		return
+
+	add_research_points(
+		amount
+	)
+
+	research_points_awarded.emit(
+		amount,
+		source
+	)
 
 
 func spend_research_points(
@@ -176,6 +265,91 @@ func spend_research_points(
 
 	set_research_points(
 		research_points - amount
+	)
+
+	return true
+	
+# -------------------------------------------------------------------
+# Indexed-page milestones
+# -------------------------------------------------------------------
+
+func _on_indexed_pages_changed(
+	new_total: int
+) -> void:
+	while (
+		new_total
+		>= next_indexed_page_milestone
+	):
+		var milestone_reached: int = (
+			next_indexed_page_milestone
+		)
+
+		award_research_points(
+			INDEXED_PAGE_MILESTONE_REWARD,
+			"Indexed %d Pages"
+			% milestone_reached
+		)
+
+		next_indexed_page_milestone += (
+			INDEXED_PAGE_MILESTONE_INTERVAL
+		)
+		
+# -------------------------------------------------------------------
+# Active-user milestones
+# -------------------------------------------------------------------
+
+func _on_active_users_changed(
+	new_total: int
+) -> void:
+	while (
+		new_total
+		>= next_active_user_milestone
+	):
+		var milestone_reached: int = (
+			next_active_user_milestone
+		)
+
+		award_research_points(
+			ACTIVE_USER_MILESTONE_REWARD,
+			"Reached %d Active Users"
+			% milestone_reached
+		)
+
+		next_active_user_milestone += (
+			ACTIVE_USER_MILESTONE_INTERVAL
+		)
+		
+# -------------------------------------------------------------------
+# Crawl-job milestones
+# -------------------------------------------------------------------
+
+func _on_crawl_job_completed() -> void:
+	award_research_points(
+		CRAWL_JOB_COMPLETION_REWARD,
+		"Crawl Job Completed"
+	)
+	
+# -------------------------------------------------------------------
+# Objective milestones
+# -------------------------------------------------------------------
+
+func award_objective_completion(
+	objective_id: StringName,
+	objective_name: String
+) -> bool:
+	if rewarded_objectives.has(
+		objective_id
+	):
+		return false
+
+	rewarded_objectives[
+		objective_id
+	] = true
+
+	award_research_points(
+		OBJECTIVE_COMPLETION_REWARD,
+		"Objective Complete: %s"
+		% objective_name
 	)
 
 	return true
@@ -352,6 +526,30 @@ func increase_upgrade_level(
 	)
 
 	return true
+	
+func connect_milestone_signals() -> void:
+	if not GameState.indexed_pages_changed.is_connected(
+		_on_indexed_pages_changed
+	):
+		GameState.indexed_pages_changed.connect(
+			_on_indexed_pages_changed
+		)
+
+	if not GameState.active_users_changed.is_connected(
+		_on_active_users_changed
+	):
+		GameState.active_users_changed.connect(
+			_on_active_users_changed
+		)
+
+	if not CrawlerManager.crawl_job_completed.is_connected(
+		_on_crawl_job_completed
+	):
+		CrawlerManager.crawl_job_completed.connect(
+			_on_crawl_job_completed
+		)
+		
+		
 
 
 # -------------------------------------------------------------------
@@ -387,3 +585,7 @@ func reset_research() -> void:
 	unlocked_upgrades[
 		UPGRADE_DATA_COMPRESSION
 	] = false
+	
+	rewarded_objectives.clear()
+
+	initialize_milestone_tracking()
