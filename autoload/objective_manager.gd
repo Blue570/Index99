@@ -99,6 +99,8 @@ var current_event_progress: int = 0
 
 var sequence_completed: bool = false
 
+var suppress_objective_evaluation: bool = false
+
 
 # -------------------------------------------------------------------
 # Setup
@@ -292,6 +294,9 @@ func emit_current_progress() -> void:
 
 
 func evaluate_current_objective() -> void:
+	if suppress_objective_evaluation:
+		return
+		
 	if sequence_completed:
 		return
 
@@ -432,3 +437,42 @@ func reset_objectives() -> void:
 	sequence_completed = false
 
 	activate_current_objective()
+	
+# -------------------------------------------------------------------
+# Save / load support
+# -------------------------------------------------------------------
+
+func begin_save_restore() -> void:
+	suppress_objective_evaluation = true
+
+
+func restore_saved_state(
+	saved_objective_index: int,
+	saved_event_progress: int,
+	saved_sequence_completed: bool
+) -> void:
+	current_objective_index = clampi(
+		saved_objective_index,
+		0,
+		OBJECTIVES.size()
+	)
+
+	current_event_progress = maxi(
+		saved_event_progress,
+		0
+	)
+
+	sequence_completed = (
+		saved_sequence_completed
+		or current_objective_index
+		>= OBJECTIVES.size()
+	)
+
+	suppress_objective_evaluation = false
+
+	if sequence_completed:
+		all_objectives_completed.emit()
+		return
+
+	emit_current_objective()
+	emit_current_progress()

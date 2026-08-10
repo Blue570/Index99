@@ -169,6 +169,8 @@ var unlocked_upgrades: Dictionary = {
 	UPGRADE_AUDIENCE_DISCOVERY: true
 }
 
+var suppress_milestone_rewards: bool = false
+
 
 # -------------------------------------------------------------------
 # Setup
@@ -185,6 +187,19 @@ func _ready() -> void:
 		"ResearchManager loaded successfully."
 	)
 	
+	
+# -------------------------------------------------------------------
+# Save / load support
+# -------------------------------------------------------------------
+
+func begin_save_restore() -> void:
+	suppress_milestone_rewards = true
+
+
+func finish_save_restore() -> void:
+	suppress_milestone_rewards = false
+
+	initialize_milestone_tracking()
 
 
 # -------------------------------------------------------------------
@@ -600,6 +615,9 @@ func has_completed_any_upgrade() -> bool:
 func _on_indexed_pages_changed(
 	new_total: int
 ) -> void:
+	if suppress_milestone_rewards:
+		return
+		
 	while (
 		new_total
 		>= next_indexed_page_milestone
@@ -626,6 +644,9 @@ func _on_indexed_pages_changed(
 func _on_active_users_changed(
 	new_total: int
 ) -> void:
+	if suppress_milestone_rewards:
+		return
+		
 	while (
 		new_total
 		>= next_active_user_milestone

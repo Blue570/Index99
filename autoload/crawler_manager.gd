@@ -482,3 +482,65 @@ func complete_current_job() -> void:
 
 	crawl_job_completed.emit()
 	
+# -------------------------------------------------------------------
+# Save / load support
+# -------------------------------------------------------------------
+
+func restore_saved_state(
+	saved_job_pages: int,
+	saved_page_fraction: float,
+	saved_active_user_fraction: float,
+	saved_running: bool,
+	saved_paused_for_overload: bool
+) -> void:
+	current_job_pages = clampi(
+		saved_job_pages,
+		0,
+		CURRENT_JOB_TARGET_PAGES
+	)
+
+	page_fraction_buffer = clampf(
+		saved_page_fraction,
+		0.0,
+		0.999999
+	)
+
+	active_user_fraction_buffer = clampf(
+		saved_active_user_fraction,
+		0.0,
+		0.999999
+	)
+
+	paused_for_overload = (
+		saved_paused_for_overload
+	)
+
+	crawler_timer.stop()
+
+	if (
+		saved_running
+		and GameState.server_load
+		>= get_effective_maximum_safe_load()
+	):
+		paused_for_overload = true
+
+	var should_run: bool = (
+		saved_running
+		and not paused_for_overload
+		and current_job_pages
+		< CURRENT_JOB_TARGET_PAGES
+	)
+
+	GameState.set_crawler_running(
+		should_run
+	)
+
+	if should_run:
+		crawler_timer.start()
+
+	crawler_state_changed.emit(
+		should_run
+	)
+
+	emit_current_progress()
+	

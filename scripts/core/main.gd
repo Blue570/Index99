@@ -872,6 +872,8 @@ func _on_maximize_button_pressed() -> void:
 
 
 func _on_close_button_pressed() -> void:
+	SaveManager.save_game()
+
 	get_tree().quit()
 	
 func setup_background_jobs_connections() -> void:
