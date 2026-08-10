@@ -544,3 +544,26 @@ func restore_saved_state(
 
 	emit_current_progress()
 	
+# -------------------------------------------------------------------
+# New-game reset
+# -------------------------------------------------------------------
+
+func reset_crawler_state() -> void:
+	crawler_timer.stop()
+
+	current_job_pages = 0
+	page_fraction_buffer = 0.0
+	active_user_fraction_buffer = 0.0
+
+	paused_for_overload = false
+
+	GameState.set_crawler_running(
+		false
+	)
+
+	crawler_state_changed.emit(
+		false
+	)
+
+	emit_current_progress()
+	

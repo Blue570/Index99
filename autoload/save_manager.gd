@@ -17,6 +17,8 @@ signal load_failed(
 	reason: String
 )
 
+signal new_game_reset
+
 
 # -------------------------------------------------------------------
 # Save settings
@@ -37,17 +39,38 @@ const AUTOSAVE_INTERVAL_SECONDS: float = 30.0
 
 var autosave_timer: Timer
 
+var event_autosave_queued: bool = false
+var save_actions_blocked: bool = false
+
+var new_game_defaults: Dictionary = {}
+
 
 # -------------------------------------------------------------------
 # Setup
 # -------------------------------------------------------------------
 
 func _ready() -> void:
+	capture_new_game_defaults()
+
 	create_autosave_timer()
+	connect_event_autosave_signals()
 
 	call_deferred(
 		"load_game"
 	)
+	
+# -------------------------------------------------------------------
+# New-game defaults
+# -------------------------------------------------------------------
+
+func capture_new_game_defaults() -> void:
+	new_game_defaults = {
+		"revenue": GameState.revenue,
+		"active_users": GameState.active_users,
+		"indexed_pages": GameState.indexed_pages,
+		"reputation": GameState.reputation,
+		"server_load": GameState.server_load
+	}
 
 
 func _notification(
@@ -81,6 +104,9 @@ func create_autosave_timer() -> void:
 
 
 func _on_autosave_timeout() -> void:
+	if save_actions_blocked:
+		return
+
 	save_game()
 	
 # -------------------------------------------------------------------
@@ -185,6 +211,9 @@ func build_save_data() -> Dictionary:
 # -------------------------------------------------------------------
 
 func save_game() -> bool:
+	if save_actions_blocked:
+		return false
+		
 	var save_data: Dictionary = (
 		build_save_data()
 	)
@@ -727,3 +756,198 @@ func restore_objective(
 			false
 		)
 	)
+	
+# -------------------------------------------------------------------
+# Event autosave connections
+# -------------------------------------------------------------------
+
+func connect_event_autosave_signals() -> void:
+	if not ServerManager.server_upgrade_purchased.is_connected(
+		_on_server_upgrade_purchased_for_save
+	):
+		ServerManager.server_upgrade_purchased.connect(
+			_on_server_upgrade_purchased_for_save
+		)
+
+	if not ResearchManager.research_upgrade_purchased.is_connected(
+		_on_research_upgrade_purchased_for_save
+	):
+		ResearchManager.research_upgrade_purchased.connect(
+			_on_research_upgrade_purchased_for_save
+		)
+
+	if not ObjectiveManager.objective_completed.is_connected(
+		_on_objective_completed_for_save
+	):
+		ObjectiveManager.objective_completed.connect(
+			_on_objective_completed_for_save
+		)
+
+	if not CrawlerManager.crawl_job_completed.is_connected(
+		_on_crawl_job_completed_for_save
+	):
+		CrawlerManager.crawl_job_completed.connect(
+			_on_crawl_job_completed_for_save
+		)
+		
+func _on_server_upgrade_purchased_for_save(
+	_upgrade_id: StringName,
+	_new_level: int,
+	_revenue_spent: float
+) -> void:
+	request_event_autosave()
+
+
+func _on_research_upgrade_purchased_for_save(
+	_upgrade_id: StringName,
+	_new_level: int,
+	_research_points_spent: float
+) -> void:
+	request_event_autosave()
+
+
+func _on_objective_completed_for_save(
+	_objective_id: StringName,
+	_title: String
+) -> void:
+	request_event_autosave()
+
+
+func _on_crawl_job_completed_for_save() -> void:
+	request_event_autosave()
+	
+func request_event_autosave() -> void:
+	if save_actions_blocked:
+		return
+
+	if event_autosave_queued:
+		return
+
+	event_autosave_queued = true
+
+	call_deferred(
+		"perform_event_autosave"
+	)
+
+
+func perform_event_autosave() -> void:
+	event_autosave_queued = false
+
+	if save_actions_blocked:
+		return
+
+	save_game()
+	
+# -------------------------------------------------------------------
+# Controlled new-game reset
+# -------------------------------------------------------------------
+
+func reset_to_new_game() -> bool:
+	if new_game_defaults.is_empty():
+		push_error(
+			"SaveManager: New-game defaults are unavailable."
+		)
+
+		return false
+
+	save_actions_blocked = true
+	event_autosave_queued = false
+
+	ResearchManager.begin_save_restore()
+	ObjectiveManager.begin_save_restore()
+
+	CrawlerManager.reset_crawler_state()
+
+	ServerManager.reset_upgrade_levels()
+
+	GameState.set_revenue(
+		float(
+			new_game_defaults["revenue"]
+		)
+	)
+
+	GameState.set_active_users(
+		int(
+			new_game_defaults["active_users"]
+		)
+	)
+
+	GameState.set_indexed_pages(
+		int(
+			new_game_defaults["indexed_pages"]
+		)
+	)
+
+	GameState.set_reputation(
+		float(
+			new_game_defaults["reputation"]
+		)
+	)
+
+	GameState.set_server_load(
+		float(
+			new_game_defaults["server_load"]
+		)
+	)
+
+	ResearchManager.reset_research()
+
+	ResearchManager.finish_save_restore()
+
+	ObjectiveManager.restore_saved_state(
+		0,
+		0,
+		false
+	)
+
+	CrawlerManager.apply_research_crawler_rate()
+
+	save_actions_blocked = false
+
+	var save_successful: bool = (
+		save_game()
+	)
+
+	if save_successful:
+		print(
+			"SaveManager: New game reset completed."
+		)
+
+	else:
+		push_warning(
+			"SaveManager: Runtime reset completed, "
+			+ "but the new save could not be written."
+		)
+	
+	new_game_reset.emit()
+	return save_successful
+	
+# -------------------------------------------------------------------
+# Debug reset shortcut
+# -------------------------------------------------------------------
+
+func _input(
+	event: InputEvent
+) -> void:
+	if not OS.is_debug_build():
+		return
+
+	if not event is InputEventKey:
+		return
+
+	var key_event: InputEventKey = (
+		event as InputEventKey
+	)
+
+	if not key_event.pressed:
+		return
+
+	if key_event.echo:
+		return
+
+	if (
+		key_event.keycode == KEY_F12
+		and key_event.ctrl_pressed
+		and key_event.shift_pressed
+	):
+		reset_to_new_game()
