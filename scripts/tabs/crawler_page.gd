@@ -439,8 +439,12 @@ func show_completed_state() -> void:
 		ThemeManager.STATUS_SUCCESS
 	)
 
-	start_crawler_button.text = "Job Complete"
-	start_crawler_button.disabled = true
+	start_crawler_button.text = (
+		"Start Next Crawl"
+	)
+
+	start_crawler_button.disabled = false
+
 	pause_crawler_button.disabled = true
 	
 func show_warning_state() -> void:

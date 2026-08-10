@@ -238,27 +238,45 @@ func get_server_load_usage_percent(
 # -------------------------------------------------------------------
 
 func start_crawler() -> void:
-	if paused_for_overload:
+	if GameState.crawler_running:
 		return
 
+	# A finished 100-page batch becomes a new crawl
+	# when the player presses Start Next Crawl.
+	if is_current_job_complete():
+		prepare_next_crawl_job()
+
+	# Do not allow the crawler to start while the
+	# server is still at or above its safe maximum.
 	if (
 		GameState.server_load
 		>= get_effective_maximum_safe_load()
 	):
-		return
+		paused_for_overload = true
 
-	if current_job_pages >= CURRENT_JOB_TARGET_PAGES:
+		GameState.set_crawler_running(
+			false
+		)
+
+		crawler_state_changed.emit(
+			false
+		)
+
 		emit_current_progress()
+
 		return
 
-	if GameState.crawler_running:
-		return
+	paused_for_overload = false
 
-	GameState.set_crawler_running(true)
+	GameState.set_crawler_running(
+		true
+	)
 
 	crawler_timer.start()
 
-	crawler_state_changed.emit(true)
+	crawler_state_changed.emit(
+		true
+	)
 
 	emit_current_progress()
 	
@@ -285,6 +303,20 @@ func pause_crawler_for_overload() -> void:
 	GameState.set_crawler_running(false)
 
 	crawler_state_changed.emit(false)
+
+	emit_current_progress()
+	
+func is_current_job_complete() -> bool:
+	return (
+		current_job_pages
+		>= CURRENT_JOB_TARGET_PAGES
+	)
+
+
+func prepare_next_crawl_job() -> void:
+	current_job_pages = 0
+
+	paused_for_overload = false
 
 	emit_current_progress()
 	
@@ -476,11 +508,21 @@ func get_progress_percent() -> float:
 # -------------------------------------------------------------------
 
 func complete_current_job() -> void:
+	current_job_pages = (
+		CURRENT_JOB_TARGET_PAGES
+	)
+
 	crawler_timer.stop()
 
-	GameState.set_crawler_running(false)
+	GameState.set_crawler_running(
+		false
+	)
 
-	crawler_state_changed.emit(false)
+	crawler_state_changed.emit(
+		false
+	)
+
+	emit_current_progress()
 
 	crawl_job_completed.emit()
 	
