@@ -217,6 +217,78 @@ extends PanelContainer
 	+ "ActiveUserEffectValueLabel"
 ) as Label
 
+# -------------------------------------------------------------------
+# Research Purchase Buttons
+# -------------------------------------------------------------------
+
+@onready var crawler_optimization_purchase_button: Button = get_node(
+	"ResearchMargin/ResearchPageLayout/"
+	+ "ResearchListsRow/AvailableResearchPanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "AvailableResearchLayout/"
+	+ "CrawlerOptimizationResearchRow/"
+	+ "CrawlerOptimizationPurchaseButton"
+) as Button
+
+@onready var search_monetization_purchase_button: Button = get_node(
+	"ResearchMargin/ResearchPageLayout/"
+	+ "ResearchListsRow/AvailableResearchPanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "AvailableResearchLayout/"
+	+ "SearchMonetizationResearchRow/"
+	+ "SearchMonetizationPurchaseButton"
+) as Button
+
+@onready var audience_discovery_purchase_button: Button = get_node(
+	"ResearchMargin/ResearchPageLayout/"
+	+ "ResearchListsRow/AvailableResearchPanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "AvailableResearchLayout/"
+	+ "AudienceDiscoveryResearchRow/"
+	+ "AudienceDiscoveryPurchaseButton"
+) as Button
+
+# -------------------------------------------------------------------
+# Completed Research
+# -------------------------------------------------------------------
+
+@onready var completed_research_panel: SectionPanel = get_node(
+	"ResearchMargin/ResearchPageLayout/"
+	+ "ResearchListsRow/CompletedResearchPanel"
+) as SectionPanel
+
+@onready var completed_research_summary_value_label: Label = get_node(
+	"ResearchMargin/ResearchPageLayout/"
+	+ "ResearchListsRow/CompletedResearchPanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CompletedResearchLayout/"
+	+ "CompletedResearchSummaryRow/"
+	+ "CompletedResearchSummaryValueLabel"
+) as Label
+
+@onready var completed_research_entries: VBoxContainer = get_node(
+	"ResearchMargin/ResearchPageLayout/"
+	+ "ResearchListsRow/CompletedResearchPanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CompletedResearchLayout/"
+	+ "CompletedResearchEntries"
+) as VBoxContainer
+
+@onready var completed_research_empty_label: Label = get_node(
+	"ResearchMargin/ResearchPageLayout/"
+	+ "ResearchListsRow/CompletedResearchPanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CompletedResearchLayout/"
+	+ "CompletedResearchEntries/"
+	+ "CompletedResearchEmptyLabel"
+) as Label
+
 
 # -------------------------------------------------------------------
 # Setup
@@ -224,10 +296,12 @@ extends PanelContainer
 
 func _ready() -> void:
 	connect_research_signals()
+	connect_research_purchase_buttons()
 
 	refresh_research_points()
 	refresh_research_upgrades()
 	refresh_research_effects()
+	refresh_completed_research()
 
 
 func connect_research_signals() -> void:
@@ -244,6 +318,88 @@ func connect_research_signals() -> void:
 		ResearchManager.research_upgrade_level_changed.connect(
 			_on_research_upgrade_level_changed
 		)
+		
+func connect_research_purchase_buttons() -> void:
+	if not crawler_optimization_purchase_button.pressed.is_connected(
+		_on_crawler_optimization_purchase_pressed
+	):
+		crawler_optimization_purchase_button.pressed.connect(
+			_on_crawler_optimization_purchase_pressed
+		)
+
+	if not search_monetization_purchase_button.pressed.is_connected(
+		_on_search_monetization_purchase_pressed
+	):
+		search_monetization_purchase_button.pressed.connect(
+			_on_search_monetization_purchase_pressed
+		)
+
+	if not audience_discovery_purchase_button.pressed.is_connected(
+		_on_audience_discovery_purchase_pressed
+	):
+		audience_discovery_purchase_button.pressed.connect(
+			_on_audience_discovery_purchase_pressed
+		)
+		
+func _on_crawler_optimization_purchase_pressed() -> void:
+	attempt_research_purchase(
+		ResearchManager.UPGRADE_CRAWLER_OPTIMIZATION
+	)
+
+
+func _on_search_monetization_purchase_pressed() -> void:
+	attempt_research_purchase(
+		ResearchManager.UPGRADE_SEARCH_MONETIZATION
+	)
+
+
+func _on_audience_discovery_purchase_pressed() -> void:
+	attempt_research_purchase(
+		ResearchManager.UPGRADE_AUDIENCE_DISCOVERY
+	)
+	
+func attempt_research_purchase(
+	upgrade_id: StringName
+) -> void:
+	var purchase_successful: bool = (
+		ResearchManager.purchase_upgrade(
+			upgrade_id
+		)
+	)
+
+	if not purchase_successful:
+		refresh_research_upgrades()
+		return
+
+	refresh_research_upgrades()
+	refresh_research_effects()
+	refresh_completed_research()
+	
+func refresh_research_purchase_button(
+	upgrade_id: StringName,
+	purchase_button: Button
+) -> void:
+	if not ResearchManager.is_upgrade_unlocked(
+		upgrade_id
+	):
+		purchase_button.text = "LOCKED"
+		purchase_button.disabled = true
+		return
+
+	if ResearchManager.is_upgrade_maxed(
+		upgrade_id
+	):
+		purchase_button.text = "MAX"
+		purchase_button.disabled = true
+		return
+
+	purchase_button.text = "Research"
+
+	purchase_button.disabled = (
+		not ResearchManager.can_afford_upgrade(
+			upgrade_id
+		)
+	)
 
 
 func refresh_research_points() -> void:
@@ -257,6 +413,7 @@ func _on_research_upgrade_level_changed(
 ) -> void:
 	refresh_research_upgrades()
 	refresh_research_effects()
+	refresh_completed_research()
 	
 func refresh_research_effects() -> void:
 	var crawler_bonus: float = (
@@ -316,14 +473,199 @@ func refresh_research_upgrades() -> void:
 	refresh_search_monetization()
 	refresh_audience_discovery()
 
+	refresh_available_research_status()
+	
+func refresh_available_research_status() -> void:
+	var available_count: int = 0
+
+	var upgrade_ids: Array[StringName] = [
+		ResearchManager.UPGRADE_CRAWLER_OPTIMIZATION,
+		ResearchManager.UPGRADE_SEARCH_MONETIZATION,
+		ResearchManager.UPGRADE_AUDIENCE_DISCOVERY
+	]
+
+	for upgrade_id: StringName in upgrade_ids:
+		if (
+			ResearchManager.is_upgrade_unlocked(
+				upgrade_id
+			)
+			and not ResearchManager.is_upgrade_maxed(
+				upgrade_id
+			)
+		):
+			available_count += 1
+
+	if available_count <= 0:
+		available_research_panel.set_status(
+			"ALL COMPLETE",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+		return
+
 	available_research_panel.set_status(
-		"3 AVAILABLE",
+		"%d AVAILABLE" % available_count,
 		ThemeManager.STATUS_INFORMATION
 	)
+	
+func refresh_completed_research() -> void:
+	clear_completed_research_entries()
+
+	var completed_level_count: int = 0
+
+	var upgrade_ids: Array[StringName] = [
+		ResearchManager.UPGRADE_CRAWLER_OPTIMIZATION,
+		ResearchManager.UPGRADE_SEARCH_MONETIZATION,
+		ResearchManager.UPGRADE_AUDIENCE_DISCOVERY
+	]
+
+	for upgrade_id: StringName in upgrade_ids:
+		var current_level: int = (
+			ResearchManager.get_upgrade_level(
+				upgrade_id
+			)
+		)
+
+		for level_number in range(
+			1,
+			current_level + 1
+		):
+			add_completed_research_entry(
+				upgrade_id,
+				level_number
+			)
+
+			completed_level_count += 1
+
+	completed_research_summary_value_label.text = (
+		str(completed_level_count)
+	)
+
+	if completed_level_count <= 0:
+		completed_research_empty_label.visible = true
+
+		completed_research_panel.set_status(
+			"EMPTY",
+			ThemeManager.TEXT_DISABLED
+		)
+
+		return
+
+	completed_research_empty_label.visible = false
+
+	completed_research_panel.set_status(
+		"%d COMPLETE"
+		% completed_level_count,
+		ThemeManager.STATUS_SUCCESS
+	)
+	
+func clear_completed_research_entries() -> void:
+	for child: Node in completed_research_entries.get_children():
+		if child == completed_research_empty_label:
+			continue
+
+		completed_research_entries.remove_child(
+			child
+		)
+
+		child.queue_free()
+		
+func add_completed_research_entry(
+	upgrade_id: StringName,
+	level_number: int
+) -> void:
+	var entry_label: Label = Label.new()
+
+	entry_label.text = (
+		"%s — Level %d — %s"
+		% [
+			ResearchManager.get_upgrade_name(
+				upgrade_id
+			),
+			level_number,
+			get_completed_research_effect_text(
+				upgrade_id,
+				level_number
+			)
+		]
+	)
+
+	entry_label.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
+	entry_label.add_theme_font_size_override(
+		"font_size",
+		ThemeManager.FONT_SIZE_SMALL
+	)
+
+	entry_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_PRIMARY
+	)
+
+	completed_research_entries.add_child(
+		entry_label
+	)
+	
+func get_completed_research_effect_text(
+	upgrade_id: StringName,
+	level_number: int
+) -> String:
+	if (
+		upgrade_id
+		== ResearchManager.UPGRADE_CRAWLER_OPTIMIZATION
+	):
+		var crawler_bonus: float = (
+			float(level_number)
+			* ResearchManager.CRAWLER_RATE_BONUS_PER_LEVEL
+		)
+
+		return (
+			"+%.2f pages/sec"
+			% crawler_bonus
+		)
+
+	if (
+		upgrade_id
+		== ResearchManager.UPGRADE_SEARCH_MONETIZATION
+	):
+		var revenue_bonus: float = (
+			float(level_number)
+			* ResearchManager
+			.REVENUE_BONUS_PERCENT_PER_LEVEL
+		)
+
+		return (
+			"+%d%% revenue"
+			% roundi(revenue_bonus)
+		)
+
+	if (
+		upgrade_id
+		== ResearchManager.UPGRADE_AUDIENCE_DISCOVERY
+	):
+		var audience_bonus: float = (
+			float(level_number)
+			* ResearchManager
+			.ACTIVE_USER_BONUS_PERCENT_PER_LEVEL
+		)
+
+		return (
+			"+%d%% user growth"
+			% roundi(audience_bonus)
+		)
+
+	return "Completed"
 	
 func refresh_crawler_optimization() -> void:
 	var upgrade_id: StringName = (
 		ResearchManager.UPGRADE_CRAWLER_OPTIMIZATION
+	)
+	
+	refresh_research_purchase_button(
+		upgrade_id,
+		crawler_optimization_purchase_button
 	)
 
 	var current_level: int = (
@@ -390,6 +732,11 @@ func refresh_search_monetization() -> void:
 	var upgrade_id: StringName = (
 		ResearchManager.UPGRADE_SEARCH_MONETIZATION
 	)
+	
+	refresh_research_purchase_button(
+		upgrade_id,
+		search_monetization_purchase_button
+	)
 
 	var current_level: int = (
 		ResearchManager.get_upgrade_level(
@@ -454,6 +801,11 @@ func refresh_search_monetization() -> void:
 func refresh_audience_discovery() -> void:
 	var upgrade_id: StringName = (
 		ResearchManager.UPGRADE_AUDIENCE_DISCOVERY
+	)
+	
+	refresh_research_purchase_button(
+		upgrade_id,
+		audience_discovery_purchase_button
 	)
 
 	var current_level: int = (
@@ -529,6 +881,8 @@ func _on_research_points_changed(
 			new_points
 		)
 	)
+
+	refresh_research_upgrades()
 
 
 func format_research_points(
