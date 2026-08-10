@@ -41,26 +41,26 @@ const UPGRADE_MAXIMUM_SAFE_LOAD: StringName = &"maximum_safe_load"
 
 const COOLING_SPEED_COSTS: Array[float] = [
 	100.0,
-	175.0,
-	300.0,
-	500.0,
-	800.0
+	225.0,
+	400.0,
+	650.0,
+	1000.0
 ]
 
 const CRAWLER_EFFICIENCY_COSTS: Array[float] = [
-	150.0,
-	250.0,
-	425.0,
-	700.0,
-	1100.0
+	125.0,
+	275.0,
+	500.0,
+	800.0,
+	1200.0
 ]
 
 const MAXIMUM_SAFE_LOAD_COSTS: Array[float] = [
-	250.0,
-	450.0,
-	800.0,
-	1400.0,
-	2300.0
+	150.0,
+	325.0,
+	600.0,
+	950.0,
+	1400.0
 ]
 
 

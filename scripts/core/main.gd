@@ -388,10 +388,18 @@ func _on_server_load_changed(
 func get_server_load_display_color(
 	server_load_value: float
 ) -> Color:
-	if server_load_value >= 100.0:
+	var maximum_safe_load: float = (
+		CrawlerManager.get_effective_maximum_safe_load()
+	)
+
+	var warning_threshold: float = (
+		CrawlerManager.get_effective_warning_threshold()
+	)
+
+	if server_load_value >= maximum_safe_load:
 		return ThemeManager.RESOURCE_VALUE_RED
 
-	if server_load_value >= 90.0:
+	if server_load_value >= warning_threshold:
 		return ThemeManager.RESOURCE_VALUE_AMBER
 
 	return ThemeManager.RESOURCE_VALUE_BLUE
@@ -934,7 +942,7 @@ func refresh_background_jobs_bar() -> void:
 	elif (
 		GameState.crawler_running
 		and GameState.server_load
-		>= CrawlerManager.SERVER_LOAD_WARNING_THRESHOLD
+		>= CrawlerManager.get_effective_warning_threshold()
 	):
 		show_background_crawler_warning(
 			pages_processed,

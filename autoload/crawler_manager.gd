@@ -29,10 +29,23 @@ signal crawl_job_completed
 const TIMER_INTERVAL_SECONDS: float = 1.0
 const CURRENT_JOB_TARGET_PAGES: int = 100
 
-const REVENUE_PER_PAGE: float = 0.10
-const ACTIVE_USERS_PER_PAGE: float = 0.20
+const REVENUE_PER_PAGE: float = 1.0
+const ACTIVE_USERS_PER_PAGE: float = 0.15
 
 const BASE_CRAWLER_RATE: float = 1.0
+
+#---------------------------------------------------------------------
+#Server Load
+#---------------------------------------------------------------------
+
+
+const SERVER_LOAD_INTERVAL_SECONDS: float = 1.0
+
+const SERVER_LOAD_GAIN_PER_TICK: float = 1.5
+const SERVER_LOAD_COOLING_PER_TICK: float = 6.0
+
+const SERVER_LOAD_WARNING_THRESHOLD: float = 90.0
+const SERVER_LOAD_MAXIMUM: float = 100.0
 
 
 # -------------------------------------------------------------------
@@ -51,18 +64,7 @@ var active_user_fraction_buffer: float = 0.0
 var paused_for_overload: bool = false
 
 
-#---------------------------------------------------------------------
-#Server Load
-#---------------------------------------------------------------------
 
-
-const SERVER_LOAD_INTERVAL_SECONDS: float = 1.0
-
-const SERVER_LOAD_GAIN_PER_TICK: float = 2.0
-const SERVER_LOAD_COOLING_PER_TICK: float = 5.0
-
-const SERVER_LOAD_WARNING_THRESHOLD: float = 90.0
-const SERVER_LOAD_MAXIMUM: float = 100.0
 
 
 # -------------------------------------------------------------------
