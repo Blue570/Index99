@@ -301,6 +301,21 @@ func _ready() -> void:
 	
 	open_page(DEFAULT_PAGE_ID)
 	
+	print(
+	"WINDOW SIZE: ",
+	get_window().size
+)
+
+	print(
+	"CONTENT SCALE SIZE: ",
+	get_tree().root.content_scale_size
+)
+
+	print(
+	"ROOT VIEWPORT SIZE: ",
+	get_tree().root.get_visible_rect().size
+)
+	
 	
 func setup_game_state_connections() -> void:
 	if not GameState.revenue_changed.is_connected(
@@ -1050,3 +1065,4 @@ func _on_background_crawler_progress_changed(
 
 func _on_background_crawl_job_completed() -> void:
 	refresh_background_jobs_bar()
+	
