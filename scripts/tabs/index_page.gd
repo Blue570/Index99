@@ -1038,4 +1038,4 @@ func format_crawler_rate(
 
 		return "%d pages/sec" % rounded_value
 
-	return "%.1f pages/sec" % safe_value
+	return "%.2f pages/sec" % safe_value

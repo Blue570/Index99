@@ -2266,29 +2266,29 @@ layout_mode = 2
 text = "0%"
 horizontal_alignment = 2
 
-[node name="ServerLoadEffectRow2" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout" unique_id=435627360]
+[node name="ReputationEffectRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout" unique_id=435627360]
 layout_mode = 2
 
-[node name="ReputationEffectNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout/ServerLoadEffectRow2" unique_id=1948964262]
+[node name="ReputationEffectNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout/ReputationEffectRow" unique_id=1948964262]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Reputation Gain"
 
-[node name="ReputationEffectValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout/ServerLoadEffectRow2" unique_id=784823379]
+[node name="ReputationEffectValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout/ReputationEffectRow" unique_id=784823379]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "0%"
 horizontal_alignment = 2
 
-[node name="ServerLoadEffectRow3" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout" unique_id=2122768038]
+[node name="ActiveUserEffectRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout" unique_id=2122768038]
 layout_mode = 2
 
-[node name="ActiveUserEffectNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout/ServerLoadEffectRow3" unique_id=1099444969]
+[node name="ActiveUserEffectNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout/ActiveUserEffectRow" unique_id=1099444969]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Active User Growth"
 
-[node name="ActiveUserEffectValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout/ServerLoadEffectRow3" unique_id=388701650]
+[node name="ActiveUserEffectValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchSummaryRow/ResearchEffectsPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/ResearchEffectsLayout/ActiveUserEffectRow" unique_id=388701650]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "0%"

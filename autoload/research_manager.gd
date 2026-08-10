@@ -178,6 +178,7 @@ func _ready() -> void:
 	print(
 		"ResearchManager loaded successfully."
 	)
+	
 
 
 # -------------------------------------------------------------------

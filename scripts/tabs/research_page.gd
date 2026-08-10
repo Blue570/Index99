@@ -178,6 +178,45 @@ extends PanelContainer
 	+ "AudienceDiscoveryNextEffectLabel"
 ) as Label
 
+# -------------------------------------------------------------------
+# Research Effects
+# -------------------------------------------------------------------
+
+@onready var research_effects_panel: SectionPanel = get_node(
+	"ResearchMargin/ResearchPageLayout/"
+	+ "ResearchSummaryRow/ResearchEffectsPanel"
+) as SectionPanel
+
+@onready var crawler_speed_effect_value_label: Label = get_node(
+	"ResearchMargin/ResearchPageLayout/"
+	+ "ResearchSummaryRow/ResearchEffectsPanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "ResearchEffectsLayout/"
+	+ "CrawlerSpeedEffectRow/"
+	+ "CrawlerSpeedEffectValueLabel"
+) as Label
+
+@onready var revenue_effect_value_label: Label = get_node(
+	"ResearchMargin/ResearchPageLayout/"
+	+ "ResearchSummaryRow/ResearchEffectsPanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "ResearchEffectsLayout/"
+	+ "RevenueEffectRow/"
+	+ "RevenueEffectValueLabel"
+) as Label
+
+@onready var active_user_effect_value_label: Label = get_node(
+	"ResearchMargin/ResearchPageLayout/"
+	+ "ResearchSummaryRow/ResearchEffectsPanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "ResearchEffectsLayout/"
+	+ "ActiveUserEffectRow/"
+	+ "ActiveUserEffectValueLabel"
+) as Label
+
 
 # -------------------------------------------------------------------
 # Setup
@@ -188,6 +227,7 @@ func _ready() -> void:
 
 	refresh_research_points()
 	refresh_research_upgrades()
+	refresh_research_effects()
 
 
 func connect_research_signals() -> void:
@@ -216,6 +256,60 @@ func _on_research_upgrade_level_changed(
 	_new_level: int
 ) -> void:
 	refresh_research_upgrades()
+	refresh_research_effects()
+	
+func refresh_research_effects() -> void:
+	var crawler_bonus: float = (
+		ResearchManager.get_crawler_optimization_bonus()
+	)
+
+	var revenue_bonus: float = (
+		ResearchManager
+		.get_search_monetization_bonus_percent()
+	)
+
+	var audience_bonus: float = (
+		ResearchManager
+		.get_audience_discovery_bonus_percent()
+	)
+
+	crawler_speed_effect_value_label.text = (
+		"+%.2f pages/sec"
+		% crawler_bonus
+	)
+
+	revenue_effect_value_label.text = (
+		"+%d%%"
+		% roundi(revenue_bonus)
+	)
+
+	active_user_effect_value_label.text = (
+		"+%d%%"
+		% roundi(audience_bonus)
+	)
+
+	var active_effect_count: int = 0
+
+	if crawler_bonus > 0.0:
+		active_effect_count += 1
+
+	if revenue_bonus > 0.0:
+		active_effect_count += 1
+
+	if audience_bonus > 0.0:
+		active_effect_count += 1
+
+	if active_effect_count <= 0:
+		research_effects_panel.set_status(
+			"NO EFFECTS",
+			ThemeManager.TEXT_DISABLED
+		)
+
+	else:
+		research_effects_panel.set_status(
+			"%d ACTIVE" % active_effect_count,
+			ThemeManager.STATUS_SUCCESS
+		)
 	
 func refresh_research_upgrades() -> void:
 	refresh_crawler_optimization()

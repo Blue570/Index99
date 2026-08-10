@@ -32,6 +32,8 @@ const CURRENT_JOB_TARGET_PAGES: int = 100
 const REVENUE_PER_PAGE: float = 0.10
 const ACTIVE_USERS_PER_PAGE: float = 0.20
 
+const BASE_CRAWLER_RATE: float = 1.0
+
 
 # -------------------------------------------------------------------
 # Runtime values
@@ -68,8 +70,56 @@ const SERVER_LOAD_MAXIMUM: float = 100.0
 # -------------------------------------------------------------------
 
 func _ready() -> void:
+	connect_research_signals()
+
+	apply_research_crawler_rate()
+
 	create_crawler_timer()
 	create_server_load_timer()
+	
+func connect_research_signals() -> void:
+	if not ResearchManager.research_upgrade_level_changed.is_connected(
+		_on_research_upgrade_level_changed
+	):
+		ResearchManager.research_upgrade_level_changed.connect(
+			_on_research_upgrade_level_changed
+		)
+		
+func _on_research_upgrade_level_changed(
+	_upgrade_id: StringName,
+	_new_level: int
+) -> void:
+	apply_research_crawler_rate()
+	
+func apply_research_crawler_rate() -> void:
+	var research_bonus: float = (
+		ResearchManager.get_crawler_optimization_bonus()
+	)
+
+	var effective_crawler_rate: float = (
+		BASE_CRAWLER_RATE
+		+ research_bonus
+	)
+
+	GameState.set_crawler_rate(
+		effective_crawler_rate
+	)
+	
+func get_effective_revenue_per_page() -> float:
+	var bonus_percent: float = (
+		ResearchManager
+		.get_search_monetization_bonus_percent()
+	)
+
+	var multiplier: float = (
+		1.0
+		+ bonus_percent / 100.0
+	)
+
+	return (
+		REVENUE_PER_PAGE
+		* multiplier
+	)
 
 
 func create_crawler_timer() -> void:
@@ -104,6 +154,22 @@ func create_server_load_timer() -> void:
 	)
 
 	server_load_timer.start()
+	
+func get_effective_active_users_per_page() -> float:
+	var bonus_percent: float = (
+		ResearchManager
+		.get_audience_discovery_bonus_percent()
+	)
+
+	var multiplier: float = (
+		1.0
+		+ bonus_percent / 100.0
+	)
+
+	return (
+		ACTIVE_USERS_PER_PAGE
+		* multiplier
+	)
 	
 # -------------------------------------------------------------------
 # Effective server values
@@ -269,8 +335,8 @@ func process_indexed_pages(pages_added: int) -> void:
 	)
 
 	var revenue_added: float = (
-		float(pages_added)
-		* REVENUE_PER_PAGE
+	float(pages_added)
+	* get_effective_revenue_per_page()
 	)
 
 	GameState.set_revenue(
@@ -302,8 +368,8 @@ func calculate_active_user_growth(
 	pages_added: int
 ) -> int:
 	active_user_fraction_buffer += (
-		float(pages_added)
-		* ACTIVE_USERS_PER_PAGE
+	float(pages_added)
+	* get_effective_active_users_per_page()
 	)
 
 	var users_added: int = floori(
