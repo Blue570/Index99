@@ -221,7 +221,6 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_6gwxi")
 layout_mode = 2
 
 [node name="DashboardPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=374740521]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -790,59 +789,33 @@ minimum_panel_height = 220.0
 [node name="CurrentObjectiveLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(570147225, 287423228) index="0" unique_id=1124873688]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 10
-
-[node name="ObjectiveNumberLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1971355889]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
-theme_override_font_sizes/font_size = 11
-text = "OBJECTIVE 01"
+theme_override_constants/separation = 6
 
 [node name="ObjectiveTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=205842125]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 14
 text = "Index 100 pages"
-autowrap_mode = 3
 
 [node name="ObjectiveDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1964427412]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
-theme_override_font_sizes/font_size = 13
-text = "Start the crawler and build the first searchable collection of public web pages."
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "Grow the search index to 100 total pages."
 autowrap_mode = 3
 
-[node name="ObjectiveSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1042202574]
-layout_mode = 2
-
-[node name="ObjectiveProgressHeadingLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=924553478]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
-theme_override_font_sizes/font_size = 11
-text = "PROGRESS"
-
 [node name="ObjectiveProgressBar" type="ProgressBar" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=274196494]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
 step = 1.0
 show_percentage = false
 
-[node name="ObjectiveProgressValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1237455342]
+[node name="ObjectiveProgressLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=354452930]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
-theme_override_font_sizes/font_size = 12
-text = "0 / 100 Pages"
+theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
+theme_override_font_sizes/font_size = 11
+text = "0 / 100"
 horizontal_alignment = 2
-
-[node name="ObjectiveSpacer" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=1022099331]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="ObjectiveRewardLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout" unique_id=57986588]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
-theme_override_font_sizes/font_size = 13
-text = "Reward: +0.5 Reputation"
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
 visible = false
@@ -2064,6 +2037,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="ResearchPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=1928910644]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

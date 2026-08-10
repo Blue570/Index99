@@ -283,6 +283,13 @@ func get_maximum_safe_load_cost() -> float:
 		maximum_safe_load_level
 	]
 	
+func has_purchased_any_upgrade() -> bool:
+	return (
+		cooling_speed_level > 0
+		or crawler_efficiency_level > 0
+		or maximum_safe_load_level > 0
+	)
+	
 # -------------------------------------------------------------------
 # Affordability
 # -------------------------------------------------------------------

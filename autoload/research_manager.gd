@@ -23,6 +23,12 @@ signal research_upgrade_level_changed(
 	new_level: int
 )
 
+signal research_upgrade_purchased(
+	upgrade_id: StringName,
+	new_level: int,
+	research_points_spent: float
+)
+
 
 # -------------------------------------------------------------------
 # Upgrade identifiers
@@ -482,6 +488,65 @@ func increase_upgrade_level(
 	)
 
 	return true
+	
+func purchase_upgrade(
+	upgrade_id: StringName
+) -> bool:
+	if not is_upgrade_unlocked(
+		upgrade_id
+	):
+		return false
+
+	if is_upgrade_maxed(
+		upgrade_id
+	):
+		return false
+
+	var upgrade_cost: float = (
+		get_upgrade_cost(
+			upgrade_id
+		)
+	)
+
+	if upgrade_cost < 0.0:
+		return false
+
+	if not can_afford_upgrade(
+		upgrade_id
+	):
+		return false
+
+	if not spend_research_points(
+		upgrade_cost
+	):
+		return false
+
+	var upgraded_successfully: bool = (
+		increase_upgrade_level(
+			upgrade_id
+		)
+	)
+
+	if not upgraded_successfully:
+		add_research_points(
+			upgrade_cost
+		)
+
+		return false
+
+	var new_level: int = (
+		get_upgrade_level(
+			upgrade_id
+		)
+	)
+
+	research_upgrade_purchased.emit(
+		upgrade_id,
+		new_level,
+		upgrade_cost
+	)
+
+	return true
 
 
 # -------------------------------------------------------------------
@@ -512,6 +577,19 @@ func get_audience_discovery_bonus_percent() -> float:
 			UPGRADE_AUDIENCE_DISCOVERY
 		)
 		* ACTIVE_USER_BONUS_PERCENT_PER_LEVEL
+	)
+	
+func has_completed_any_upgrade() -> bool:
+	return (
+		get_upgrade_level(
+			UPGRADE_CRAWLER_OPTIMIZATION
+		) > 0
+		or get_upgrade_level(
+			UPGRADE_SEARCH_MONETIZATION
+		) > 0
+		or get_upgrade_level(
+			UPGRADE_AUDIENCE_DISCOVERY
+		) > 0
 	)
 
 

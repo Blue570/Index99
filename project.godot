@@ -21,6 +21,7 @@ ThemeManager="*uid://dqbjwre656mbv"
 GameState="*uid://17or4m1j820a"
 ServerManager="*uid://ci88iiq53e83c"
 ResearchManager="*uid://jwtpk384s85i"
+ObjectiveManager="*uid://ucil07dbsird"
 CrawlerManager="*uid://ckn42y5ix4vn1"
 
 [display]

@@ -338,6 +338,9 @@ func setup_game_state_connections() -> void:
 			_on_server_load_changed
 		)
 		
+		
+
+		
 func refresh_resource_displays() -> void:
 	_on_revenue_changed(GameState.revenue)
 	_on_active_users_changed(GameState.active_users)

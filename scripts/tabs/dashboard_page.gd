@@ -100,57 +100,58 @@ const OBJECTIVE_TARGET: int = 100
 # -------------------------------------------------------------------
 
 @onready var current_objective_panel: SectionPanel = get_node(
-	"DashboardMargin/DashboardLayout/DashboardColumns/"
-	+ "RightColumn/CurrentObjectivePanel"
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel"
 ) as SectionPanel
 
-@onready var objective_number_label: Label = get_node(
-	"DashboardMargin/DashboardLayout/DashboardColumns/"
-	+ "RightColumn/CurrentObjectivePanel/PanelLayout/"
-	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CurrentObjectiveLayout/ObjectiveNumberLabel"
-) as Label
-
 @onready var objective_title_label: Label = get_node(
-	"DashboardMargin/DashboardLayout/DashboardColumns/"
-	+ "RightColumn/CurrentObjectivePanel/PanelLayout/"
-	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CurrentObjectiveLayout/ObjectiveTitleLabel"
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CurrentObjectiveLayout/"
+	+ "ObjectiveTitleLabel"
 ) as Label
 
 @onready var objective_description_label: Label = get_node(
-	"DashboardMargin/DashboardLayout/DashboardColumns/"
-	+ "RightColumn/CurrentObjectivePanel/PanelLayout/"
-	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CurrentObjectiveLayout/ObjectiveDescriptionLabel"
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CurrentObjectiveLayout/"
+	+ "ObjectiveDescriptionLabel"
 ) as Label
 
 @onready var objective_progress_bar: ProgressBar = get_node(
-	"DashboardMargin/DashboardLayout/DashboardColumns/"
-	+ "RightColumn/CurrentObjectivePanel/PanelLayout/"
-	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CurrentObjectiveLayout/ObjectiveProgressBar"
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CurrentObjectiveLayout/"
+	+ "ObjectiveProgressBar"
 ) as ProgressBar
 
-@onready var objective_progress_value_label: Label = get_node(
-	"DashboardMargin/DashboardLayout/DashboardColumns/"
-	+ "RightColumn/CurrentObjectivePanel/PanelLayout/"
-	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CurrentObjectiveLayout/ObjectiveProgressValueLabel"
-) as Label
-
-@onready var objective_reward_label: Label = get_node(
-	"DashboardMargin/DashboardLayout/DashboardColumns/"
-	+ "RightColumn/CurrentObjectivePanel/PanelLayout/"
-	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CurrentObjectiveLayout/ObjectiveRewardLabel"
+@onready var objective_progress_label: Label = get_node(
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CurrentObjectiveLayout/"
+	+ "ObjectiveProgressLabel"
 ) as Label
 
 
 func _ready() -> void:
-	setup_objective()
+	
 	connect_game_state_signals()
 	refresh_dashboard()
+	connect_objective_signals()
+	refresh_current_objective()
 	
 	
 
@@ -159,21 +160,122 @@ func _ready() -> void:
 # Objective setup
 # -------------------------------------------------------------------
 
-func setup_objective() -> void:
-	objective_number_label.text = "OBJECTIVE 01"
-	objective_title_label.text = "Index 100 Pages"
+	
+func connect_objective_signals() -> void:
+	if not ObjectiveManager.objective_changed.is_connected(
+		_on_objective_changed
+	):
+		ObjectiveManager.objective_changed.connect(
+			_on_objective_changed
+		)
 
-	objective_description_label.text = (
-		"Start the crawler and build the first searchable "
-		+ "collection of public web pages."
+	if not ObjectiveManager.objective_progress_changed.is_connected(
+		_on_objective_progress_changed
+	):
+		ObjectiveManager.objective_progress_changed.connect(
+			_on_objective_progress_changed
+		)
+
+	if not ObjectiveManager.all_objectives_completed.is_connected(
+		_on_all_objectives_completed
+	):
+		ObjectiveManager.all_objectives_completed.connect(
+			_on_all_objectives_completed
+		)
+		
+func refresh_current_objective() -> void:
+	if ObjectiveManager.sequence_completed:
+		_on_all_objectives_completed()
+		return
+
+	_on_objective_changed(
+		ObjectiveManager.get_current_objective_id(),
+		ObjectiveManager.get_current_objective_title(),
+		ObjectiveManager.get_current_objective_description(),
+		ObjectiveManager.get_current_progress(),
+		ObjectiveManager.get_current_objective_target()
+	)
+	
+func _on_objective_changed(
+	_objective_id: StringName,
+	title: String,
+	description: String,
+	current_value: int,
+	target_value: int
+) -> void:
+	objective_title_label.text = title
+	objective_description_label.text = description
+
+	current_objective_panel.set_status(
+		"ACTIVE",
+		ThemeManager.STATUS_INFORMATION
 	)
 
-	objective_reward_label.text = "Reward: +0.5 Reputation"
+	update_objective_progress(
+		current_value,
+		target_value
+	)
+	
+func _on_objective_progress_changed(
+	current_value: int,
+	target_value: int
+) -> void:
+	update_objective_progress(
+		current_value,
+		target_value
+	)
+	
+func update_objective_progress(
+	current_value: int,
+	target_value: int
+) -> void:
+	if target_value <= 0:
+		objective_progress_bar.value = 0.0
+		objective_progress_label.text = "0 / 0"
+		return
+
+	var progress_percent: float = clampf(
+		float(current_value)
+		/ float(target_value)
+		* 100.0,
+		0.0,
+		100.0
+	)
 
 	objective_progress_bar.min_value = 0.0
-	objective_progress_bar.max_value = float(OBJECTIVE_TARGET)
-	objective_progress_bar.step = 1.0
-	objective_progress_bar.show_percentage = false
+	objective_progress_bar.max_value = 100.0
+	objective_progress_bar.value = progress_percent
+
+	objective_progress_label.text = (
+		"%d / %d"
+		% [
+			mini(
+				current_value,
+				target_value
+			),
+			target_value
+		]
+	)
+	
+func _on_all_objectives_completed() -> void:
+	objective_title_label.text = (
+		"Initial Objectives Complete"
+	)
+
+	objective_description_label.text = (
+		"All current objectives have been completed."
+	)
+
+	objective_progress_bar.value = 100.0
+
+	objective_progress_label.text = (
+		"COMPLETE"
+	)
+
+	current_objective_panel.set_status(
+		"COMPLETE",
+		ThemeManager.STATUS_SUCCESS
+	)
 
 
 # -------------------------------------------------------------------
@@ -244,7 +346,7 @@ func _on_indexed_pages_changed(new_value: int) -> void:
 		new_value
 	)
 
-	update_objective(new_value)
+	
 
 
 # -------------------------------------------------------------------
@@ -320,39 +422,6 @@ func _on_server_load_changed(new_value: float) -> void:
 # Objective updates
 # -------------------------------------------------------------------
 
-func update_objective(indexed_page_count: int) -> void:
-	var safe_page_count: int = maxi(
-		indexed_page_count,
-		0
-	)
-
-	var displayed_progress: int = mini(
-		safe_page_count,
-		OBJECTIVE_TARGET
-	)
-
-	objective_progress_bar.value = float(
-		displayed_progress
-	)
-
-	objective_progress_value_label.text = (
-		"%s / %s pages"
-		% [
-			format_whole_number(displayed_progress),
-			format_whole_number(OBJECTIVE_TARGET)
-		]
-	)
-
-	if safe_page_count >= OBJECTIVE_TARGET:
-		current_objective_panel.set_status(
-			"COMPLETE",
-			ThemeManager.STATUS_SUCCESS
-		)
-	else:
-		current_objective_panel.set_status(
-			"ACTIVE",
-			ThemeManager.STATUS_WARNING
-		)
 
 
 # -------------------------------------------------------------------
