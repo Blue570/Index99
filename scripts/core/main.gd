@@ -927,7 +927,7 @@ func refresh_background_jobs_bar() -> void:
 	)
 
 	var target_pages: int = (
-		CrawlerManager.CURRENT_JOB_TARGET_PAGES
+		CrawlerManager.get_current_job_target_pages()
 	)
 
 	var progress_percent: float = (

@@ -21,13 +21,42 @@ signal crawler_tick_completed(
 
 signal crawl_job_completed
 
+signal crawl_job_selection_changed(
+	job_id: StringName,
+	display_name: String,
+	target_pages: int
+)
+
 
 # -------------------------------------------------------------------
 # Temporary balance values
 # -------------------------------------------------------------------
 
 const TIMER_INTERVAL_SECONDS: float = 1.0
-const CURRENT_JOB_TARGET_PAGES: int = 100
+const DEFAULT_JOB_TARGET_PAGES: int = 100
+const CRAWL_JOB_BASIC: StringName = &"basic"
+const CRAWL_JOB_EXPANDED: StringName = &"expanded"
+const CRAWL_JOB_DEEP: StringName = &"deep"
+
+const CRAWL_JOBS: Dictionary = {
+	CRAWL_JOB_BASIC: {
+		"display_name": "Basic Crawl",
+		"target_pages": 100,
+		"required_tier": 1
+	},
+
+	CRAWL_JOB_EXPANDED: {
+		"display_name": "Expanded Crawl",
+		"target_pages": 250,
+		"required_tier": 2
+	},
+
+	CRAWL_JOB_DEEP: {
+		"display_name": "Deep Crawl",
+		"target_pages": 500,
+		"required_tier": 2
+	}
+}
 
 const REVENUE_PER_PAGE: float = 1.0
 const ACTIVE_USERS_PER_PAGE: float = 0.15
@@ -58,6 +87,14 @@ var server_load_timer: Timer
 
 var current_job_pages: int = 0
 
+var selected_job_id: StringName = (
+	CRAWL_JOB_BASIC
+)
+
+var current_job_target_pages: int = (
+	DEFAULT_JOB_TARGET_PAGES
+)
+
 var page_fraction_buffer: float = 0.0
 var active_user_fraction_buffer: float = 0.0
 
@@ -78,6 +115,14 @@ func _ready() -> void:
 
 	create_crawler_timer()
 	create_server_load_timer()
+	
+	if not ObjectiveManager.progression_tier_changed.is_connected(
+		_on_progression_tier_changed
+):
+		ObjectiveManager.progression_tier_changed.connect(
+			_on_progression_tier_changed
+	)
+	
 	
 func connect_research_signals() -> void:
 	if not ResearchManager.research_upgrade_level_changed.is_connected(
@@ -171,6 +216,27 @@ func get_effective_active_users_per_page() -> float:
 	return (
 		ACTIVE_USERS_PER_PAGE
 		* multiplier
+	)
+	
+func get_current_job_target_pages() -> int:
+	return current_job_target_pages
+	
+func get_selected_job_id() -> StringName:
+	return selected_job_id
+	
+func get_selected_job_display_name() -> String:
+	if not CRAWL_JOBS.has(selected_job_id):
+		return "Basic Crawl"
+
+	var job_data: Dictionary = (
+		CRAWL_JOBS[selected_job_id]
+	)
+
+	return str(
+		job_data.get(
+			"display_name",
+			"Basic Crawl"
+		)
 	)
 	
 # -------------------------------------------------------------------
@@ -309,7 +375,7 @@ func pause_crawler_for_overload() -> void:
 func is_current_job_complete() -> bool:
 	return (
 		current_job_pages
-		>= CURRENT_JOB_TARGET_PAGES
+		>= current_job_target_pages
 	)
 
 
@@ -346,7 +412,7 @@ func _on_crawler_timer_timeout() -> void:
 	)
 
 	var pages_remaining: int = maxi(
-		CURRENT_JOB_TARGET_PAGES - current_job_pages,
+		current_job_target_pages - current_job_pages,
 		0
 	)
 
@@ -395,7 +461,7 @@ func process_indexed_pages(pages_added: int) -> void:
 
 	emit_current_progress()
 
-	if current_job_pages >= CURRENT_JOB_TARGET_PAGES:
+	if current_job_pages >= current_job_target_pages:
 		complete_current_job()
 		
 func calculate_active_user_growth(
@@ -482,26 +548,97 @@ func emit_current_progress() -> void:
 
 	crawler_progress_changed.emit(
 		current_job_pages,
-		CURRENT_JOB_TARGET_PAGES,
+		current_job_target_pages,
 		progress_percent
 	)
 
 
 func get_progress_percent() -> float:
-	if CURRENT_JOB_TARGET_PAGES <= 0:
-		return 100.0
-
-	var progress_percent: float = (
-		float(current_job_pages)
-		/ float(CURRENT_JOB_TARGET_PAGES)
-		* 100.0
-	)
+	if current_job_target_pages <= 0:
+		return 0.0
 
 	return clampf(
-		progress_percent,
+		float(current_job_pages)
+		/ float(current_job_target_pages)
+		* 100.0,
 		0.0,
 		100.0
 	)
+	
+func get_job_target_pages(
+	job_id: StringName
+) -> int:
+	if not CRAWL_JOBS.has(job_id):
+		return DEFAULT_JOB_TARGET_PAGES
+
+	var job_data: Dictionary = (
+		CRAWL_JOBS[job_id]
+	)
+
+	return int(
+		job_data.get(
+			"target_pages",
+			DEFAULT_JOB_TARGET_PAGES
+		)
+	)
+	
+func is_crawl_job_unlocked(
+	job_id: StringName
+) -> bool:
+	if not CRAWL_JOBS.has(job_id):
+		return false
+
+	var job_data: Dictionary = (
+		CRAWL_JOBS[job_id]
+	)
+
+	var required_tier: int = int(
+		job_data.get(
+			"required_tier",
+			ObjectiveManager.PROGRESSION_TIER_1
+		)
+	)
+
+	return (
+		ObjectiveManager.get_current_progression_tier()
+		>= required_tier
+	)
+	
+func select_crawl_job(
+	job_id: StringName
+) -> bool:
+	if not CRAWL_JOBS.has(job_id):
+		return false
+
+	if not is_crawl_job_unlocked(job_id):
+		return false
+
+	if GameState.crawler_running:
+		return false
+
+	if (
+		current_job_pages > 0
+		and not is_current_job_complete()
+	):
+		return false
+
+	selected_job_id = job_id
+
+	current_job_target_pages = (
+		get_job_target_pages(job_id)
+	)
+
+	var job_data: Dictionary = (
+		CRAWL_JOBS[job_id]
+	)
+
+	crawl_job_selection_changed.emit(
+		selected_job_id,
+		str(job_data.get("display_name", "Crawl")),
+		current_job_target_pages
+	)
+
+	return true
 	
 # -------------------------------------------------------------------
 # Completion
@@ -509,7 +646,7 @@ func get_progress_percent() -> float:
 
 func complete_current_job() -> void:
 	current_job_pages = (
-		CURRENT_JOB_TARGET_PAGES
+		current_job_target_pages
 	)
 
 	crawler_timer.stop()
@@ -540,7 +677,7 @@ func restore_saved_state(
 	current_job_pages = clampi(
 		saved_job_pages,
 		0,
-		CURRENT_JOB_TARGET_PAGES
+		current_job_target_pages
 	)
 
 	page_fraction_buffer = clampf(
@@ -572,7 +709,7 @@ func restore_saved_state(
 		saved_running
 		and not paused_for_overload
 		and current_job_pages
-		< CURRENT_JOB_TARGET_PAGES
+		< current_job_target_pages
 	)
 
 	GameState.set_crawler_running(
@@ -610,4 +747,39 @@ func reset_crawler_state() -> void:
 	)
 
 	emit_current_progress()
+	
+#----------------------------------------------------------------------------------------TEST
+func _on_progression_tier_changed(
+	new_tier: int
+) -> void:
+	print(
+		"CrawlerManager received progression tier: ",
+		new_tier
+	)
+
+	print(
+		"Current Progression Tier: ",
+		ObjectiveManager.get_current_progression_tier()
+	)
+
+	print(
+		"Basic unlocked: ",
+		is_crawl_job_unlocked(
+			CRAWL_JOB_BASIC
+		)
+	)
+
+	print(
+		"Expanded unlocked: ",
+		is_crawl_job_unlocked(
+			CRAWL_JOB_EXPANDED
+		)
+	)
+
+	print(
+		"Deep unlocked: ",
+		is_crawl_job_unlocked(
+			CRAWL_JOB_DEEP
+		)
+	)
 	

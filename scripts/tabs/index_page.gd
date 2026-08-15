@@ -341,7 +341,7 @@ func refresh_index_page() -> void:
 
 	_on_crawler_progress_changed(
 		CrawlerManager.current_job_pages,
-		CrawlerManager.CURRENT_JOB_TARGET_PAGES,
+		CrawlerManager.get_current_job_target_pages(),
 		CrawlerManager.get_progress_percent()
 	)
 
@@ -470,7 +470,7 @@ func _on_crawler_progress_changed(
 func _on_crawl_job_completed() -> void:
 	_on_crawler_progress_changed(
 		CrawlerManager.current_job_pages,
-		CrawlerManager.CURRENT_JOB_TARGET_PAGES,
+		CrawlerManager.get_current_job_target_pages(),
 		CrawlerManager.get_progress_percent()
 	)
 
