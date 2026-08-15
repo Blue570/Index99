@@ -202,7 +202,10 @@ func build_save_data() -> Dictionary:
 				ObjectiveManager.current_event_progress,
 
 			"sequence_completed":
-				ObjectiveManager.sequence_completed
+				ObjectiveManager.sequence_completed,
+				
+			"current_progression_tier":
+				ObjectiveManager.current_progression_tier
 		}
 	}
 	
@@ -741,20 +744,35 @@ func restore_objective(
 
 		saved_index = 0
 
+	var saved_event_progress: int = read_int(
+		data,
+		"current_event_progress",
+		0
+	)
+
+	var saved_sequence_completed: bool = read_bool(
+		data,
+		"sequence_completed",
+		false
+	)
+
+	var default_progression_tier: int = (
+		ObjectiveManager.PROGRESSION_TIER_2
+		if saved_sequence_completed
+		else ObjectiveManager.PROGRESSION_TIER_1
+	)
+
+	var saved_progression_tier: int = read_int(
+		data,
+		"current_progression_tier",
+		default_progression_tier
+	)
+
 	ObjectiveManager.restore_saved_state(
 		saved_index,
-
-		read_int(
-			data,
-			"current_event_progress",
-			0
-		),
-
-		read_bool(
-			data,
-			"sequence_completed",
-			false
-		)
+		saved_event_progress,
+		saved_sequence_completed,
+		saved_progression_tier
 	)
 	
 # -------------------------------------------------------------------
@@ -897,7 +915,8 @@ func reset_to_new_game() -> bool:
 	ObjectiveManager.restore_saved_state(
 		0,
 		0,
-		false
+		false,
+		ObjectiveManager.PROGRESSION_TIER_1
 	)
 
 	CrawlerManager.apply_research_crawler_rate()

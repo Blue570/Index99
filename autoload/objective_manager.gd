@@ -25,6 +25,10 @@ signal objective_completed(
 
 signal all_objectives_completed
 
+signal progression_tier_changed(
+	new_tier: int
+)
+
 
 # -------------------------------------------------------------------
 # Objective identifiers
@@ -88,6 +92,14 @@ const OBJECTIVES: Array[Dictionary] = [
 	}
 ]
 
+# -------------------------------------------------------------------
+# Progression Tiers
+# -------------------------------------------------------------------
+
+const PROGRESSION_TIER_1: int = 1
+const PROGRESSION_TIER_2: int = 2
+const MAX_PROGRESSION_TIER: int = 2
+
 
 # -------------------------------------------------------------------
 # Objective state
@@ -100,6 +112,10 @@ var current_event_progress: int = 0
 var sequence_completed: bool = false
 
 var suppress_objective_evaluation: bool = false
+
+var current_progression_tier: int = (
+	PROGRESSION_TIER_1
+)
 
 
 # -------------------------------------------------------------------
@@ -351,6 +367,10 @@ func complete_current_objective() -> void:
 func finish_objective_sequence() -> void:
 	sequence_completed = true
 
+	set_progression_tier(
+		PROGRESSION_TIER_2
+	)
+
 	all_objectives_completed.emit()
 
 
@@ -425,6 +445,47 @@ func _on_research_upgrade_purchased(
 		return
 
 	evaluate_current_objective()
+	
+# -------------------------------------------------------------------
+# Progression Tiers
+# -------------------------------------------------------------------
+	
+func set_progression_tier(
+	new_tier: int
+) -> void:
+	var safe_tier: int = clampi(
+		new_tier,
+		PROGRESSION_TIER_1,
+		MAX_PROGRESSION_TIER
+	)
+
+	if safe_tier == current_progression_tier:
+		return
+
+	current_progression_tier = safe_tier
+
+	print(
+		"ObjectiveManager: Progression Tier changed to ",
+		current_progression_tier
+	)
+
+	progression_tier_changed.emit(
+		current_progression_tier
+	)
+	
+func is_progression_tier_unlocked(
+	tier: int
+) -> bool:
+	if tier < PROGRESSION_TIER_1:
+		return false
+
+	if tier > MAX_PROGRESSION_TIER:
+		return false
+
+	return current_progression_tier >= tier
+	
+func get_current_progression_tier() -> int:
+	return current_progression_tier
 
 
 # -------------------------------------------------------------------
@@ -449,7 +510,8 @@ func begin_save_restore() -> void:
 func restore_saved_state(
 	saved_objective_index: int,
 	saved_event_progress: int,
-	saved_sequence_completed: bool
+	saved_sequence_completed: bool,
+	saved_progression_tier: int
 ) -> void:
 	current_objective_index = clampi(
 		saved_objective_index,
@@ -464,8 +526,25 @@ func restore_saved_state(
 
 	sequence_completed = (
 		saved_sequence_completed
-		or current_objective_index
-		>= OBJECTIVES.size()
+		or current_objective_index >= OBJECTIVES.size()
+	)
+
+	var restored_tier: int = clampi(
+		saved_progression_tier,
+		PROGRESSION_TIER_1,
+		MAX_PROGRESSION_TIER
+	)
+
+	# A completed Tier 1 objective sequence always means
+	# Tier 2 has been unlocked.
+	if sequence_completed:
+		restored_tier = maxi(
+			restored_tier,
+			PROGRESSION_TIER_2
+		)
+
+	set_progression_tier(
+		restored_tier
 	)
 
 	suppress_objective_evaluation = false
