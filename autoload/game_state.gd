@@ -19,7 +19,7 @@ signal crawler_rate_changed(new_value: float)
 # Starting values
 # -------------------------------------------------------------------
 
-const STARTING_REVENUE: float = 5000.0 #--------------------------------------------------- CHANGE REVENUE AFTER TESTING
+const STARTING_REVENUE: float = 100000.0 #--------------------------------------------------- CHANGE REVENUE AFTER TESTING
 const STARTING_ACTIVE_USERS: int = 10
 const STARTING_INDEXED_PAGES: int = 0
 const STARTING_REPUTATION: float = 1.0

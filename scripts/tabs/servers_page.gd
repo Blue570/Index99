@@ -293,6 +293,8 @@ func _ready() -> void:
 
 	refresh_server_page()
 	refresh_server_upgrades()
+	
+	connect_progression_signals()
 
 
 func configure_progress_bars() -> void:
@@ -881,6 +883,10 @@ func refresh_improved_cooling_upgrade() -> void:
 		% ServerManager.MAX_UPGRADE_LEVEL
 	)
 
+	# ---------------------------------------------------------------
+	# STATE 1 — TRUE MAXIMUM
+	# ---------------------------------------------------------------
+
 	if is_maxed:
 		improved_cooling_cost_label.text = "—"
 
@@ -897,6 +903,29 @@ func refresh_improved_cooling_upgrade() -> void:
 		)
 
 		return
+
+	# ---------------------------------------------------------------
+	# STATE 2 — TIER 2 LOCKED
+	# ---------------------------------------------------------------
+
+	if not ServerManager.is_next_upgrade_level_unlocked(
+		current_level
+	):
+		improved_cooling_cost_label.text = "—"
+
+		improved_cooling_description_label.text = (
+			"Next Effect: Tier 2 Required"
+		)
+
+		configure_tier_locked_purchase_button(
+			improved_cooling_purchase_button
+		)
+
+		return
+
+	# ---------------------------------------------------------------
+	# STATE 3 — NORMAL PURCHASE
+	# ---------------------------------------------------------------
 
 	var upgrade_cost: float = (
 		ServerManager.get_cooling_speed_cost()
@@ -944,6 +973,10 @@ func refresh_efficient_crawling_upgrade() -> void:
 		% ServerManager.MAX_UPGRADE_LEVEL
 	)
 
+	# ---------------------------------------------------------------
+	# STATE 1 — TRUE MAXIMUM
+	# ---------------------------------------------------------------
+
 	if is_maxed:
 		efficient_crawling_cost_label.text = "—"
 
@@ -960,6 +993,29 @@ func refresh_efficient_crawling_upgrade() -> void:
 		)
 
 		return
+
+	# ---------------------------------------------------------------
+	# STATE 2 — TIER 2 LOCKED
+	# ---------------------------------------------------------------
+
+	if not ServerManager.is_next_upgrade_level_unlocked(
+		current_level
+	):
+		efficient_crawling_cost_label.text = "—"
+
+		efficient_crawling_description_label.text = (
+			"Next Effect: Tier 2 Required"
+		)
+
+		configure_tier_locked_purchase_button(
+			efficient_crawling_purchase_button
+		)
+
+		return
+
+	# ---------------------------------------------------------------
+	# STATE 3 — NORMAL PURCHASE
+	# ---------------------------------------------------------------
 
 	var upgrade_cost: float = (
 		ServerManager.get_crawler_efficiency_cost()
@@ -1003,6 +1059,10 @@ func refresh_load_buffering_upgrade() -> void:
 		% ServerManager.MAX_UPGRADE_LEVEL
 	)
 
+	# ---------------------------------------------------------------
+	# STATE 1 — TRUE MAXIMUM
+	# ---------------------------------------------------------------
+
 	if is_maxed:
 		load_buffering_cost_label.text = "—"
 
@@ -1019,6 +1079,29 @@ func refresh_load_buffering_upgrade() -> void:
 		)
 
 		return
+
+	# ---------------------------------------------------------------
+	# STATE 2 — TIER 2 LOCKED
+	# ---------------------------------------------------------------
+
+	if not ServerManager.is_next_upgrade_level_unlocked(
+		current_level
+	):
+		load_buffering_cost_label.text = "—"
+
+		load_buffering_description_label.text = (
+			"Next Effect: Tier 2 Required"
+		)
+
+		configure_tier_locked_purchase_button(
+			load_buffering_purchase_button
+		)
+
+		return
+
+	# ---------------------------------------------------------------
+	# STATE 3 — NORMAL PURCHASE
+	# ---------------------------------------------------------------
 
 	var upgrade_cost: float = (
 		ServerManager.get_maximum_safe_load_cost()
@@ -1075,6 +1158,16 @@ func configure_purchase_button(
 			]
 		)
 		
+func configure_tier_locked_purchase_button(
+	purchase_button: Button
+) -> void:
+	purchase_button.text = "TIER 2 LOCKED"
+	purchase_button.disabled = true
+	purchase_button.tooltip_text = (
+		"Complete the initial objectives to unlock "
+		+ "Tier 2 server upgrades."
+	)		
+
 func configure_maxed_purchase_button(
 	purchase_button: Button
 ) -> void:
@@ -1121,3 +1214,17 @@ func format_currency(
 		value,
 		0.0
 	)
+	
+func connect_progression_signals() -> void:
+	if not ObjectiveManager.progression_tier_changed.is_connected(
+		_on_progression_tier_changed
+	):
+		ObjectiveManager.progression_tier_changed.connect(
+			_on_progression_tier_changed
+		)
+		
+func _on_progression_tier_changed(
+	_new_tier: int
+) -> void:
+	refresh_server_page()
+	refresh_server_upgrades()

@@ -23,7 +23,8 @@ signal maximum_safe_load_level_changed(
 # -------------------------------------------------------------------
 
 const MIN_UPGRADE_LEVEL: int = 0
-const MAX_UPGRADE_LEVEL: int = 5
+const TIER_1_MAX_UPGRADE_LEVEL: int = 5
+const MAX_UPGRADE_LEVEL: int = 10
 
 
 # -------------------------------------------------------------------
@@ -44,7 +45,12 @@ const COOLING_SPEED_COSTS: Array[float] = [
 	225.0,
 	400.0,
 	650.0,
-	1000.0
+	1000.0,
+	1500.0,
+	2200.0,
+	3100.0,
+	4300.0,
+	5800.0
 ]
 
 const CRAWLER_EFFICIENCY_COSTS: Array[float] = [
@@ -52,7 +58,12 @@ const CRAWLER_EFFICIENCY_COSTS: Array[float] = [
 	275.0,
 	500.0,
 	800.0,
-	1200.0
+	1200.0,
+	1800.0,
+	2600.0,
+	3600.0,
+	4900.0,
+	6500.0
 ]
 
 const MAXIMUM_SAFE_LOAD_COSTS: Array[float] = [
@@ -60,7 +71,12 @@ const MAXIMUM_SAFE_LOAD_COSTS: Array[float] = [
 	325.0,
 	600.0,
 	950.0,
-	1400.0
+	1400.0,
+	2100.0,
+	3000.0,
+	4200.0,
+	5600.0,
+	7400.0
 ]
 
 
@@ -326,7 +342,17 @@ func spend_revenue(
 # -------------------------------------------------------------------
 
 func purchase_cooling_speed() -> bool:
-	if is_cooling_speed_maxed():
+	
+	if cooling_speed_level >= MAX_UPGRADE_LEVEL:
+		return false
+		
+	var next_level: int = (
+		cooling_speed_level + 1
+	)
+
+	if not is_upgrade_level_unlocked(
+		next_level
+	):
 		return false
 
 	var upgrade_cost: float = (
@@ -353,7 +379,17 @@ func purchase_cooling_speed() -> bool:
 
 
 func purchase_crawler_efficiency() -> bool:
-	if is_crawler_efficiency_maxed():
+	
+	if crawler_efficiency_level >= MAX_UPGRADE_LEVEL:
+		return false
+
+	var next_level: int = (
+		crawler_efficiency_level + 1
+	)
+
+	if not is_upgrade_level_unlocked(
+		next_level
+	):
 		return false
 
 	var upgrade_cost: float = (
@@ -380,7 +416,17 @@ func purchase_crawler_efficiency() -> bool:
 
 
 func purchase_maximum_safe_load() -> bool:
-	if is_maximum_safe_load_maxed():
+	
+	if maximum_safe_load_level >= MAX_UPGRADE_LEVEL:
+		return false
+
+	var next_level: int = (
+		maximum_safe_load_level + 1
+	)
+
+	if not is_upgrade_level_unlocked(
+		next_level
+	):
 		return false
 
 	var upgrade_cost: float = (
@@ -404,3 +450,30 @@ func purchase_maximum_safe_load() -> bool:
 	)
 
 	return true
+	
+func is_upgrade_level_unlocked(
+	level: int
+) -> bool:
+	if level <= 0:
+		return false
+
+	if level > MAX_UPGRADE_LEVEL:
+		return false
+
+	if level <= TIER_1_MAX_UPGRADE_LEVEL:
+		return true
+
+	return ObjectiveManager.is_progression_tier_unlocked(
+		ObjectiveManager.PROGRESSION_TIER_2
+	)
+	
+func is_next_upgrade_level_unlocked(
+	current_level: int
+) -> bool:
+	var next_level: int = (
+		current_level + 1
+	)
+
+	return is_upgrade_level_unlocked(
+		next_level
+	)
