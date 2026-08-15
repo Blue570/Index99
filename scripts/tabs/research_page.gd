@@ -276,6 +276,7 @@ extends PanelContainer
 	+ "PanelLayout/ContentPanel/"
 	+ "ContentMargin/ContentContainer/"
 	+ "CompletedResearchLayout/"
+	+ "CompletedResearchScrollContainer/"
 	+ "CompletedResearchEntries"
 ) as VBoxContainer
 
@@ -285,6 +286,7 @@ extends PanelContainer
 	+ "PanelLayout/ContentPanel/"
 	+ "ContentMargin/ContentContainer/"
 	+ "CompletedResearchLayout/"
+	+ "CompletedResearchScrollContainer/"
 	+ "CompletedResearchEntries/"
 	+ "CompletedResearchEmptyLabel"
 ) as Label

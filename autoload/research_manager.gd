@@ -52,7 +52,10 @@ const UPGRADE_AUDIENCE_DISCOVERY: StringName = (
 # -------------------------------------------------------------------
 
 const MIN_UPGRADE_LEVEL: int = 0
-const MAX_UPGRADE_LEVEL: int = 3
+
+const TIER_1_MAX_UPGRADE_LEVEL: int = 3
+
+const MAX_UPGRADE_LEVEL: int = 6
 
 
 # -------------------------------------------------------------------
@@ -77,25 +80,37 @@ const UPGRADE_NAMES: Dictionary = {
 # Position 0 = Level 1
 # Position 1 = Level 2
 # Position 2 = Level 3
+# Position 3 = Level 4
+# Position 4 = Level 5
+# Position 5 = Level 6
 # -------------------------------------------------------------------
 
 const UPGRADE_COSTS: Dictionary = {
 	UPGRADE_CRAWLER_OPTIMIZATION: [
 		10.0,
 		25.0,
-		50.0
+		50.0,
+		90.0,
+		150.0,
+		225.0
 	],
 
 	UPGRADE_SEARCH_MONETIZATION: [
 		15.0,
 		30.0,
-		60.0
+		60.0,
+		110.0,
+		180.0,
+		275.0
 	],
 
 	UPGRADE_AUDIENCE_DISCOVERY: [
 		15.0,
 		30.0,
-		60.0
+		60.0,
+		110.0,
+		180.0,
+		275.0
 	]
 }
 
@@ -272,7 +287,7 @@ func set_research_points(
 ) -> void:
 	var safe_points: float = maxf(
 		new_points,
-		0.0
+		1000.0 #-----------------------------------------------------------------------------TESTING
 	)
 
 	if is_equal_approx(
@@ -371,6 +386,40 @@ func is_upgrade_unlocked(
 			false
 		)
 	)
+	
+func is_upgrade_level_unlocked(
+	level: int
+) -> bool:
+	if level <= MIN_UPGRADE_LEVEL:
+		return false
+
+	if level > MAX_UPGRADE_LEVEL:
+		return false
+
+	if level <= TIER_1_MAX_UPGRADE_LEVEL:
+		return true
+
+	return ObjectiveManager.is_progression_tier_unlocked(
+		ObjectiveManager.PROGRESSION_TIER_2
+	)
+	
+func is_next_upgrade_level_unlocked(
+	upgrade_id: StringName
+) -> bool:
+	if not upgrade_levels.has(upgrade_id):
+		return false
+
+	var current_level: int = (
+		get_upgrade_level(upgrade_id)
+	)
+
+	var next_level: int = (
+		current_level + 1
+	)
+
+	return is_upgrade_level_unlocked(
+		next_level
+	)
 
 
 func is_upgrade_maxed(
@@ -389,22 +438,39 @@ func is_upgrade_maxed(
 func get_upgrade_cost(
 	upgrade_id: StringName
 ) -> float:
-	if not is_upgrade_unlocked(upgrade_id):
+	if not is_upgrade_unlocked(
+		upgrade_id
+	):
 		return -1.0
 
-	if is_upgrade_maxed(upgrade_id):
+	if is_upgrade_maxed(
+		upgrade_id
+	):
 		return -1.0
 
-	if not UPGRADE_COSTS.has(upgrade_id):
+	if not UPGRADE_COSTS.has(
+		upgrade_id
+	):
+		return -1.0
+
+	var current_level: int = (
+		get_upgrade_level(
+			upgrade_id
+		)
+	)
+
+	var next_level: int = (
+		current_level + 1
+	)
+
+	if not is_upgrade_level_unlocked(
+		next_level
+	):
 		return -1.0
 
 	var costs: Array = UPGRADE_COSTS[
 		upgrade_id
 	]
-
-	var current_level: int = (
-		get_upgrade_level(upgrade_id)
-	)
 
 	if current_level >= costs.size():
 		return -1.0
@@ -487,19 +553,34 @@ func set_upgrade_level(
 func increase_upgrade_level(
 	upgrade_id: StringName
 ) -> bool:
-	if not is_upgrade_unlocked(upgrade_id):
+	if not is_upgrade_unlocked(
+		upgrade_id
+	):
 		return false
 
-	if is_upgrade_maxed(upgrade_id):
+	if is_upgrade_maxed(
+		upgrade_id
+	):
 		return false
 
 	var current_level: int = (
-		get_upgrade_level(upgrade_id)
+		get_upgrade_level(
+			upgrade_id
+		)
 	)
+
+	var next_level: int = (
+		current_level + 1
+	)
+
+	if not is_upgrade_level_unlocked(
+		next_level
+	):
+		return false
 
 	set_upgrade_level(
 		upgrade_id,
-		current_level + 1
+		next_level
 	)
 
 	return true
@@ -514,6 +595,21 @@ func purchase_upgrade(
 
 	if is_upgrade_maxed(
 		upgrade_id
+	):
+		return false
+		
+	var current_level: int = (
+		get_upgrade_level(
+			upgrade_id
+		)
+	)
+
+	var next_level: int = (
+		current_level + 1
+	)
+
+	if not is_upgrade_level_unlocked(
+		next_level
 	):
 		return false
 

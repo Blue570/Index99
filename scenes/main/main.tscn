@@ -819,6 +819,7 @@ text = "0 / 100"
 horizontal_alignment = 2
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2066,7 +2067,6 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="ResearchPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=1928910644]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2551,14 +2551,16 @@ layout_mode = 2
 text = "0"
 horizontal_alignment = 2
 
-[node name="CompletedResearchSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/CompletedResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CompletedResearchLayout" unique_id=675330949]
-layout_mode = 2
-
-[node name="CompletedResearchEntries" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/CompletedResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CompletedResearchLayout" unique_id=305284963]
+[node name="CompletedResearchScrollContainer" type="ScrollContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/CompletedResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CompletedResearchLayout" unique_id=873489595]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
-[node name="CompletedResearchEmptyLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/CompletedResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CompletedResearchLayout/CompletedResearchEntries" unique_id=1265477715]
+[node name="CompletedResearchEntries" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/CompletedResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CompletedResearchLayout/CompletedResearchScrollContainer" unique_id=305284963]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CompletedResearchEmptyLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/CompletedResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CompletedResearchLayout/CompletedResearchScrollContainer/CompletedResearchEntries" unique_id=1265477715]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.33333334, 0.33333334, 0.33333334, 1)
@@ -2566,6 +2568,9 @@ text = "No research projects have been completed."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
+
+[node name="CompletedResearchSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/CompletedResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CompletedResearchLayout" unique_id=675330949]
+layout_mode = 2
 
 [node name="BackgroundJobsBar" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=1989258494]
 custom_minimum_size = Vector2(0, 48)
