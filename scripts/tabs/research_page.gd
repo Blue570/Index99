@@ -298,6 +298,7 @@ extends PanelContainer
 
 func _ready() -> void:
 	connect_research_signals()
+	connect_progression_signals()
 	connect_research_purchase_buttons()
 
 	refresh_research_points()
@@ -320,6 +321,19 @@ func connect_research_signals() -> void:
 		ResearchManager.research_upgrade_level_changed.connect(
 			_on_research_upgrade_level_changed
 		)
+		
+func connect_progression_signals() -> void:
+	if not ObjectiveManager.progression_tier_changed.is_connected(
+		_on_progression_tier_changed
+	):
+		ObjectiveManager.progression_tier_changed.connect(
+			_on_progression_tier_changed
+		)
+		
+func _on_progression_tier_changed(
+	_new_tier: int
+) -> void:
+	refresh_research_upgrades()
 		
 func connect_research_purchase_buttons() -> void:
 	if not crawler_optimization_purchase_button.pressed.is_connected(
@@ -381,6 +395,10 @@ func refresh_research_purchase_button(
 	upgrade_id: StringName,
 	purchase_button: Button
 ) -> void:
+	# ---------------------------------------------------------------
+	# STATE 1 — RESEARCH TYPE LOCKED
+	# ---------------------------------------------------------------
+
 	if not ResearchManager.is_upgrade_unlocked(
 		upgrade_id
 	):
@@ -388,12 +406,31 @@ func refresh_research_purchase_button(
 		purchase_button.disabled = true
 		return
 
+	# ---------------------------------------------------------------
+	# STATE 2 — TRUE MAXIMUM
+	# ---------------------------------------------------------------
+
 	if ResearchManager.is_upgrade_maxed(
 		upgrade_id
 	):
 		purchase_button.text = "MAX"
 		purchase_button.disabled = true
 		return
+
+	# ---------------------------------------------------------------
+	# STATE 3 — NEXT LEVEL LOCKED BY PROGRESSION
+	# ---------------------------------------------------------------
+
+	if not ResearchManager.is_next_upgrade_level_unlocked(
+		upgrade_id
+	):
+		purchase_button.text = "TIER 2 LOCKED"
+		purchase_button.disabled = true
+		return
+
+	# ---------------------------------------------------------------
+	# STATE 4 — NORMAL RESEARCH
+	# ---------------------------------------------------------------
 
 	purchase_button.text = "Research"
 
@@ -479,6 +516,8 @@ func refresh_research_upgrades() -> void:
 	
 func refresh_available_research_status() -> void:
 	var available_count: int = 0
+	var tier_locked_count: int = 0
+	var maxed_count: int = 0
 
 	var upgrade_ids: Array[StringName] = [
 		ResearchManager.UPGRADE_CRAWLER_OPTIMIZATION,
@@ -487,17 +526,42 @@ func refresh_available_research_status() -> void:
 	]
 
 	for upgrade_id: StringName in upgrade_ids:
-		if (
-			ResearchManager.is_upgrade_unlocked(
-				upgrade_id
-			)
-			and not ResearchManager.is_upgrade_maxed(
-				upgrade_id
-			)
+		if not ResearchManager.is_upgrade_unlocked(
+			upgrade_id
 		):
-			available_count += 1
+			continue
 
-	if available_count <= 0:
+		if ResearchManager.is_upgrade_maxed(
+			upgrade_id
+		):
+			maxed_count += 1
+			continue
+
+		if not ResearchManager.is_next_upgrade_level_unlocked(
+			upgrade_id
+		):
+			tier_locked_count += 1
+			continue
+
+		available_count += 1
+
+	if available_count > 0:
+		available_research_panel.set_status(
+			"%d AVAILABLE" % available_count,
+			ThemeManager.STATUS_INFORMATION
+		)
+
+		return
+
+	if tier_locked_count > 0:
+		available_research_panel.set_status(
+			"TIER 2 LOCKED",
+			ThemeManager.STATUS_WARNING
+		)
+
+		return
+
+	if maxed_count >= upgrade_ids.size():
 		available_research_panel.set_status(
 			"ALL COMPLETE",
 			ThemeManager.STATUS_SUCCESS
@@ -506,8 +570,8 @@ func refresh_available_research_status() -> void:
 		return
 
 	available_research_panel.set_status(
-		"%d AVAILABLE" % available_count,
-		ThemeManager.STATUS_INFORMATION
+		"NO RESEARCH",
+		ThemeManager.TEXT_DISABLED
 	)
 	
 func refresh_completed_research() -> void:
@@ -707,6 +771,17 @@ func refresh_crawler_optimization() -> void:
 		)
 
 		return
+		
+	if not ResearchManager.is_next_upgrade_level_unlocked(
+		upgrade_id
+	):
+		crawler_optimization_cost_label.text = "—"
+
+		crawler_optimization_next_effect_label.text = (
+			"Next Effect: Tier 2 Required"
+		)
+
+		return
 
 	var upgrade_cost: float = (
 		ResearchManager.get_upgrade_cost(
@@ -777,6 +852,17 @@ func refresh_search_monetization() -> void:
 		)
 
 		return
+		
+	if not ResearchManager.is_next_upgrade_level_unlocked(
+		upgrade_id
+	):
+		search_monetization_cost_label.text = "—"
+
+		search_monetization_next_effect_label.text = (
+			"Next Effect: Tier 2 Required"
+		)
+
+		return
 
 	var upgrade_cost: float = (
 		ResearchManager.get_upgrade_cost(
@@ -844,6 +930,17 @@ func refresh_audience_discovery() -> void:
 
 		audience_discovery_next_effect_label.text = (
 			"Next Effect: MAXIMUM LEVEL"
+		)
+
+		return
+		
+	if not ResearchManager.is_next_upgrade_level_unlocked(
+		upgrade_id
+	):
+		audience_discovery_cost_label.text = "—"
+
+		audience_discovery_next_effect_label.text = (
+			"Next Effect: Tier 2 Required"
 		)
 
 		return
