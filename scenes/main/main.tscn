@@ -819,7 +819,6 @@ text = "0 / 100"
 horizontal_alignment = 2
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -950,6 +949,35 @@ layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
 text = "Pause Crawler"
+
+[node name="CrawlJobSelectionContainer" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(256051415, 287423228) index="1" unique_id=773536557]
+layout_mode = 2
+
+[node name="CrawlJobSelectionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer" unique_id=481396843]
+layout_mode = 2
+text = "CRAWL JOB"
+
+[node name="CrawlJobSelectionButtonRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer" unique_id=496584244]
+layout_mode = 2
+
+[node name="BasicCrawlButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer/CrawlJobSelectionButtonRow" unique_id=969069115]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Basic Crawl"
+
+[node name="ExpandedCrawlButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer/CrawlJobSelectionButtonRow" unique_id=653287964]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Expanded Crawl"
+
+[node name="DeepCrawlButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer/CrawlJobSelectionButtonRow" unique_id=1539555892]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Deep Crawl"
+
+[node name="CrawlJobSelectionInfoLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer" unique_id=579883207]
+layout_mode = 2
+text = "Basic Crawl | Target: 100 Pages"
 
 [node name="CurrentCrawlJobPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn" unique_id=1953031972 instance=ExtResource("4_l3cfh")]
 layout_mode = 2
@@ -2038,6 +2066,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="ResearchPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=1928910644]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

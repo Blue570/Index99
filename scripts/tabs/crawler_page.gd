@@ -138,6 +138,38 @@ extends PanelContainer
 	+ "StatisticsServerLoadValueLabel"
 ) as Label
 
+@onready var basic_crawl_button: Button = (
+	find_child(
+		"BasicCrawlButton",
+		true,
+		false
+	) as Button
+)
+
+@onready var expanded_crawl_button: Button = (
+	find_child(
+		"ExpandedCrawlButton",
+		true,
+		false
+	) as Button
+)
+
+@onready var deep_crawl_button: Button = (
+	find_child(
+		"DeepCrawlButton",
+		true,
+		false
+	) as Button
+)
+
+@onready var crawl_job_selection_info_label: Label = (
+	find_child(
+		"CrawlJobSelectionInfoLabel",
+		true,
+		false
+	) as Label
+)
+
 
 # -------------------------------------------------------------------
 # Setup
@@ -149,6 +181,7 @@ func _ready() -> void:
 	connect_crawler_signals()
 	connect_game_state_signals()
 	refresh_crawler_page()
+	connect_progression_signals()
 
 
 func setup_progress_bar() -> void:
@@ -172,6 +205,180 @@ func connect_buttons() -> void:
 		pause_crawler_button.pressed.connect(
 			_on_pause_crawler_button_pressed
 		)
+		
+	if not basic_crawl_button.pressed.is_connected(
+		_on_basic_crawl_button_pressed
+	):
+		basic_crawl_button.pressed.connect(
+			_on_basic_crawl_button_pressed
+	)
+
+	if not expanded_crawl_button.pressed.is_connected(
+		_on_expanded_crawl_button_pressed
+	):
+		expanded_crawl_button.pressed.connect(
+			_on_expanded_crawl_button_pressed
+	)
+
+	if not deep_crawl_button.pressed.is_connected(
+		_on_deep_crawl_button_pressed
+	):
+		deep_crawl_button.pressed.connect(
+			_on_deep_crawl_button_pressed
+	)
+	
+func _on_basic_crawl_button_pressed() -> void:
+	var selection_changed: bool = (
+		CrawlerManager.select_crawl_job(
+			CrawlerManager.CRAWL_JOB_BASIC
+		)
+	)
+
+	if selection_changed:
+		refresh_crawler_page()
+
+
+func _on_expanded_crawl_button_pressed() -> void:
+	var selection_changed: bool = (
+		CrawlerManager.select_crawl_job(
+			CrawlerManager.CRAWL_JOB_EXPANDED
+		)
+	)
+
+	if selection_changed:
+		refresh_crawler_page()
+
+
+func _on_deep_crawl_button_pressed() -> void:
+	var selection_changed: bool = (
+		CrawlerManager.select_crawl_job(
+			CrawlerManager.CRAWL_JOB_DEEP
+		)
+	)
+
+	if selection_changed:
+		refresh_crawler_page()
+		
+func refresh_crawl_job_selection() -> void:
+	var selected_job_id: StringName = (
+		CrawlerManager.get_selected_job_id()
+	)
+
+	var current_target: int = (
+		CrawlerManager.get_current_job_target_pages()
+	)
+
+	var selected_name: String = (
+		CrawlerManager.get_selected_job_display_name()
+	)
+
+	crawl_job_selection_info_label.text = (
+		"Selected: %s | Target: %d pages"
+		% [
+			selected_name,
+			current_target
+		]
+	)
+
+	refresh_crawl_job_button(
+		basic_crawl_button,
+		CrawlerManager.CRAWL_JOB_BASIC,
+		selected_job_id
+	)
+
+	refresh_crawl_job_button(
+		expanded_crawl_button,
+		CrawlerManager.CRAWL_JOB_EXPANDED,
+		selected_job_id
+	)
+
+	refresh_crawl_job_button(
+		deep_crawl_button,
+		CrawlerManager.CRAWL_JOB_DEEP,
+		selected_job_id
+	)
+	
+func connect_progression_signals() -> void:
+	if not ObjectiveManager.progression_tier_changed.is_connected(
+		_on_progression_tier_changed
+	):
+		ObjectiveManager.progression_tier_changed.connect(
+			_on_progression_tier_changed
+	)
+	
+func _on_progression_tier_changed(
+	_new_tier: int
+) -> void:
+	refresh_crawl_job_selection()
+	
+func refresh_crawl_job_button(
+	button: Button,
+	job_id: StringName,
+	selected_job_id: StringName
+) -> void:
+	var unlocked: bool = (
+		CrawlerManager.is_crawl_job_unlocked(
+			job_id
+		)
+	)
+
+	var selected: bool = (
+		job_id == selected_job_id
+	)
+
+	var job_name: String = (
+		CrawlerManager.get_job_display_name(
+			job_id
+		)
+	)
+
+	var job_target: int = (
+		CrawlerManager.get_job_target_pages(
+			job_id
+		)
+	)
+
+	var selection_locked: bool = (
+		GameState.crawler_running
+		or (
+			CrawlerManager.current_job_pages > 0
+			and not CrawlerManager.is_current_job_complete()
+		)
+	)
+
+	if not unlocked:
+		button.text = (
+			"%s (%d) - LOCKED"
+			% [
+				job_name,
+				job_target
+			]
+		)
+
+		button.disabled = true
+		return
+
+	if selected:
+		button.text = (
+			"%s (%d) - SELECTED"
+			% [
+				job_name,
+				job_target
+			]
+		)
+
+		button.disabled = true
+		return
+
+	button.text = (
+		"%s (%d)"
+		% [
+			job_name,
+			job_target
+		]
+	)
+
+	button.disabled = selection_locked
 
 
 func connect_crawler_signals() -> void:
@@ -246,6 +453,8 @@ func refresh_crawler_page() -> void:
 	update_crawler_state(
 		GameState.crawler_running
 	)
+	
+	refresh_crawl_job_selection()
 
 
 # -------------------------------------------------------------------
@@ -334,6 +543,8 @@ func update_crawler_state(
 
 	else:
 		show_ready_state()
+		
+	refresh_crawl_job_selection()
 
 
 func show_ready_state() -> void:

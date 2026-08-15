@@ -616,11 +616,20 @@ func select_crawl_job(
 	if GameState.crawler_running:
 		return false
 
+	var previous_job_complete: bool = (
+		is_current_job_complete()
+	)
+
 	if (
 		current_job_pages > 0
-		and not is_current_job_complete()
+		and not previous_job_complete
 	):
 		return false
+
+	# Selecting the already-selected job does not
+	# need to change anything.
+	if job_id == selected_job_id:
+		return true
 
 	selected_job_id = job_id
 
@@ -628,15 +637,28 @@ func select_crawl_job(
 		get_job_target_pages(job_id)
 	)
 
+	# If the previous crawl was already complete,
+	# switching job types prepares a fresh job.
+	if previous_job_complete:
+		current_job_pages = 0
+		paused_for_overload = false
+
 	var job_data: Dictionary = (
 		CRAWL_JOBS[job_id]
 	)
 
 	crawl_job_selection_changed.emit(
 		selected_job_id,
-		str(job_data.get("display_name", "Crawl")),
+		str(
+			job_data.get(
+				"display_name",
+				"Crawl"
+			)
+		),
 		current_job_target_pages
 	)
+
+	emit_current_progress()
 
 	return true
 	
@@ -668,12 +690,25 @@ func complete_current_job() -> void:
 # -------------------------------------------------------------------
 
 func restore_saved_state(
+	
 	saved_job_pages: int,
 	saved_page_fraction: float,
 	saved_active_user_fraction: float,
 	saved_running: bool,
-	saved_paused_for_overload: bool
+	saved_paused_for_overload: bool,
+	saved_job_id: StringName
 ) -> void:
+	if CRAWL_JOBS.has(saved_job_id):
+		selected_job_id = saved_job_id
+	else:
+		selected_job_id = CRAWL_JOB_BASIC
+		
+	current_job_target_pages = (
+		get_job_target_pages(
+			selected_job_id
+		)
+	)
+	
 	current_job_pages = clampi(
 		saved_job_pages,
 		0,
@@ -737,6 +772,12 @@ func reset_crawler_state() -> void:
 	active_user_fraction_buffer = 0.0
 
 	paused_for_overload = false
+	
+	selected_job_id = CRAWL_JOB_BASIC
+
+	current_job_target_pages = (
+		DEFAULT_JOB_TARGET_PAGES
+	)
 
 	GameState.set_crawler_running(
 		false
@@ -747,6 +788,23 @@ func reset_crawler_state() -> void:
 	)
 
 	emit_current_progress()
+	
+func get_job_display_name(
+	job_id: StringName
+) -> String:
+	if not CRAWL_JOBS.has(job_id):
+		return "Unknown Crawl"
+
+	var job_data: Dictionary = (
+		CRAWL_JOBS[job_id]
+	)
+
+	return str(
+		job_data.get(
+			"display_name",
+			"Unknown Crawl"
+		)
+	)
 	
 #----------------------------------------------------------------------------------------TEST
 func _on_progression_tier_changed(

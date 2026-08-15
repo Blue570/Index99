@@ -139,7 +139,12 @@ func build_save_data() -> Dictionary:
 				GameState.crawler_running,
 
 			"paused_for_overload":
-				CrawlerManager.paused_for_overload
+				CrawlerManager.paused_for_overload,
+				
+			"selected_job_id":
+				str(
+				CrawlerManager.get_selected_job_id()
+			)
 		},
 
 		"server_upgrades": {
@@ -207,6 +212,7 @@ func build_save_data() -> Dictionary:
 			"current_progression_tier":
 				ObjectiveManager.current_progression_tier
 		}
+		
 	}
 	
 # -------------------------------------------------------------------
@@ -691,36 +697,57 @@ func restore_game_state(
 func restore_crawler(
 	data: Dictionary
 ) -> void:
-	CrawlerManager.restore_saved_state(
-		read_int(
-			data,
-			"current_job_pages",
-			CrawlerManager.current_job_pages
-		),
+	var saved_job_pages: int = read_int(
+		data,
+		"current_job_pages",
+		0
+	)
 
-		read_float(
-			data,
-			"page_fraction_buffer",
-			CrawlerManager.page_fraction_buffer
-		),
+	var saved_page_fraction: float = read_float(
+		data,
+		"page_fraction_buffer",
+		0.0
+	)
 
-		read_float(
-			data,
-			"active_user_fraction_buffer",
-			CrawlerManager.active_user_fraction_buffer
-		),
+	var saved_active_user_fraction: float = read_float(
+		data,
+		"active_user_fraction_buffer",
+		0.0
+	)
 
-		read_bool(
-			data,
-			"running",
-			GameState.crawler_running
-		),
+	var saved_running: bool = read_bool(
+		data,
+		"crawler_running",
+		false
+	)
 
-		read_bool(
-			data,
-			"paused_for_overload",
-			CrawlerManager.paused_for_overload
+	var saved_paused_for_overload: bool = read_bool(
+		data,
+		"paused_for_overload",
+		false
+	)
+
+	var saved_job_id: StringName = StringName(
+		str(
+			data.get(
+				"selected_job_id",
+				"basic"
+			)
 		)
+	)
+	
+	print(
+	"LOADING CRAWL JOB: ",
+	saved_job_id
+	)
+
+	CrawlerManager.restore_saved_state(
+		saved_job_pages,
+		saved_page_fraction,
+		saved_active_user_fraction,
+		saved_running,
+		saved_paused_for_overload,
+		saved_job_id
 	)
 	
 func restore_objective(
