@@ -54,6 +54,32 @@ const OBJECTIVE_INDEX_500_PAGES: StringName = (
 	&"index_500_pages"
 )
 
+const OBJECTIVE_COMPLETE_EXPANDED_CRAWL: StringName = (
+	&"complete_expanded_crawl"
+)
+
+const OBJECTIVE_INDEX_1000_PAGES: StringName = (
+	&"index_1000_pages"
+)
+
+const OBJECTIVE_REACH_100_USERS: StringName = (
+	&"reach_100_active_users"
+)
+
+const OBJECTIVE_PURCHASE_TIER_2_SERVER_UPGRADE: StringName = (
+	&"purchase_tier_2_server_upgrade"
+)
+
+const OBJECTIVE_COMPLETE_TIER_2_RESEARCH: StringName = (
+	&"complete_tier_2_research"
+)
+
+const OBJECTIVE_INDEX_2000_PAGES: StringName = (
+	&"index_2000_pages"
+)
+
+const TIER_1_OBJECTIVE_COUNT: int = 5
+
 
 # -------------------------------------------------------------------
 # Objective sequence
@@ -89,6 +115,42 @@ const OBJECTIVES: Array[Dictionary] = [
 		"title": "Index 500 Pages",
 		"description": "Grow the search index to 500 total pages.",
 		"target": 500
+	},
+	{
+		"id": OBJECTIVE_COMPLETE_EXPANDED_CRAWL,
+		"title": "Complete an Expanded Crawl",
+		"description": "Complete one 250-page Expanded Crawl.",
+		"target": 1
+	},
+	{
+		"id": OBJECTIVE_INDEX_1000_PAGES,
+		"title": "Index 1,000 Pages",
+		"description": "Grow the search index to 1,000 total pages.",
+		"target": 1000
+	},
+	{
+		"id": OBJECTIVE_REACH_100_USERS,
+		"title": "Reach 100 Active Users",
+		"description": "Build an audience of 100 active users.",
+		"target": 100
+	},
+	{
+		"id": OBJECTIVE_PURCHASE_TIER_2_SERVER_UPGRADE,
+		"title": "Purchase a Tier 2 Server Upgrade",
+		"description": "Reach Level 6 on any server upgrade.",
+		"target": 1
+	},
+	{
+		"id": OBJECTIVE_COMPLETE_TIER_2_RESEARCH,
+		"title": "Complete Tier 2 Research",
+		"description": "Reach Level 4 on any research upgrade.",
+		"target": 1
+	},
+	{
+		"id": OBJECTIVE_INDEX_2000_PAGES,
+		"title": "Index 2,000 Pages",
+		"description": "Grow the search index to 2,000 total pages.",
+		"target": 2000
 	}
 ]
 
@@ -165,6 +227,13 @@ func connect_objective_signals() -> void:
 	):
 		ResearchManager.research_upgrade_purchased.connect(
 			_on_research_upgrade_purchased
+		)
+	
+	if not CrawlerManager.crawl_job_completed.is_connected(
+		_on_crawl_job_completed
+	):
+			CrawlerManager.crawl_job_completed.connect(
+				_on_crawl_job_completed
 		)
 
 
@@ -296,7 +365,51 @@ func get_current_progress() -> int:
 		OBJECTIVE_INDEX_500_PAGES:
 			return GameState.indexed_pages
 
+		OBJECTIVE_COMPLETE_EXPANDED_CRAWL:
+			return current_event_progress
+
+		OBJECTIVE_INDEX_1000_PAGES:
+			return GameState.indexed_pages
+
+		OBJECTIVE_REACH_100_USERS:
+			return GameState.active_users
+
+		OBJECTIVE_PURCHASE_TIER_2_SERVER_UPGRADE:
+			if has_completed_tier_2_server_upgrade():
+				return 1
+
+			return 0
+
+		OBJECTIVE_COMPLETE_TIER_2_RESEARCH:
+			if has_completed_tier_2_research():
+				return 1
+
+			return 0
+
+		OBJECTIVE_INDEX_2000_PAGES:
+			return GameState.indexed_pages
+
 	return 0
+	
+func has_completed_tier_2_server_upgrade() -> bool:
+	return (
+		ServerManager.cooling_speed_level >= 6
+		or ServerManager.crawler_efficiency_level >= 6
+		or ServerManager.maximum_safe_load_level >= 6
+	)
+	
+func has_completed_tier_2_research() -> bool:
+	return (
+		ResearchManager.get_upgrade_level(
+			ResearchManager.UPGRADE_CRAWLER_OPTIMIZATION
+		) >= 4
+		or ResearchManager.get_upgrade_level(
+			ResearchManager.UPGRADE_SEARCH_MONETIZATION
+		) >= 4
+		or ResearchManager.get_upgrade_level(
+			ResearchManager.UPGRADE_AUDIENCE_DISCOVERY
+		) >= 4
+	)
 
 
 func emit_current_progress() -> void:
@@ -358,6 +471,11 @@ func complete_current_objective() -> void:
 		objective_id,
 		objective_title
 	)
+	
+	if objective_id == OBJECTIVE_INDEX_500_PAGES:
+		set_progression_tier(
+			PROGRESSION_TIER_2
+		)
 
 	current_objective_index += 1
 
@@ -366,10 +484,6 @@ func complete_current_objective() -> void:
 
 func finish_objective_sequence() -> void:
 	sequence_completed = true
-
-	set_progression_tier(
-		PROGRESSION_TIER_2
-	)
 
 	all_objectives_completed.emit()
 
@@ -386,10 +500,10 @@ func _on_indexed_pages_changed(
 	)
 
 	if (
-		objective_id
-		!= OBJECTIVE_INDEX_100_PAGES
-		and objective_id
-		!= OBJECTIVE_INDEX_500_PAGES
+		objective_id != OBJECTIVE_INDEX_100_PAGES
+		and objective_id != OBJECTIVE_INDEX_500_PAGES
+		and objective_id != OBJECTIVE_INDEX_1000_PAGES
+		and objective_id != OBJECTIVE_INDEX_2000_PAGES
 	):
 		return
 
@@ -403,11 +517,36 @@ func _on_indexed_pages_changed(
 func _on_active_users_changed(
 	_new_total: int
 ) -> void:
-	if (
+	var objective_id: StringName = (
 		get_current_objective_id()
-		!= OBJECTIVE_REACH_25_USERS
+	)
+
+	if (
+		objective_id != OBJECTIVE_REACH_25_USERS
+		and objective_id != OBJECTIVE_REACH_100_USERS
 	):
 		return
+
+	evaluate_current_objective()
+	
+# -------------------------------------------------------------------
+# Crawl jobs
+# -------------------------------------------------------------------
+
+func _on_crawl_job_completed() -> void:
+	if (
+		get_current_objective_id()
+		!= OBJECTIVE_COMPLETE_EXPANDED_CRAWL
+	):
+		return
+
+	if (
+		CrawlerManager.selected_job_id
+		!= CrawlerManager.CRAWL_JOB_EXPANDED
+	):
+		return
+
+	current_event_progress = 1
 
 	evaluate_current_objective()
 	
@@ -420,9 +559,14 @@ func _on_server_upgrade_purchased(
 	_new_level: int,
 	_revenue_spent: float
 ) -> void:
-	if (
+	var objective_id: StringName = (
 		get_current_objective_id()
-		!= OBJECTIVE_PURCHASE_SERVER_UPGRADE
+	)
+
+	if (
+		objective_id != OBJECTIVE_PURCHASE_SERVER_UPGRADE
+		and objective_id
+		!= OBJECTIVE_PURCHASE_TIER_2_SERVER_UPGRADE
 	):
 		return
 
@@ -438,9 +582,14 @@ func _on_research_upgrade_purchased(
 	_new_level: int,
 	_research_points_spent: float
 ) -> void:
-	if (
+	var objective_id: StringName = (
 		get_current_objective_id()
-		!= OBJECTIVE_COMPLETE_RESEARCH
+	)
+
+	if (
+		objective_id != OBJECTIVE_COMPLETE_RESEARCH
+		and objective_id
+		!= OBJECTIVE_COMPLETE_TIER_2_RESEARCH
 	):
 		return
 
@@ -497,6 +646,10 @@ func reset_objectives() -> void:
 	current_event_progress = 0
 	sequence_completed = false
 
+	set_progression_tier(
+		PROGRESSION_TIER_1
+	)
+
 	activate_current_objective()
 	
 # -------------------------------------------------------------------
@@ -513,11 +666,24 @@ func restore_saved_state(
 	saved_sequence_completed: bool,
 	saved_progression_tier: int
 ) -> void:
+	var migrated_from_old_tier_1_sequence: bool = (
+		saved_sequence_completed
+		and saved_objective_index
+		== TIER_1_OBJECTIVE_COUNT
+		and saved_progression_tier
+		>= PROGRESSION_TIER_2
+	)
+
 	current_objective_index = clampi(
 		saved_objective_index,
 		0,
 		OBJECTIVES.size()
 	)
+
+	if migrated_from_old_tier_1_sequence:
+		current_objective_index = (
+			TIER_1_OBJECTIVE_COUNT
+		)
 
 	current_event_progress = maxi(
 		saved_event_progress,
@@ -525,8 +691,12 @@ func restore_saved_state(
 	)
 
 	sequence_completed = (
-		saved_sequence_completed
-		or current_objective_index >= OBJECTIVES.size()
+		(
+			saved_sequence_completed
+			and not migrated_from_old_tier_1_sequence
+		)
+		or current_objective_index
+		>= OBJECTIVES.size()
 	)
 
 	var restored_tier: int = clampi(
@@ -535,9 +705,10 @@ func restore_saved_state(
 		MAX_PROGRESSION_TIER
 	)
 
-	# A completed Tier 1 objective sequence always means
-	# Tier 2 has been unlocked.
-	if sequence_completed:
+	if (
+		current_objective_index
+		>= TIER_1_OBJECTIVE_COUNT
+	):
 		restored_tier = maxi(
 			restored_tier,
 			PROGRESSION_TIER_2
@@ -555,3 +726,5 @@ func restore_saved_state(
 
 	emit_current_objective()
 	emit_current_progress()
+
+	evaluate_current_objective()
