@@ -717,7 +717,7 @@ func restore_crawler(
 
 	var saved_running: bool = read_bool(
 		data,
-		"crawler_running",
+		"running",
 		false
 	)
 

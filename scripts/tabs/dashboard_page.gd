@@ -96,6 +96,109 @@ const OBJECTIVE_TARGET: int = 100
 
 
 # -------------------------------------------------------------------
+# Recent Events
+# -------------------------------------------------------------------
+
+@onready var recent_events_panel: SectionPanel = (
+	find_child(
+		"RecentEventsPanel",
+		true,
+		false
+	) as SectionPanel
+)
+
+
+# Event Row 1
+
+@onready var event_1_time_label: Label = (
+	recent_events_panel.get_node(
+		"PanelLayout/ContentPanel/"
+		+ "ContentMargin/ContentContainer/"
+		+ "RecentEventsLayout/EventRow1Panel/"
+		+ "EventRow1Layout/Event1TimeLabel"
+	) as Label
+)
+
+@onready var event_1_type_label: Label = (
+	recent_events_panel.get_node(
+		"PanelLayout/ContentPanel/"
+		+ "ContentMargin/ContentContainer/"
+		+ "RecentEventsLayout/EventRow1Panel/"
+		+ "EventRow1Layout/Event1TypeLabel"
+	) as Label
+)
+
+@onready var event_1_message_label: Label = (
+	recent_events_panel.get_node(
+		"PanelLayout/ContentPanel/"
+		+ "ContentMargin/ContentContainer/"
+		+ "RecentEventsLayout/EventRow1Panel/"
+		+ "EventRow1Layout/Event1MessageLabel"
+	) as Label
+)
+
+
+# Event Row 2
+
+@onready var event_2_time_label: Label = (
+	recent_events_panel.get_node(
+		"PanelLayout/ContentPanel/"
+		+ "ContentMargin/ContentContainer/"
+		+ "RecentEventsLayout/EventRow2Panel/"
+		+ "EventRow2Layout/Event2TimeLabel"
+	) as Label
+)
+
+@onready var event_2_type_label: Label = (
+	recent_events_panel.get_node(
+		"PanelLayout/ContentPanel/"
+		+ "ContentMargin/ContentContainer/"
+		+ "RecentEventsLayout/EventRow2Panel/"
+		+ "EventRow2Layout/Event2TypeLabel"
+	) as Label
+)
+
+@onready var event_2_message_label: Label = (
+	recent_events_panel.get_node(
+		"PanelLayout/ContentPanel/"
+		+ "ContentMargin/ContentContainer/"
+		+ "RecentEventsLayout/EventRow2Panel/"
+		+ "EventRow2Layout/Event2MessageLabel"
+	) as Label
+)
+
+
+# Event Row 3
+
+@onready var event_3_time_label: Label = (
+	recent_events_panel.get_node(
+		"PanelLayout/ContentPanel/"
+		+ "ContentMargin/ContentContainer/"
+		+ "RecentEventsLayout/EventRow3Panel/"
+		+ "EventRow3Layout/Event3TimeLabel"
+	) as Label
+)
+
+@onready var event_3_type_label: Label = (
+	recent_events_panel.get_node(
+		"PanelLayout/ContentPanel/"
+		+ "ContentMargin/ContentContainer/"
+		+ "RecentEventsLayout/EventRow3Panel/"
+		+ "EventRow3Layout/Event3TypeLabel"
+	) as Label
+)
+
+@onready var event_3_message_label: Label = (
+	recent_events_panel.get_node(
+		"PanelLayout/ContentPanel/"
+		+ "ContentMargin/ContentContainer/"
+		+ "RecentEventsLayout/EventRow3Panel/"
+		+ "EventRow3Layout/Event3MessageLabel"
+	) as Label
+)
+
+
+# -------------------------------------------------------------------
 # Current Objective
 # -------------------------------------------------------------------
 
@@ -147,13 +250,207 @@ const OBJECTIVE_TARGET: int = 100
 
 
 func _ready() -> void:
-	
 	connect_game_state_signals()
 	refresh_dashboard()
+
 	connect_objective_signals()
 	refresh_current_objective()
+
+	connect_event_log_signals()
+	refresh_recent_events()
 	
+
+# -------------------------------------------------------------------
+# Recent Events setup
+# -------------------------------------------------------------------
+
+func connect_event_log_signals() -> void:
+	if not EventLogManager.history_changed.is_connected(
+		_on_event_history_changed
+	):
+		EventLogManager.history_changed.connect(
+			_on_event_history_changed
+		)
+
+
+func _on_event_history_changed() -> void:
+	refresh_recent_events()
 	
+func refresh_recent_events() -> void:
+	var recent_events: Array[Dictionary] = (
+		EventLogManager.get_recent_events(3)
+	)
+
+	var time_labels: Array[Label] = [
+		event_1_time_label,
+		event_2_time_label,
+		event_3_time_label
+	]
+
+	var type_labels: Array[Label] = [
+		event_1_type_label,
+		event_2_type_label,
+		event_3_type_label
+	]
+
+	var message_labels: Array[Label] = [
+		event_1_message_label,
+		event_2_message_label,
+		event_3_message_label
+	]
+
+	for event_index: int in range(3):
+		if event_index < recent_events.size():
+			var event_data: Dictionary = (
+				recent_events[event_index]
+			)
+
+			time_labels[event_index].text = str(
+				event_data.get(
+					"time",
+					"--:--"
+				)
+			)
+
+			type_labels[event_index].text = (
+				get_event_type_text(
+					event_data.get(
+						"category",
+						&"information"
+					) as StringName
+				)
+			)
+
+			message_labels[event_index].text = str(
+				event_data.get(
+					"message",
+					""
+				)
+			)
+
+			apply_event_type_color(
+				type_labels[event_index],
+				event_data.get(
+					"category",
+					&"information"
+				) as StringName
+			)
+
+		else:
+			time_labels[event_index].text = "--:--"
+			type_labels[event_index].text = "SYSTEM"
+			message_labels[event_index].text = (
+				"No recent event."
+			)
+
+			type_labels[event_index].add_theme_color_override(
+				"font_color",
+				ThemeManager.TEXT_DISABLED
+			)
+
+	refresh_recent_events_status(
+		recent_events.size()
+	)
+	
+func get_event_type_text(
+	category: StringName
+) -> String:
+	match category:
+		&"crawler":
+			return "CRAWLER"
+
+		&"server":
+			return "SERVER"
+
+		&"research":
+			return "RESEARCH"
+
+		&"objective":
+			return "OBJECTIVE"
+
+		&"progression":
+			return "PROGRESS"
+
+		&"warning":
+			return "WARNING"
+
+		&"success":
+			return "SUCCESS"
+
+	return "SYSTEM"
+	
+func apply_event_type_color(
+	type_label: Label,
+	category: StringName
+) -> void:
+	var event_color: Color = (
+		ThemeManager.TEXT_SECONDARY
+	)
+
+	match category:
+		&"warning":
+			event_color = (
+				ThemeManager.STATUS_WARNING
+			)
+
+		&"success":
+			event_color = (
+				ThemeManager.STATUS_SUCCESS
+			)
+
+		&"objective":
+			event_color = (
+				ThemeManager.STATUS_SUCCESS
+			)
+
+		&"progression":
+			event_color = (
+				ThemeManager.STATUS_SUCCESS
+			)
+
+		&"server":
+			event_color = (
+				ThemeManager.STATUS_INFORMATION
+			)
+
+		&"crawler":
+			event_color = (
+				ThemeManager.STATUS_INFORMATION
+			)
+
+		&"research":
+			event_color = (
+				ThemeManager.ACCENT_BLUE
+			)
+
+	type_label.add_theme_color_override(
+		"font_color",
+		event_color
+	)
+	
+func refresh_recent_events_status(
+	event_count: int
+) -> void:
+	if event_count <= 0:
+		recent_events_panel.set_status(
+			"NO EVENTS",
+			ThemeManager.TEXT_DISABLED
+		)
+
+		return
+
+	if event_count == 1:
+		recent_events_panel.set_status(
+			"1 EVENT",
+			ThemeManager.STATUS_INFORMATION
+		)
+
+		return
+
+	recent_events_panel.set_status(
+		"%d EVENTS" % event_count,
+		ThemeManager.STATUS_INFORMATION
+	)
 
 
 # -------------------------------------------------------------------

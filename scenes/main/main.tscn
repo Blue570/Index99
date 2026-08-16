@@ -221,7 +221,6 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_6gwxi")
 layout_mode = 2
 
 [node name="DashboardPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=374740521]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2067,6 +2066,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="ResearchPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=1928910644]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

@@ -303,8 +303,9 @@ func _ready() -> void:
 	
 	print(
 	"WINDOW SIZE: ",
-	get_window().size
-)
+	get_window().size 
+	)
+
 
 	print(
 	"CONTENT SCALE SIZE: ",
