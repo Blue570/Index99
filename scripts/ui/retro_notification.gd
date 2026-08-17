@@ -7,6 +7,15 @@ extends PanelContainer
 
 signal dismissed
 
+# -------------------------------------------------------------------
+# Animation settings
+# -------------------------------------------------------------------
+
+const ENTRANCE_DURATION: float = 0.22
+const EXIT_DURATION: float = 0.18
+
+const SLIDE_DISTANCE: float = 380.0
+
 
 # -------------------------------------------------------------------
 # Node references
@@ -42,6 +51,9 @@ signal dismissed
 # -------------------------------------------------------------------
 
 var lifetime_timer: Timer
+
+var animation_tween: Tween = null
+var is_dismissing: bool = false
 
 
 # -------------------------------------------------------------------
@@ -102,13 +114,73 @@ func configure(
 		notification_type
 	)
 
-	lifetime_timer.start(
+	play_entrance_animation(
 		maxf(
 			duration,
 			1.0
 		)
 	)
+	
+# -------------------------------------------------------------------
+# Entrance animation
+# -------------------------------------------------------------------
 
+func play_entrance_animation(
+	display_duration: float
+) -> void:
+	is_dismissing = false
+
+	if (
+		animation_tween != null
+		and animation_tween.is_valid()
+	):
+		animation_tween.kill()
+
+	position.x = SLIDE_DISTANCE
+
+	modulate = Color(
+		1.0,
+		1.0,
+		1.0,
+		0.35
+	)
+
+	animation_tween = create_tween()
+
+	animation_tween.set_parallel(
+		true
+	)
+
+	animation_tween.tween_property(
+		self,
+		"position:x",
+		0.0,
+		ENTRANCE_DURATION
+	).set_trans(
+		Tween.TRANS_QUAD
+	).set_ease(
+		Tween.EASE_OUT
+	)
+
+	animation_tween.tween_property(
+		self,
+		"modulate:a",
+		1.0,
+		ENTRANCE_DURATION
+	).set_trans(
+		Tween.TRANS_LINEAR
+	)
+
+	animation_tween.set_parallel(
+		false
+	)
+
+	animation_tween.tween_callback(
+		func() -> void:
+			lifetime_timer.start(
+				display_duration
+			)
+	)
 
 # -------------------------------------------------------------------
 # Theme
@@ -244,6 +316,52 @@ func _on_lifetime_timer_timeout() -> void:
 
 
 func dismiss_notification() -> void:
+	if is_dismissing:
+		return
+
+	is_dismissing = true
+
 	lifetime_timer.stop()
 
+	if (
+		animation_tween != null
+		and animation_tween.is_valid()
+	):
+		animation_tween.kill()
+
+	animation_tween = create_tween()
+
+	animation_tween.set_parallel(
+		true
+	)
+
+	animation_tween.tween_property(
+		self,
+		"position:x",
+		SLIDE_DISTANCE,
+		EXIT_DURATION
+	).set_trans(
+		Tween.TRANS_QUAD
+	).set_ease(
+		Tween.EASE_IN
+	)
+
+	animation_tween.tween_property(
+		self,
+		"modulate:a",
+		0.0,
+		EXIT_DURATION
+	).set_trans(
+		Tween.TRANS_LINEAR
+	)
+
+	animation_tween.set_parallel(
+		false
+	)
+
+	animation_tween.tween_callback(
+		_finish_dismissal
+	)
+	
+func _finish_dismissal() -> void:
 	dismissed.emit()
