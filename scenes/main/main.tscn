@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://cc4fl2orgeyr1" path="res://scripts/tabs/index_page.gd" id="7_hujxm"]
 [ext_resource type="Script" uid="uid://ckpsxyajlcgtx" path="res://scripts/tabs/servers_page.gd" id="8_yyfjg"]
 [ext_resource type="Script" uid="uid://be702lt0vde0f" path="res://scripts/tabs/research_page.gd" id="9_b1x3f"]
+[ext_resource type="Script" uid="uid://kh771vjdus32" path="res://scripts/ui/notification_host.gd" id="10_a8run"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
@@ -2671,6 +2672,27 @@ layout_mode = 2
 size_flags_vertical = 4
 step = 1.0
 value = 42.0
+
+[node name="NotificationOverlay" type="Control" parent="." unique_id=2025043617]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_a8run")
+
+[node name="NotificationAnchor" type="Control" parent="NotificationOverlay" unique_id=2051341803]
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 380.0
+offset_top = -225.0
+offset_right = -20.0
+offset_bottom = -90.0
 
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview"]

@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://cy51828yj82ad"]
+
+[ext_resource type="Script" uid="uid://cswnj0rl1uue4" path="res://scripts/ui/retro_notification.gd" id="1_2vkwu"]
+
+[node name="RetroNotification" type="PanelContainer" unique_id=1216091779]
+custom_minimum_size = Vector2(360, 135)
+script = ExtResource("1_2vkwu")
+
+[node name="NotificationLayout" type="VBoxContainer" parent="." unique_id=1945543844]
+layout_mode = 2
+
+[node name="NotificationHeader" type="PanelContainer" parent="NotificationLayout" unique_id=166750810]
+layout_mode = 2
+
+[node name="HeaderMargin" type="MarginContainer" parent="NotificationLayout/NotificationHeader" unique_id=202246097]
+layout_mode = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="NotificationLayout/NotificationHeader/HeaderMargin" unique_id=1631681719]
+layout_mode = 2
+
+[node name="TypeLabel" type="Label" parent="NotificationLayout/NotificationHeader/HeaderMargin/HeaderRow" unique_id=2042489614]
+layout_mode = 2
+
+[node name="HeaderSpacer" type="Control" parent="NotificationLayout/NotificationHeader/HeaderMargin/HeaderRow" unique_id=1806278963]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseButton" type="Button" parent="NotificationLayout/NotificationHeader/HeaderMargin/HeaderRow" unique_id=1144392465]
+custom_minimum_size = Vector2(24, 22)
+layout_mode = 2
+text = "x"
+
+[node name="BodyMargin" type="MarginContainer" parent="NotificationLayout" unique_id=1601912729]
+layout_mode = 2
+
+[node name="BodyLayout" type="VBoxContainer" parent="NotificationLayout/BodyMargin" unique_id=370335118]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="NotificationLayout/BodyMargin/BodyLayout" unique_id=1903901238]
+layout_mode = 2
+
+[node name="MessageLabel" type="Label" parent="NotificationLayout/BodyMargin/BodyLayout" unique_id=1604888248]
+layout_mode = 2
+autowrap_mode = 3

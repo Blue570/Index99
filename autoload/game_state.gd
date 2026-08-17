@@ -50,13 +50,19 @@ var crawler_rate: float = STARTING_CRAWLER_RATE
 # -------------------------------------------------------------------
 
 func set_revenue(new_value: float) -> void:
-	var safe_value: float = maxf(new_value, 0.0)
+	var safe_value: float = maxf(
+		new_value,
+		0.0
+	)
 
-	if is_equal_approx(revenue, safe_value):
+	if revenue == safe_value:
 		return
 
 	revenue = safe_value
-	revenue_changed.emit(revenue)
+
+	revenue_changed.emit(
+		revenue
+	)
 
 
 func set_active_users(new_value: int) -> void:
@@ -80,13 +86,19 @@ func set_indexed_pages(new_value: int) -> void:
 
 
 func set_reputation(new_value: float) -> void:
-	var safe_value: float = maxf(new_value, 0.0)
+	var safe_value: float = maxf(
+		new_value,
+		0.0
+	)
 
-	if is_equal_approx(reputation, safe_value):
+	if reputation == safe_value:
 		return
 
 	reputation = safe_value
-	reputation_changed.emit(reputation)
+
+	reputation_changed.emit(
+		reputation
+	)
 
 
 func set_server_load(new_value: float) -> void:

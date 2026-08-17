@@ -24,6 +24,7 @@ ResearchManager="*uid://jwtpk384s85i"
 ObjectiveManager="*uid://ucil07dbsird"
 CrawlerManager="*uid://ckn42y5ix4vn1"
 EventLogManager="*uid://icgylsds137r"
+NotificationManager="*uid://bc17nbpj2hy3i"
 SaveManager="*uid://dph2koncc6egq"
 
 [display]
