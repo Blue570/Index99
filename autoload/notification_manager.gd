@@ -245,12 +245,9 @@ func _on_server_upgrade_purchased(
 		return
 
 	var upgrade_name: String = (
-		str(upgrade_id)
-		.replace(
-			"_",
-			" "
+		get_server_upgrade_display_name(
+			upgrade_id
 		)
-		.capitalize()
 	)
 
 	show_notification(
@@ -261,6 +258,41 @@ func _on_server_upgrade_purchased(
 			new_level
 		],
 		TYPE_SUCCESS
+	)
+	
+func get_server_upgrade_display_name(
+	upgrade_id: StringName
+) -> String:
+	var upgrade_key: String = str(
+		upgrade_id
+	)
+
+	match upgrade_key:
+		"cooling_speed":
+			return "Improved Cooling"
+
+		"crawler_efficiency":
+			return "Efficient Crawling"
+
+		"maximum_safe_load":
+			return "Load Buffering"
+
+		"improved_cooling":
+			return "Improved Cooling"
+
+		"efficient_crawling":
+			return "Efficient Crawling"
+
+		"load_buffering":
+			return "Load Buffering"
+
+	return (
+		upgrade_key
+		.replace(
+			"_",
+			" "
+		)
+		.capitalize()
 	)
 
 

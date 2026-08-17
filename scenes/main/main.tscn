@@ -2685,6 +2685,7 @@ script = ExtResource("10_a8run")
 
 [node name="NotificationAnchor" type="Control" parent="NotificationOverlay" unique_id=2051341803]
 layout_mode = 1
+anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
