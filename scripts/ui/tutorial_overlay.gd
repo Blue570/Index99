@@ -51,6 +51,7 @@ const CRAWLER_FOCUS_BOTTOM_TRIM: float = 6.0
 var focus_target: Control = null
 var focus_tween: Tween = null
 var focus_step_id: StringName = &""
+var current_pulsing_tab: TabButton = null
 
 
 # -------------------------------------------------------------------
@@ -347,6 +348,23 @@ func update_tutorial_focus(
 	if focus_target == null:
 		return
 
+	# Tab buttons pulse themselves instead of
+	# using the external tutorial focus frame.
+	if focus_target is TabButton:
+		tutorial_focus_frame.visible = false
+
+		current_pulsing_tab = (
+			focus_target as TabButton
+		)
+
+		current_pulsing_tab.set_tutorial_pulse_active(
+			true
+		)
+
+		return
+
+	# Normal UI controls continue using
+	# the external tutorial focus frame.
 	tutorial_focus_frame.visible = true
 
 	update_focus_frame_position()
@@ -426,7 +444,10 @@ func start_focus_pulse() -> void:
 	)
 	
 func hide_tutorial_focus() -> void:
+	clear_current_pulsing_tab()
+
 	focus_step_id = &""
+
 	if (
 		focus_tween != null
 		and focus_tween.is_valid()
@@ -460,3 +481,12 @@ func _on_next_button_pressed() -> void:
 
 func _on_skip_button_pressed() -> void:
 	TutorialManager.skip_tutorial()
+	
+func clear_current_pulsing_tab() -> void:
+	if current_pulsing_tab == null:
+		return
+
+	if current_pulsing_tab.has_method("set_tutorial_pulse_active"):
+		current_pulsing_tab.set_tutorial_pulse_active(false)
+
+	current_pulsing_tab = null
