@@ -302,6 +302,22 @@ func get_focus_target_for_step(
 				+ "ResourceBar/ResourceRow/"
 				+ "ServerLoadDisplay"
 			) as Control
+			
+		TutorialManager.STEP_OBJECTIVES:
+			if (
+				TutorialManager.current_page_id
+				== &"dashboard"
+			):
+				return main_scene.find_child(
+					"CurrentObjectivePanel",
+					true,
+					false
+				) as Control
+
+			return main_scene.get_node_or_null(
+				"MainApplicationWindow/MainLayout/"
+				+ "TabBar/TabRow/DashboardTab"
+			) as Control
 
 		TutorialManager.STEP_RESEARCH:
 			return main_scene.get_node_or_null(

@@ -299,7 +299,13 @@ func _ready() -> void:
 	setup_game_state_connections()
 	refresh_resource_displays()
 	
-	open_page(DEFAULT_PAGE_ID)
+	open_page(
+		DEFAULT_PAGE_ID
+	)
+	
+	TutorialManager.notify_page_opened(
+		DEFAULT_PAGE_ID
+	)
 	
 	print(
 	"WINDOW SIZE: ",

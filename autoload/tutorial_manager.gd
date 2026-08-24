@@ -83,11 +83,11 @@ const TUTORIAL_STEPS: Array[Dictionary] = [
 
 	{
 		"id": STEP_OBJECTIVES,
-		"title": "OBJECTIVES",
+		"title": "CURRENT OBJECTIVES",
 		"message":
-			"The Dashboard shows your current objective. "
-			+ "Completing objectives rewards Research Points "
-			+ "and advances your progression."
+			"Return to the Dashboard and look at the Current "
+			+ "Objective panel. Objectives guide your progression "
+			+ "and reward Research Points when completed."
 	},
 
 	{
@@ -344,6 +344,10 @@ func current_step_requires_action() -> bool:
 	var step_id: StringName = (
 		get_current_step_id()
 	)
+	
+	if step_id == STEP_OBJECTIVES:
+		return current_page_id != &"dashboard"
+
 
 	return (
 		step_id == STEP_CRAWLER
@@ -382,6 +386,10 @@ func notify_page_opened(
 				advance_step(
 					true
 				)
+				
+		STEP_OBJECTIVES:
+			if page_id == &"dashboard":
+				emit_current_step()
 
 		STEP_RESEARCH:
 			if page_id == &"research":
