@@ -211,6 +211,14 @@ func build_save_data() -> Dictionary:
 				
 			"current_progression_tier":
 				ObjectiveManager.current_progression_tier
+		},
+		
+		"tutorial":{
+			"current_step_index":
+				TutorialManager.current_step_index,
+				
+			"completed":
+				TutorialManager.tutorial_has_been_completed
 		}
 		
 	}
@@ -390,6 +398,12 @@ func load_game() -> bool:
 			"SaveManager: No save file found. "
 			+ "Starting a new game."
 		)
+		
+		TutorialManager.reset_tutorial()
+		
+		call_deferred(
+			"start_tutorial_after_load"
+		)
 
 		return false
 
@@ -474,8 +488,18 @@ func load_game() -> bool:
 	print(
 		"SaveManager: Save loaded successfully."
 	)
+	
+	call_deferred(
+		"start_tutorial_after_load"
+	)
 
 	return true
+	
+func start_tutorial_after_load() -> void:
+	if not TutorialManager.should_start_tutorial():
+		return
+
+	TutorialManager.start_tutorial()
 	
 func fail_load(
 	reason: String
@@ -525,6 +549,15 @@ func restore_save_data(
 		"objective"
 	)
 
+	var tutorial_data: Dictionary = {}
+
+	if (
+		save_data.has("tutorial")
+		and typeof(save_data["tutorial"])
+		== TYPE_DICTIONARY
+	):
+		tutorial_data = save_data["tutorial"]
+
 	restore_server_upgrades(
 		server_data
 	)
@@ -545,6 +578,10 @@ func restore_save_data(
 
 	restore_objective(
 		objective_data
+	)
+
+	restore_tutorial(
+		tutorial_data
 	)
 	
 func restore_server_upgrades(
@@ -802,6 +839,30 @@ func restore_objective(
 		saved_progression_tier
 	)
 	
+func restore_tutorial(
+	data: Dictionary
+) -> void:
+	var saved_step_index: int = 0
+	var saved_completed: bool = false
+
+	if not data.is_empty():
+		saved_step_index = read_int(
+			data,
+			"current_step_index",
+			0
+		)
+
+		saved_completed = read_bool(
+			data,
+			"completed",
+			false
+		)
+
+	TutorialManager.restore_saved_state(
+		saved_step_index,
+		saved_completed
+	)
+	
 # -------------------------------------------------------------------
 # Event autosave connections
 # -------------------------------------------------------------------
@@ -835,6 +896,27 @@ func connect_event_autosave_signals() -> void:
 			_on_crawl_job_completed_for_save
 		)
 		
+	if not TutorialManager.tutorial_step_changed.is_connected(
+		_on_tutorial_step_changed_for_save
+	):
+		TutorialManager.tutorial_step_changed.connect(
+			_on_tutorial_step_changed_for_save
+		)
+
+	if not TutorialManager.tutorial_completed.is_connected(
+		_on_tutorial_completed_for_save
+	):
+		TutorialManager.tutorial_completed.connect(
+			_on_tutorial_completed_for_save
+		)
+
+	if not TutorialManager.tutorial_skipped.is_connected(
+		_on_tutorial_skipped_for_save
+	):
+		TutorialManager.tutorial_skipped.connect(
+			_on_tutorial_skipped_for_save
+		)
+		
 func _on_server_upgrade_purchased_for_save(
 	_upgrade_id: StringName,
 	_new_level: int,
@@ -859,6 +941,21 @@ func _on_objective_completed_for_save(
 
 
 func _on_crawl_job_completed_for_save() -> void:
+	request_event_autosave()
+	
+func _on_tutorial_step_changed_for_save(
+	_step_id: StringName,
+	_title: String,
+	_message: String
+) -> void:
+	request_event_autosave()
+
+
+func _on_tutorial_completed_for_save() -> void:
+	request_event_autosave()
+
+
+func _on_tutorial_skipped_for_save() -> void:
 	request_event_autosave()
 	
 func request_event_autosave() -> void:
@@ -947,6 +1044,8 @@ func reset_to_new_game() -> bool:
 	)
 
 	CrawlerManager.apply_research_crawler_rate()
+	
+	TutorialManager.reset_tutorial()
 
 	save_actions_blocked = false
 
@@ -966,6 +1065,11 @@ func reset_to_new_game() -> bool:
 		)
 	
 	new_game_reset.emit()
+	
+	call_deferred(
+		"start_tutorial_after_load"
+	)
+	
 	return save_successful
 	
 # -------------------------------------------------------------------

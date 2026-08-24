@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://ckpsxyajlcgtx" path="res://scripts/tabs/servers_page.gd" id="8_yyfjg"]
 [ext_resource type="Script" uid="uid://be702lt0vde0f" path="res://scripts/tabs/research_page.gd" id="9_b1x3f"]
 [ext_resource type="Script" uid="uid://kh771vjdus32" path="res://scripts/ui/notification_host.gd" id="10_a8run"]
+[ext_resource type="PackedScene" uid="uid://bjwyqkepsgq0i" path="res://scenes/ui/tutorial_overlay.tscn" id="11_ouso4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
@@ -2694,6 +2695,11 @@ offset_left = 380.0
 offset_top = -225.0
 offset_right = -20.0
 offset_bottom = -90.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="TutorialOverlay" parent="." unique_id=1697245027 instance=ExtResource("11_ouso4")]
+layout_mode = 1
 
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview"]

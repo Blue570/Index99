@@ -872,8 +872,16 @@ func open_page(page_id: StringName) -> void:
 		)
 
 
-func _on_tab_selected(tab_id: StringName) -> void:
-	open_page(tab_id)
+func _on_tab_selected(
+	tab_id: StringName
+) -> void:
+	open_page(
+		tab_id
+	)
+
+	TutorialManager.notify_page_opened(
+		tab_id
+	)
 
 
 func _on_minimize_button_pressed() -> void:

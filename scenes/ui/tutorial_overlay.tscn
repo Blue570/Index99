@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://bjwyqkepsgq0i"]
+
+[ext_resource type="Script" uid="uid://clp2wy08vwslk" path="res://scripts/ui/tutorial_overlay.gd" id="1_m512t"]
+
+[node name="TutorialOverlay" type="Control" unique_id=1697245027]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_m512t")
+
+[node name="TutorialWindow" type="PanelContainer" parent="." unique_id=1311607399]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TutorialMargin" type="MarginContainer" parent="TutorialWindow" unique_id=1212073311]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="TutorialLayout" type="VBoxContainer" parent="TutorialWindow/TutorialMargin" unique_id=681857110]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TutorialHeader" type="Label" parent="TutorialWindow/TutorialMargin/TutorialLayout" unique_id=966574961]
+layout_mode = 2
+text = "WELCOME TO INDEX 99"
+
+[node name="StepLabel" type="Label" parent="TutorialWindow/TutorialMargin/TutorialLayout" unique_id=487173914]
+layout_mode = 2
+text = "STEP 1 OF 9"
+
+[node name="TutorialBody" type="Label" parent="TutorialWindow/TutorialMargin/TutorialLayout" unique_id=1273733344]
+layout_mode = 2
+text = "Tutorial information appears here"
+autowrap_mode = 3
+
+[node name="TutorialButtons" type="HBoxContainer" parent="TutorialWindow/TutorialMargin/TutorialLayout" unique_id=806690175]
+layout_mode = 2
+
+[node name="SkipButton" type="Button" parent="TutorialWindow/TutorialMargin/TutorialLayout/TutorialButtons" unique_id=573103116]
+layout_mode = 2
+text = "Skip Tutorial"
+
+[node name="ButtonSpacer" type="Control" parent="TutorialWindow/TutorialMargin/TutorialLayout/TutorialButtons" unique_id=327256287]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NextButton" type="Button" parent="TutorialWindow/TutorialMargin/TutorialLayout/TutorialButtons" unique_id=1876341162]
+layout_mode = 2
+text = "Next >"
