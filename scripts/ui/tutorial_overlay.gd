@@ -36,6 +36,22 @@ extends Control
 	/NextButton
 )
 
+@onready var tutorial_focus_frame: Panel = (
+	$TutorialFocusFrame
+)
+
+# -------------------------------------------------------------------
+# Tutorial focus
+# -------------------------------------------------------------------
+
+const FOCUS_PADDING: float = 4.0
+
+const CRAWLER_FOCUS_BOTTOM_TRIM: float = 6.0
+
+var focus_target: Control = null
+var focus_tween: Tween = null
+var focus_step_id: StringName = &""
+
 
 # -------------------------------------------------------------------
 # Setup
@@ -45,11 +61,14 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	configure_tutorial_window()
+	configure_tutorial_focus()
+
 	apply_tutorial_theme()
 	connect_tutorial_signals()
 	connect_tutorial_buttons()
 
 	tutorial_window.visible = false
+	tutorial_focus_frame.visible = false
 
 
 
@@ -71,6 +90,36 @@ func configure_tutorial_window() -> void:
 
 	tutorial_window.mouse_filter = (
 		Control.MOUSE_FILTER_STOP
+	)
+	
+func configure_tutorial_focus() -> void:
+	tutorial_focus_frame.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	var focus_style: StyleBoxFlat = (
+		StyleBoxFlat.new()
+	)
+
+	focus_style.bg_color = Color(
+		0.0,
+		0.0,
+		0.0,
+		0.0
+	)
+
+	focus_style.border_color = (
+		ThemeManager.STATUS_WARNING
+	)
+
+	focus_style.border_width_left = 2
+	focus_style.border_width_top = 2
+	focus_style.border_width_right = 2
+	focus_style.border_width_bottom = 2
+
+	tutorial_focus_frame.add_theme_stylebox_override(
+		"panel",
+		focus_style
 	)
 
 
@@ -179,6 +228,10 @@ func _on_tutorial_step_changed(
 	message: String
 ) -> void:
 	tutorial_window.visible = true
+	
+	update_tutorial_focus(
+		_step_id
+	)
 
 	tutorial_header.text = title
 	tutorial_body.text = message
@@ -206,11 +259,180 @@ func _on_tutorial_step_changed(
 
 func _on_tutorial_completed() -> void:
 	tutorial_window.visible = false
+	
+	hide_tutorial_focus()
 
 
 func _on_tutorial_skipped() -> void:
 	tutorial_window.visible = false
+	
+	hide_tutorial_focus()
+	
+	
+# -------------------------------------------------------------------
+# Focus targets
+# -------------------------------------------------------------------
 
+func get_focus_target_for_step(
+	step_id: StringName
+) -> Control:
+	var main_scene: Node = (
+		get_tree().current_scene
+	)
+
+	if main_scene == null:
+		return null
+
+	match step_id:
+		TutorialManager.STEP_RESOURCES:
+			return main_scene.get_node_or_null(
+				"MainApplicationWindow/MainLayout/"
+				+ "ResourceBar"
+			) as Control
+
+		TutorialManager.STEP_CRAWLER:
+			return main_scene.get_node_or_null(
+				"MainApplicationWindow/MainLayout/"
+				+ "TabBar/TabRow/CrawlerTab"
+			) as Control
+
+		TutorialManager.STEP_SERVER_LOAD:
+			return main_scene.get_node_or_null(
+				"MainApplicationWindow/MainLayout/"
+				+ "ResourceBar/ResourceRow/"
+				+ "ServerLoadDisplay"
+			) as Control
+
+		TutorialManager.STEP_RESEARCH:
+			return main_scene.get_node_or_null(
+				"MainApplicationWindow/MainLayout/"
+				+ "TabBar/TabRow/ResearchTab"
+			) as Control
+
+		TutorialManager.STEP_SERVERS:
+			return main_scene.get_node_or_null(
+				"MainApplicationWindow/MainLayout/"
+				+ "TabBar/TabRow/ServersTab"
+			) as Control
+
+	return null
+	
+func update_tutorial_focus(
+	step_id: StringName
+) -> void:
+	hide_tutorial_focus()
+
+	focus_step_id = step_id
+
+	focus_target = get_focus_target_for_step(
+		step_id
+	)
+
+	if focus_target == null:
+		return
+
+	tutorial_focus_frame.visible = true
+
+	update_focus_frame_position()
+	start_focus_pulse()
+
+func update_focus_frame_position() -> void:
+	if focus_target == null:
+		return
+
+	if not is_instance_valid(
+		focus_target
+	):
+		return
+
+	var target_rect: Rect2 = (
+		focus_target.get_global_rect()
+	)
+
+	var overlay_rect: Rect2 = (
+		get_global_rect()
+	)
+
+	var padding_vector: Vector2 = Vector2(
+		FOCUS_PADDING,
+		FOCUS_PADDING
+	)
+
+	var focus_position: Vector2 = (
+		target_rect.position
+		- overlay_rect.position
+		- padding_vector
+	)
+
+	var focus_size: Vector2 = (
+		target_rect.size
+		+ padding_vector * 2.0
+	)
+
+	if focus_step_id == TutorialManager.STEP_CRAWLER:
+		focus_size.y -= (
+			CRAWLER_FOCUS_BOTTOM_TRIM
+		)
+
+	tutorial_focus_frame.position = (
+		focus_position
+	)
+
+	tutorial_focus_frame.size = (
+		focus_size
+	)
+	
+func start_focus_pulse() -> void:
+	if (
+		focus_tween != null
+		and focus_tween.is_valid()
+	):
+		focus_tween.kill()
+
+	tutorial_focus_frame.modulate.a = 1.0
+
+	focus_tween = create_tween()
+
+	focus_tween.set_loops()
+
+	focus_tween.tween_property(
+		tutorial_focus_frame,
+		"modulate:a",
+		0.4,
+		0.55
+	)
+
+	focus_tween.tween_property(
+		tutorial_focus_frame,
+		"modulate:a",
+		1.0,
+		0.55
+	)
+	
+func hide_tutorial_focus() -> void:
+	focus_step_id = &""
+	if (
+		focus_tween != null
+		and focus_tween.is_valid()
+	):
+		focus_tween.kill()
+
+	focus_tween = null
+	focus_target = null
+
+	tutorial_focus_frame.visible = false
+	tutorial_focus_frame.modulate.a = 1.0
+	
+func _process(
+	_delta: float
+) -> void:
+	if not tutorial_focus_frame.visible:
+		return
+
+	if focus_target == null:
+		return
+
+	update_focus_frame_position()
 
 # -------------------------------------------------------------------
 # Buttons

@@ -11,6 +11,11 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_m512t")
 
+[node name="TutorialFocusFrame" type="Panel" parent="." unique_id=1739788404]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
 [node name="TutorialWindow" type="PanelContainer" parent="." unique_id=1311607399]
 layout_mode = 0
 offset_right = 40.0
