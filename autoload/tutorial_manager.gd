@@ -119,10 +119,18 @@ const TUTORIAL_STEPS: Array[Dictionary] = [
 
 
 # -------------------------------------------------------------------
-# Tutorial timing
+# Server-load tutorial phases
 # -------------------------------------------------------------------
 
-const SERVER_LOAD_READ_DELAY_SECONDS: float = 10.0
+const SERVER_LOAD_PHASE_RUNNING: StringName = &"running"
+
+const SERVER_LOAD_PHASE_OVERLOADED: StringName = (
+	&"overloaded"
+)
+
+const SERVER_LOAD_PHASE_RECOVERED: StringName = (
+	&"recovered"
+)
 
 
 # -------------------------------------------------------------------
@@ -136,7 +144,11 @@ var tutorial_has_been_completed: bool = false
 
 var current_page_id: StringName = &""
 
-var server_load_delay_started: bool = false
+var server_load_phase: StringName = (
+	SERVER_LOAD_PHASE_RUNNING
+)
+
+var server_load_overload_seen: bool = false
 
 
 # -------------------------------------------------------------------
@@ -170,7 +182,11 @@ func connect_gameplay_signals() -> void:
 func start_tutorial(
 	reset_progress: bool = false
 ) -> void:
-	server_load_delay_started = false
+	server_load_phase = (
+		SERVER_LOAD_PHASE_RUNNING
+	)
+
+	server_load_overload_seen = false
 	
 	if (
 		tutorial_has_been_completed
@@ -196,7 +212,7 @@ func start_tutorial(
 	emit_current_step()
 	
 	call_deferred(
-		"evaluate_crrent_step_state"
+		"evaluate_current_step_state"
 	)
 	
 func evaluate_current_step_state() -> void:
@@ -215,13 +231,47 @@ func evaluate_current_step_state() -> void:
 				)
 
 		STEP_SERVER_LOAD:
-			if (
-				GameState.server_load > 0.0
-				and not server_load_delay_started
-			):
-				server_load_delay_started = true
+			evaluate_server_load_tutorial_state()
+			
+func evaluate_server_load_tutorial_state() -> void:
+	if not tutorial_active:
+		return
 
-				begin_server_load_read_delay()
+	if get_current_step_id() != STEP_SERVER_LOAD:
+		return
+
+	if CrawlerManager.paused_for_overload:
+		server_load_overload_seen = true
+
+		set_server_load_phase(
+			SERVER_LOAD_PHASE_OVERLOADED
+		)
+
+		return
+
+	if (
+		not GameState.crawler_running
+		and CrawlerManager.current_job_pages > 0
+	):
+		set_server_load_phase(
+			SERVER_LOAD_PHASE_RECOVERED
+		)
+
+		return
+
+	set_server_load_phase(
+		SERVER_LOAD_PHASE_RUNNING
+	)
+	
+func set_server_load_phase(
+	new_phase: StringName
+) -> void:
+	if server_load_phase == new_phase:
+		return
+
+	server_load_phase = new_phase
+
+	emit_current_step()
 
 
 func advance_step(
@@ -270,7 +320,11 @@ func reset_tutorial() -> void:
 	tutorial_has_been_completed = false
 	current_step_index = 0
 
-	server_load_delay_started = false
+	server_load_phase = (
+		SERVER_LOAD_PHASE_RUNNING
+	)
+
+	server_load_overload_seen = false
 
 
 # -------------------------------------------------------------------
@@ -285,13 +339,19 @@ func emit_current_step() -> void:
 	if step_data.is_empty():
 		return
 
+	var step_id: StringName = StringName(
+		step_data.get(
+			"id",
+			STEP_WELCOME
+		)
+	)
+
+	if step_id == STEP_SERVER_LOAD:
+		emit_server_load_tutorial_phase()
+		return
+
 	tutorial_step_changed.emit(
-		StringName(
-			step_data.get(
-				"id",
-				STEP_WELCOME
-			)
-		),
+		step_id,
 		str(
 			step_data.get(
 				"title",
@@ -304,6 +364,45 @@ func emit_current_step() -> void:
 				""
 			)
 		)
+	)
+	
+func emit_server_load_tutorial_phase() -> void:
+	var title: String = "WATCH SERVER LOAD"
+	var message: String = ""
+
+	match server_load_phase:
+		SERVER_LOAD_PHASE_OVERLOADED:
+			title = "SERVER OVERLOAD"
+
+			message = (
+				"The server has reached maximum capacity "
+				+ "and the crawler was automatically paused. "
+				+ "Watch Server Load decrease while the "
+				+ "system cools."
+			)
+
+		SERVER_LOAD_PHASE_RECOVERED:
+			title = "SERVER RECOVERED"
+
+			message = (
+				"Server capacity has recovered enough to "
+				+ "continue. Resume the crawler now to "
+				+ "continue indexing."
+			)
+
+		_:
+			title = "WATCH SERVER LOAD"
+
+			message = (
+				"Watch Server Load continue to increase. "
+				+ "Let the crawler run until the server "
+				+ "reaches maximum capacity."
+			)
+
+	tutorial_step_changed.emit(
+		STEP_SERVER_LOAD,
+		title,
+		message
 	)
 
 
@@ -413,15 +512,40 @@ func _on_crawler_state_changed(
 	if not tutorial_active:
 		return
 
-	if get_current_step_id() != STEP_FIRST_CRAWL:
-		return
-
-	if not is_running:
-		return
-
-	advance_step(
-		true
+	var step_id: StringName = (
+		get_current_step_id()
 	)
+
+	match step_id:
+		STEP_FIRST_CRAWL:
+			if is_running:
+				advance_step(
+					true
+				)
+
+		STEP_SERVER_LOAD:
+			if is_running:
+				if (
+					server_load_phase
+					== SERVER_LOAD_PHASE_RECOVERED
+				):
+					if server_load_overload_seen:
+						advance_step(
+							true
+						)
+					else:
+						set_server_load_phase(
+							SERVER_LOAD_PHASE_RUNNING
+						)
+
+				return
+
+			if CrawlerManager.paused_for_overload:
+				server_load_overload_seen = true
+
+				set_server_load_phase(
+					SERVER_LOAD_PHASE_OVERLOADED
+				)
 	
 # -------------------------------------------------------------------
 # Server-load actions
@@ -436,30 +560,41 @@ func _on_server_load_changed(
 	if get_current_step_id() != STEP_SERVER_LOAD:
 		return
 
-	if new_load <= 0.0:
-		return
-
-	if server_load_delay_started:
-		return
-
-	server_load_delay_started = true
-
-	begin_server_load_read_delay()
-	
-func begin_server_load_read_delay() -> void:
-	await get_tree().create_timer(
-		SERVER_LOAD_READ_DELAY_SECONDS
-	).timeout
-
-	if not tutorial_active:
-		return
-
-	if get_current_step_id() != STEP_SERVER_LOAD:
-		return
-
-	advance_step(
-		true
+	var maximum_safe_load: float = (
+		CrawlerManager
+		.get_effective_maximum_safe_load()
 	)
+
+	var warning_threshold: float = (
+		CrawlerManager
+		.get_effective_warning_threshold()
+	)
+
+	if (
+		server_load_phase
+		== SERVER_LOAD_PHASE_RUNNING
+	):
+		if new_load >= maximum_safe_load:
+			server_load_overload_seen = true
+
+			set_server_load_phase(
+				SERVER_LOAD_PHASE_OVERLOADED
+			)
+
+		return
+
+	if (
+		server_load_phase
+		== SERVER_LOAD_PHASE_OVERLOADED
+	):
+		if (
+			not CrawlerManager.paused_for_overload
+			and not GameState.crawler_running
+			and new_load < warning_threshold
+		):
+			set_server_load_phase(
+				SERVER_LOAD_PHASE_RECOVERED
+			)
 	
 # -------------------------------------------------------------------
 # Save / load support
@@ -478,7 +613,11 @@ func restore_saved_state(
 	tutorial_has_been_completed = saved_completed
 	tutorial_active = false
 
-	server_load_delay_started = false
+	server_load_phase = (
+		SERVER_LOAD_PHASE_RUNNING
+	)
+
+	server_load_overload_seen = false
 	
 func should_start_tutorial() -> bool:
 	return not tutorial_has_been_completed

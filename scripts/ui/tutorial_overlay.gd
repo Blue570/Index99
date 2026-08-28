@@ -46,8 +46,6 @@ extends Control
 
 const FOCUS_PADDING: float = 4.0
 
-const CRAWLER_FOCUS_BOTTOM_TRIM: float = 6.0
-
 var focus_target: Control = null
 var focus_tween: Tween = null
 var focus_step_id: StringName = &""
@@ -92,6 +90,26 @@ func configure_tutorial_window() -> void:
 	tutorial_window.mouse_filter = (
 		Control.MOUSE_FILTER_STOP
 	)
+	
+func update_tutorial_window_position(
+	step_id: StringName
+) -> void:
+	if step_id == TutorialManager.STEP_SERVER_LOAD:
+		# Move the tutorial lower during the
+		# Server Load tutorial so the Resource Bar
+		# remains completely visible.
+		tutorial_window.offset_left = -440.0
+		tutorial_window.offset_top = 300.0
+		tutorial_window.offset_right = -20.0
+		tutorial_window.offset_bottom = 500.0
+
+		return
+
+	# Normal tutorial position.
+	tutorial_window.offset_left = -440.0
+	tutorial_window.offset_top = 60.0
+	tutorial_window.offset_right = -20.0
+	tutorial_window.offset_bottom = 260.0
 	
 func configure_tutorial_focus() -> void:
 	tutorial_focus_frame.mouse_filter = (
@@ -230,6 +248,10 @@ func _on_tutorial_step_changed(
 ) -> void:
 	tutorial_window.visible = true
 	
+	update_tutorial_window_position(
+		_step_id
+	)
+	
 	update_tutorial_focus(
 		_step_id
 	)
@@ -296,12 +318,30 @@ func get_focus_target_for_step(
 				"MainApplicationWindow/MainLayout/"
 				+ "TabBar/TabRow/CrawlerTab"
 			) as Control
+			
+		TutorialManager.STEP_FIRST_CRAWL:
+			return main_scene.find_child(
+				"StartCrawlerButton",
+				true,
+				false
+			) as Control
 
 		TutorialManager.STEP_SERVER_LOAD:
+			if (
+				TutorialManager.server_load_phase
+				== TutorialManager
+				.SERVER_LOAD_PHASE_RECOVERED
+			):
+				return main_scene.find_child(
+					"StartCrawlerButton",
+					true,
+					false
+				) as Control
+
 			return main_scene.get_node_or_null(
 				"MainApplicationWindow/MainLayout/"
-				+ "ResourceBar/ResourceRow/"
-				+ "ServerLoadDisplay"
+					+ "ResourceBar/ResourceRow/"
+					+ "ServerLoadDisplay"
 			) as Control
 			
 		TutorialManager.STEP_OBJECTIVES:
@@ -402,11 +442,6 @@ func update_focus_frame_position() -> void:
 		target_rect.size
 		+ padding_vector * 2.0
 	)
-
-	if focus_step_id == TutorialManager.STEP_CRAWLER:
-		focus_size.y -= (
-			CRAWLER_FOCUS_BOTTOM_TRIM
-		)
 
 	tutorial_focus_frame.position = (
 		focus_position

@@ -287,7 +287,7 @@ func set_research_points(
 ) -> void:
 	var safe_points: float = maxf(
 		new_points,
-		1000.0 #-----------------------------------------------------------------------------TESTING
+		0.0
 	)
 
 	if is_equal_approx(
