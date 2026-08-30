@@ -119,17 +119,35 @@ const UPGRADE_COSTS: Dictionary = {
 # Upgrade effects
 # -------------------------------------------------------------------
 
-const CRAWLER_RATE_BONUS_PER_LEVEL: float = 0.25
+const CRAWLER_RATE_BONUS_PER_LEVEL: float = 0.60
 
-const REVENUE_BONUS_PERCENT_PER_LEVEL: float = 10.0
+const REVENUE_BONUS_PERCENT_PER_LEVEL: float = 25.0
 
-const ACTIVE_USER_BONUS_PERCENT_PER_LEVEL: float = 10.0
+const ACTIVE_USER_BONUS_PERCENT_PER_LEVEL: float = 25.0
 
 
 # -------------------------------------------------------------------
 # Research milestone rewards
 # -------------------------------------------------------------------
 
+const EARLY_INDEXED_PAGE_MILESTONES: Array[int] = [
+	10,
+	25,
+	50,
+	75,
+	100
+]
+
+const EARLY_INDEXED_PAGE_REWARDS: Dictionary = {
+	10: 1.0,
+	25: 2.0,
+	50: 3.0,
+	75: 4.0,
+	100: 5.0
+}
+
+# After the first 100 pages, indexed-page
+# milestones return to a recurring reward.
 const INDEXED_PAGE_MILESTONE_INTERVAL: int = 25
 const INDEXED_PAGE_MILESTONE_REWARD: float = 1.0
 
@@ -152,9 +170,7 @@ var research_points: float = 0.0
 # Milestone tracking
 # -------------------------------------------------------------------
 
-var next_indexed_page_milestone: int = (
-	INDEXED_PAGE_MILESTONE_INTERVAL
-)
+var next_indexed_page_milestone: int = 10
 
 var next_active_user_milestone: int = (
 	ACTIVE_USER_MILESTONE_INTERVAL
@@ -223,9 +239,8 @@ func finish_save_restore() -> void:
 
 func initialize_milestone_tracking() -> void:
 	next_indexed_page_milestone = (
-		get_next_milestone(
-			GameState.indexed_pages,
-			INDEXED_PAGE_MILESTONE_INTERVAL
+		get_next_indexed_page_milestone(
+			GameState.indexed_pages
 		)
 	)
 
@@ -253,6 +268,37 @@ func get_next_milestone(
 		(completed_intervals + 1)
 		* interval
 	)
+	
+func get_next_indexed_page_milestone(
+	current_pages: int
+) -> int:
+	for milestone: int in EARLY_INDEXED_PAGE_MILESTONES:
+		if current_pages < milestone:
+			return milestone
+
+	var completed_intervals: int = floori(
+		float(current_pages)
+		/ float(INDEXED_PAGE_MILESTONE_INTERVAL)
+	)
+
+	return (
+		(completed_intervals + 1)
+		* INDEXED_PAGE_MILESTONE_INTERVAL
+	)
+	
+func get_indexed_page_milestone_reward(
+	milestone: int
+) -> float:
+	if EARLY_INDEXED_PAGE_REWARDS.has(
+		milestone
+	):
+		return float(
+			EARLY_INDEXED_PAGE_REWARDS[
+				milestone
+			]
+		)
+
+	return INDEXED_PAGE_MILESTONE_REWARD
 
 
 func connect_milestone_signals() -> void:
@@ -713,7 +759,7 @@ func _on_indexed_pages_changed(
 ) -> void:
 	if suppress_milestone_rewards:
 		return
-		
+
 	while (
 		new_total
 		>= next_indexed_page_milestone
@@ -722,14 +768,22 @@ func _on_indexed_pages_changed(
 			next_indexed_page_milestone
 		)
 
+		var reward_amount: float = (
+			get_indexed_page_milestone_reward(
+				milestone_reached
+			)
+		)
+
 		award_research_points(
-			INDEXED_PAGE_MILESTONE_REWARD,
+			reward_amount,
 			"Indexed %d Pages"
 			% milestone_reached
 		)
 
-		next_indexed_page_milestone += (
-			INDEXED_PAGE_MILESTONE_INTERVAL
+		next_indexed_page_milestone = (
+			get_next_indexed_page_milestone(
+				milestone_reached
+			)
 		)
 
 

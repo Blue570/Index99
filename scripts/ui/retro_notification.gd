@@ -281,6 +281,9 @@ func get_type_color(
 		NotificationManager.TYPE_UNLOCK:
 			return ThemeManager.ACCENT_BLUE
 
+		NotificationManager.TYPE_REWARD:
+			return ThemeManager.ACCENT_BLUE
+
 	return ThemeManager.STATUS_INFORMATION
 
 
@@ -299,6 +302,9 @@ func get_type_text(
 
 		NotificationManager.TYPE_UNLOCK:
 			return "UNLOCKED"
+
+		NotificationManager.TYPE_REWARD:
+			return "REWARD"
 
 	return "INFORMATION"
 

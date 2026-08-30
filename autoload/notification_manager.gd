@@ -17,6 +17,7 @@ const TYPE_SUCCESS: StringName = &"success"
 const TYPE_WARNING: StringName = &"warning"
 const TYPE_ERROR: StringName = &"error"
 const TYPE_UNLOCK: StringName = &"unlock"
+const TYPE_REWARD: StringName = &"reward"
 
 
 # -------------------------------------------------------------------
@@ -123,6 +124,13 @@ func connect_notification_signals() -> void:
 		ObjectiveManager.progression_tier_changed.connect(
 			_on_progression_tier_changed
 		)
+		
+	if not ResearchManager.research_points_awarded.is_connected(
+		_on_research_points_awarded
+	):
+		ResearchManager.research_points_awarded.connect(
+			_on_research_points_awarded
+		)
 
 	if not ResearchManager.research_upgrade_purchased.is_connected(
 		_on_research_upgrade_purchased
@@ -206,6 +214,113 @@ func _on_progression_tier_changed(
 # -------------------------------------------------------------------
 # Research notifications
 # -------------------------------------------------------------------
+
+func _on_research_points_awarded(
+	amount: float,
+	source: String
+) -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	if ResearchManager.suppress_milestone_rewards:
+		return
+
+	if not source.begins_with(
+		"Indexed "
+	):
+		return
+
+	if not source.ends_with(
+		" Pages"
+	):
+		return
+
+	var milestone_pages: int = (
+		get_indexed_page_milestone_from_source(
+			source
+		)
+	)
+
+	if milestone_pages <= 0:
+		return
+
+	if milestone_pages > 100:
+		return
+
+	show_indexed_page_milestone_notification(
+		milestone_pages,
+		amount
+	)
+	
+func get_indexed_page_milestone_from_source(
+	source: String
+) -> int:
+	var source_parts: PackedStringArray = (
+		source.split(
+			" "
+		)
+	)
+
+	if source_parts.size() != 3:
+		return -1
+
+	return int(
+		source_parts[1]
+	)
+	
+func show_indexed_page_milestone_notification(
+	milestone_pages: int,
+	reward_amount: float
+) -> void:
+	var rounded_reward: int = roundi(
+		reward_amount
+	)
+
+	var reward_text: String = (
+		"+%d Research Point"
+		% rounded_reward
+	)
+
+	if rounded_reward != 1:
+		reward_text += "s"
+
+	var message: String = (
+		"Indexed %d Pages\n%s"
+		% [
+			milestone_pages,
+			reward_text
+		]
+	)
+
+	var duration: float = 3.5
+
+	if milestone_pages == 75:
+		if (
+			ResearchManager.get_upgrade_level(
+				ResearchManager
+				.UPGRADE_CRAWLER_OPTIMIZATION
+			) == 0
+			and ResearchManager.can_afford_upgrade(
+				ResearchManager
+					.UPGRADE_CRAWLER_OPTIMIZATION
+			)
+		):
+			message += (
+				"\nCrawler Optimization is now purchasable."
+			)
+
+			duration = 4.5
+
+	elif milestone_pages == 100:
+		duration = 4.5
+
+	show_notification(
+		"INDEX MILESTONE",
+		message,
+		TYPE_REWARD,
+		duration
+	)
+
 
 func _on_research_upgrade_purchased(
 	upgrade_id: StringName,
