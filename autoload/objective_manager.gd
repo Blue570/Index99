@@ -345,6 +345,24 @@ func is_server_purchasing_unlocked() -> bool:
 		current_objective_index
 		>= server_purchase_objective_index
 	)
+	
+func is_full_research_purchasing_unlocked() -> bool:
+	if sequence_completed:
+		return true
+
+	var research_objective_index: int = (
+		get_objective_index_by_id(
+			OBJECTIVE_COMPLETE_RESEARCH
+		)
+	)
+
+	if research_objective_index < 0:
+		return true
+
+	return (
+		current_objective_index
+		>= research_objective_index
+	)
 
 
 # -------------------------------------------------------------------

@@ -329,6 +329,22 @@ func connect_progression_signals() -> void:
 		ObjectiveManager.progression_tier_changed.connect(
 			_on_progression_tier_changed
 		)
+
+	if not ObjectiveManager.objective_changed.is_connected(
+		_on_objective_changed
+	):
+		ObjectiveManager.objective_changed.connect(
+			_on_objective_changed
+		)
+		
+func _on_objective_changed(
+	_objective_id: StringName,
+	_title: String,
+	_description: String,
+	_current_value: int,
+	_target_value: int
+) -> void:
+	refresh_research_upgrades()
 		
 func _on_progression_tier_changed(
 	_new_tier: int
@@ -395,6 +411,7 @@ func refresh_research_purchase_button(
 	upgrade_id: StringName,
 	purchase_button: Button
 ) -> void:
+	purchase_button.tooltip_text = ""
 	# ---------------------------------------------------------------
 	# STATE 1 — RESEARCH TYPE LOCKED
 	# ---------------------------------------------------------------
@@ -418,7 +435,7 @@ func refresh_research_purchase_button(
 		return
 
 	# ---------------------------------------------------------------
-	# STATE 3 — NEXT LEVEL LOCKED BY PROGRESSION
+	# STATE 3 — EARLY PROGRESSION LOCK
 	# ---------------------------------------------------------------
 
 	if not ResearchManager.is_next_upgrade_level_unlocked(
@@ -427,9 +444,25 @@ func refresh_research_purchase_button(
 		purchase_button.text = "TIER 2 LOCKED"
 		purchase_button.disabled = true
 		return
+		
+	# ---------------------------------------------------------------
+	# STATE 4 — NEXT LEVEL LOCKED BY PROGRESSION
+	# ---------------------------------------------------------------
+
+	if not ResearchManager.is_research_purchase_allowed():
+		purchase_button.text = "LOCKED"
+		purchase_button.disabled = true
+
+		purchase_button.tooltip_text = (
+			"Additional research purchasing unlocks when the "
+			+ "\"Complete a Research Upgrade\" objective "
+			+ "becomes active."
+		)
+
+		return
 
 	# ---------------------------------------------------------------
-	# STATE 4 — NORMAL RESEARCH
+	# STATE 5 — NORMAL RESEARCH
 	# ---------------------------------------------------------------
 
 	purchase_button.text = "Research"
@@ -515,6 +548,14 @@ func refresh_research_upgrades() -> void:
 	refresh_available_research_status()
 	
 func refresh_available_research_status() -> void:
+	if not ResearchManager.is_research_purchase_allowed():
+		available_research_panel.set_status(
+			"PROGRESSION LOCKED",
+			ThemeManager.TEXT_DISABLED
+		)
+
+		return
+		
 	var available_count: int = 0
 	var tier_locked_count: int = 0
 	var maxed_count: int = 0

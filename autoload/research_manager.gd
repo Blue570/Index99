@@ -634,6 +634,9 @@ func increase_upgrade_level(
 func purchase_upgrade(
 	upgrade_id: StringName
 ) -> bool:
+	if not is_research_purchase_allowed():
+		return false
+
 	if not is_upgrade_unlocked(
 		upgrade_id
 	):
@@ -748,6 +751,12 @@ func has_completed_any_upgrade() -> bool:
 			UPGRADE_AUDIENCE_DISCOVERY
 		) > 0
 	)
+	
+func is_research_purchase_allowed() -> bool:
+	if ObjectiveManager.is_full_research_purchasing_unlocked():
+		return true
+
+	return not has_completed_any_upgrade()
 
 
 # -------------------------------------------------------------------
