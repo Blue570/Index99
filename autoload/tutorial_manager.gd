@@ -565,9 +565,9 @@ func _on_server_load_changed(
 		.get_effective_maximum_safe_load()
 	)
 
-	var warning_threshold: float = (
+	var recovery_threshold: float = (
 		CrawlerManager
-		.get_effective_warning_threshold()
+		.get_effective_recovery_threshold()
 	)
 
 	if (
@@ -590,7 +590,7 @@ func _on_server_load_changed(
 		if (
 			not CrawlerManager.paused_for_overload
 			and not GameState.crawler_running
-			and new_load < warning_threshold
+			and new_load < recovery_threshold
 		):
 			set_server_load_phase(
 				SERVER_LOAD_PHASE_RECOVERED

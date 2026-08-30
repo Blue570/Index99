@@ -74,6 +74,7 @@ const SERVER_LOAD_GAIN_PER_TICK: float = 1.5
 const SERVER_LOAD_COOLING_PER_TICK: float = 6.0
 
 const SERVER_LOAD_WARNING_THRESHOLD: float = 90.0
+const SERVER_LOAD_RECOVERY_THRESHOLD: float = 50.0
 const SERVER_LOAD_MAXIMUM: float = 100.0
 
 
@@ -279,6 +280,17 @@ func get_effective_warning_threshold() -> float:
 		get_effective_maximum_safe_load()
 		* warning_ratio
 	)
+	
+func get_effective_recovery_threshold() -> float:
+	var recovery_ratio: float = (
+		SERVER_LOAD_RECOVERY_THRESHOLD
+		/ SERVER_LOAD_MAXIMUM
+	)
+
+	return (
+		get_effective_maximum_safe_load()
+		* recovery_ratio
+	)
 
 
 func get_server_load_usage_percent(
@@ -305,6 +317,9 @@ func get_server_load_usage_percent(
 
 func start_crawler() -> void:
 	if GameState.crawler_running:
+		return
+		
+	if paused_for_overload:
 		return
 
 	# A finished 100-page batch becomes a new crawl
@@ -526,7 +541,7 @@ func decrease_server_load() -> void:
 	var recovered_from_overload: bool = (
 		paused_for_overload
 		and cooled_server_load
-		< get_effective_warning_threshold()
+		< get_effective_recovery_threshold()
 	)
 
 	if recovered_from_overload:
@@ -732,6 +747,13 @@ func restore_saved_state(
 	)
 
 	crawler_timer.stop()
+	
+	if (
+		paused_for_overload
+		and GameState.server_load
+		< get_effective_recovery_threshold()
+	):
+		paused_for_overload = false
 
 	if (
 		saved_running
