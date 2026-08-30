@@ -63,6 +63,13 @@ const ACTIVE_USERS_PER_PAGE: float = 0.15
 
 const BASE_CRAWLER_RATE: float = 1.0
 
+# -------------------------------------------------------------------
+# Manual Crawl Assist
+# -------------------------------------------------------------------
+
+const MANUAL_ASSIST_PROGRESS_PER_CLICK: float = 0.50
+const MANUAL_ASSIST_SERVER_LOAD_PER_CLICK: float = 0.75
+
 #---------------------------------------------------------------------
 #Server Load
 #---------------------------------------------------------------------
@@ -315,6 +322,35 @@ func get_server_load_usage_percent(
 # Crawler controls
 # -------------------------------------------------------------------
 
+func can_use_manual_crawl_assist() -> bool:
+	if not GameState.crawler_running:
+		return false
+
+	if paused_for_overload:
+		return false
+
+	if is_current_job_complete():
+		return false
+
+	return true
+	
+func use_manual_crawl_assist() -> bool:
+	if not can_use_manual_crawl_assist():
+		return false
+
+	page_fraction_buffer += (
+		MANUAL_ASSIST_PROGRESS_PER_CLICK
+	)
+
+	process_page_fraction_buffer()
+
+	if is_current_job_complete():
+		return true
+
+	add_manual_assist_server_load()
+
+	return true
+
 func start_crawler() -> void:
 	if GameState.crawler_running:
 		return
@@ -414,6 +450,9 @@ func _on_crawler_timer_timeout() -> void:
 		* TIMER_INTERVAL_SECONDS
 	)
 
+	process_page_fraction_buffer()
+	
+func process_page_fraction_buffer() -> void:
 	var requested_pages: int = floori(
 		page_fraction_buffer
 	)
@@ -440,7 +479,9 @@ func _on_crawler_timer_timeout() -> void:
 		complete_current_job()
 		return
 
-	process_indexed_pages(pages_added)
+	process_indexed_pages(
+		pages_added
+	)
 	
 func process_indexed_pages(pages_added: int) -> void:
 	current_job_pages += pages_added
@@ -503,6 +544,24 @@ func _on_server_load_timer_timeout() -> void:
 		increase_server_load()
 	else:
 		decrease_server_load()
+		
+func add_manual_assist_server_load() -> void:
+	var maximum_safe_load: float = (
+		get_effective_maximum_safe_load()
+	)
+
+	var new_server_load: float = minf(
+		GameState.server_load
+		+ MANUAL_ASSIST_SERVER_LOAD_PER_CLICK,
+		maximum_safe_load
+	)
+
+	GameState.set_server_load(
+		new_server_load
+	)
+
+	if new_server_load >= maximum_safe_load:
+		pause_crawler_for_overload()
 		
 func increase_server_load() -> void:
 	var maximum_safe_load: float = (

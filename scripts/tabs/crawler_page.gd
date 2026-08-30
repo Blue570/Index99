@@ -52,6 +52,13 @@ extends PanelContainer
 	+ "PauseCrawlerButton"
 ) as Button
 
+@onready var manual_crawl_assist_button: Button = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerControlLayout/ManualCrawlAssistButton"
+) as Button
+
 
 # -------------------------------------------------------------------
 # Current Crawl Job panel
@@ -204,6 +211,13 @@ func connect_buttons() -> void:
 	):
 		pause_crawler_button.pressed.connect(
 			_on_pause_crawler_button_pressed
+		)
+		
+	if not manual_crawl_assist_button.pressed.is_connected(
+		_on_manual_crawl_assist_button_pressed
+	):
+		manual_crawl_assist_button.pressed.connect(
+			_on_manual_crawl_assist_button_pressed
 		)
 		
 	if not basic_crawl_button.pressed.is_connected(
@@ -467,6 +481,58 @@ func _on_start_crawler_button_pressed() -> void:
 
 func _on_pause_crawler_button_pressed() -> void:
 	CrawlerManager.pause_crawler()
+	
+func _on_manual_crawl_assist_button_pressed() -> void:
+	var assist_used: bool = (
+		CrawlerManager.use_manual_crawl_assist()
+	)
+
+	if not assist_used:
+		refresh_manual_crawl_assist_button()
+		
+func refresh_manual_crawl_assist_button() -> void:
+	var assist_available: bool = (
+		CrawlerManager.can_use_manual_crawl_assist()
+	)
+
+	manual_crawl_assist_button.disabled = (
+		not assist_available
+	)
+
+	manual_crawl_assist_button.text = (
+		"Manual Crawl Assist"
+	)
+
+	if assist_available:
+		manual_crawl_assist_button.tooltip_text = (
+			"Click repeatedly to add +%.2f page work. "
+			+ "Each click also adds +%.2f server load."
+		) % [
+			CrawlerManager.MANUAL_ASSIST_PROGRESS_PER_CLICK,
+			CrawlerManager.MANUAL_ASSIST_SERVER_LOAD_PER_CLICK
+		]
+
+		return
+
+	if CrawlerManager.paused_for_overload:
+		manual_crawl_assist_button.tooltip_text = (
+			"Manual assistance is unavailable while "
+			+ "the server is cooling down."
+		)
+
+		return
+
+	if CrawlerManager.is_current_job_complete():
+		manual_crawl_assist_button.tooltip_text = (
+			"The current crawl job is complete."
+		)
+
+		return
+
+	manual_crawl_assist_button.tooltip_text = (
+		"Start or resume the crawler to use "
+		+ "Manual Crawl Assist."
+	)
 
 
 # -------------------------------------------------------------------
@@ -545,6 +611,7 @@ func update_crawler_state(
 		show_ready_state()
 		
 	refresh_crawl_job_selection()
+	refresh_manual_crawl_assist_button()
 
 
 func show_ready_state() -> void:

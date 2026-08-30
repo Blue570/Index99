@@ -223,6 +223,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_6gwxi")
 layout_mode = 2
 
 [node name="DashboardPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=374740521]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -820,7 +821,6 @@ text = "0 / 100"
 horizontal_alignment = 2
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -951,6 +951,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
 text = "Pause Crawler"
+
+[node name="ManualCrawlAssistButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout" unique_id=1801049792]
+layout_mode = 2
+tooltip_text = "Click repeatedly while the crawler is running to add manual indexing work. Manual assistance also increases server load."
+disabled = true
+text = "Manual Crawl Assist"
 
 [node name="CrawlJobSelectionContainer" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(256051415, 287423228) index="1" unique_id=773536557]
 layout_mode = 2
