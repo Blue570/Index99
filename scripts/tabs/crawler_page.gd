@@ -59,6 +59,27 @@ extends PanelContainer
 	+ "CrawlerControlLayout/ManualCrawlAssistButton"
 ) as Button
 
+var manual_assist_feedback_tween: Tween = null
+
+const MANUAL_ASSIST_FEEDBACK_DURATION: float = 0.16
+
+var manual_assist_feedback_layer: Control = null
+var manual_assist_combo_label: Label = null
+var manual_assist_audio_player: AudioStreamPlayer = null
+
+var manual_assist_combo_count: int = 0
+var manual_assist_combo_generation: int = 0
+var manual_assist_float_sequence: int = 0
+
+
+const MANUAL_ASSIST_FLOAT_DURATION: float = 0.55
+
+const MANUAL_ASSIST_COMBO_RESET_SECONDS: float = 0.75
+
+const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
+	"res://audio/manual_assist_click.wav"
+)
+
 
 # -------------------------------------------------------------------
 # Current Crawl Job panel
@@ -187,6 +208,10 @@ func _ready() -> void:
 	connect_buttons()
 	connect_crawler_signals()
 	connect_game_state_signals()
+	
+	setup_manual_assist_feedback()
+	setup_manual_assist_audio()
+	
 	refresh_crawler_page()
 	connect_progression_signals()
 
@@ -446,6 +471,76 @@ func connect_game_state_signals() -> void:
 		GameState.crawler_rate_changed.connect(
 			_on_crawler_rate_changed
 		)
+		
+func setup_manual_assist_feedback() -> void:
+	manual_assist_feedback_layer = Control.new()
+
+	manual_assist_feedback_layer.name = (
+		"ManualAssistFeedbackLayer"
+	)
+
+	manual_assist_feedback_layer.set_anchors_and_offsets_preset(
+		Control.PRESET_FULL_RECT
+	)
+
+	manual_assist_feedback_layer.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	manual_assist_feedback_layer.z_index = 50
+
+	add_child(
+		manual_assist_feedback_layer
+	)
+
+	manual_assist_combo_label = Label.new()
+
+	manual_assist_combo_label.name = (
+		"ManualAssistComboLabel"
+	)
+
+	manual_assist_combo_label.text = ""
+
+	manual_assist_combo_label.visible = false
+
+	manual_assist_combo_label.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	manual_assist_combo_label.horizontal_alignment = (
+		HORIZONTAL_ALIGNMENT_CENTER
+	)
+
+	manual_assist_combo_label.custom_minimum_size = Vector2(
+		150.0,
+		26.0
+	)
+
+	manual_assist_combo_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_INFORMATION
+	)
+
+	manual_assist_feedback_layer.add_child(
+		manual_assist_combo_label
+	)
+	
+func setup_manual_assist_audio() -> void:
+	manual_assist_audio_player = AudioStreamPlayer.new()
+
+	manual_assist_audio_player.name = (
+		"ManualAssistAudioPlayer"
+	)
+
+	manual_assist_audio_player.stream = (
+		MANUAL_ASSIST_CLICK_SOUND
+	)
+
+	manual_assist_audio_player.volume_db = -8.0
+
+	add_child(
+		manual_assist_audio_player
+	)
 
 
 # -------------------------------------------------------------------
@@ -489,6 +584,314 @@ func _on_manual_crawl_assist_button_pressed() -> void:
 
 	if not assist_used:
 		refresh_manual_crawl_assist_button()
+		return
+
+	register_manual_assist_combo()
+
+	spawn_manual_assist_floating_feedback()
+
+	play_manual_assist_sound()
+
+	play_manual_assist_click_feedback()
+	
+func register_manual_assist_combo() -> void:
+	manual_assist_combo_count += 1
+
+	manual_assist_combo_generation += 1
+
+	var current_generation: int = (
+		manual_assist_combo_generation
+	)
+
+	refresh_manual_assist_combo_label()
+
+	reset_manual_assist_combo_after_delay(
+		current_generation
+	)
+	
+func reset_manual_assist_combo_after_delay(
+	expected_generation: int
+) -> void:
+	await get_tree().create_timer(
+		MANUAL_ASSIST_COMBO_RESET_SECONDS
+	).timeout
+
+	if (
+		expected_generation
+		!= manual_assist_combo_generation
+	):
+		return
+
+	manual_assist_combo_count = 0
+
+	if manual_assist_combo_label != null:
+		manual_assist_combo_label.visible = false
+		
+func refresh_manual_assist_combo_label() -> void:
+	if manual_assist_combo_label == null:
+		return
+
+	if manual_assist_feedback_layer == null:
+		return
+
+	manual_assist_combo_label.text = (
+		"ASSIST x%d"
+		% manual_assist_combo_count
+	)
+
+	manual_assist_combo_label.visible = (
+		manual_assist_combo_count >= 2
+	)
+
+	if manual_assist_combo_count >= 10:
+		manual_assist_combo_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_WARNING
+		)
+
+	elif manual_assist_combo_count >= 5:
+		manual_assist_combo_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+	else:
+		manual_assist_combo_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_INFORMATION
+		)
+
+	position_manual_assist_combo_label()
+	
+func position_manual_assist_combo_label() -> void:
+	if manual_assist_combo_label == null:
+		return
+
+	if manual_assist_feedback_layer == null:
+		return
+
+	var button_rect: Rect2 = (
+		manual_crawl_assist_button.get_global_rect()
+	)
+
+	var layer_position: Vector2 = (
+		manual_assist_feedback_layer.global_position
+	)
+
+	var label_width: float = (
+		manual_assist_combo_label.custom_minimum_size.x
+	)
+
+	manual_assist_combo_label.position = Vector2(
+		button_rect.position.x
+		- layer_position.x
+		+ button_rect.size.x
+		- label_width,
+		button_rect.position.y
+		- layer_position.y
+		- 30.0
+	)
+	
+func spawn_manual_assist_floating_feedback() -> void:
+	manual_assist_float_sequence += 1
+
+	var spread_index: int = (
+		manual_assist_float_sequence % 3
+	)
+
+	var horizontal_spread: float = (
+		float(spread_index - 1)
+		* 12.0
+	)
+
+	spawn_manual_assist_float_label(
+		"+%.2f WORK"
+		% CrawlerManager.MANUAL_ASSIST_PROGRESS_PER_CLICK,
+		ThemeManager.STATUS_SUCCESS,
+		-70.0 + horizontal_spread,
+		Vector2(
+			-12.0,
+			-42.0
+		)
+	)
+
+	spawn_manual_assist_float_label(
+		"+%.2f LOAD"
+		% CrawlerManager.MANUAL_ASSIST_SERVER_LOAD_PER_CLICK,
+		ThemeManager.STATUS_WARNING,
+		35.0 + horizontal_spread,
+		Vector2(
+			12.0,
+			-42.0
+		)
+	)
+	
+func spawn_manual_assist_float_label(
+	label_text: String,
+	label_color: Color,
+	horizontal_offset: float,
+	movement: Vector2
+) -> void:
+	if manual_assist_feedback_layer == null:
+		return
+
+	var floating_label: Label = Label.new()
+
+	floating_label.text = label_text
+
+	floating_label.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	floating_label.horizontal_alignment = (
+		HORIZONTAL_ALIGNMENT_CENTER
+	)
+
+	floating_label.custom_minimum_size = Vector2(
+		105.0,
+		24.0
+	)
+
+	floating_label.size = Vector2(
+		105.0,
+		24.0
+	)
+
+	floating_label.add_theme_color_override(
+		"font_color",
+		label_color
+	)
+
+	manual_assist_feedback_layer.add_child(
+		floating_label
+	)
+
+	var button_rect: Rect2 = (
+		manual_crawl_assist_button.get_global_rect()
+	)
+
+	var layer_position: Vector2 = (
+		manual_assist_feedback_layer.global_position
+	)
+
+	var button_center_x: float = (
+		button_rect.position.x
+		- layer_position.x
+		+ button_rect.size.x * 0.5
+	)
+
+	var button_top_y: float = (
+		button_rect.position.y
+		- layer_position.y
+	)
+
+	var start_position: Vector2 = Vector2(
+		button_center_x
+		- 52.5
+		+ horizontal_offset,
+		button_top_y - 4.0
+	)
+
+	floating_label.position = (
+		start_position
+	)
+
+	var target_position: Vector2 = (
+		start_position + movement
+	)
+
+	var floating_tween: Tween = create_tween()
+
+	floating_tween.set_parallel(
+		true
+	)
+
+	floating_tween.tween_property(
+		floating_label,
+		"position",
+		target_position,
+		MANUAL_ASSIST_FLOAT_DURATION
+	).set_trans(
+		Tween.TRANS_QUAD
+	).set_ease(
+		Tween.EASE_OUT
+	)
+
+	floating_tween.tween_property(
+		floating_label,
+		"modulate",
+		Color(
+			1.0,
+			1.0,
+			1.0,
+			0.0
+		),
+		MANUAL_ASSIST_FLOAT_DURATION
+	)
+
+	floating_tween.finished.connect(
+		floating_label.queue_free
+	)
+	
+func play_manual_assist_sound() -> void:
+	if manual_assist_audio_player == null:
+		return
+
+	var combo_pitch_steps: int = mini(
+		manual_assist_combo_count - 1,
+		8
+	)
+
+	var pitch_bonus: float = (
+		float(combo_pitch_steps)
+		* 0.025
+	)
+
+	manual_assist_audio_player.pitch_scale = (
+		1.0 + pitch_bonus
+	)
+
+	manual_assist_audio_player.stop()
+
+	manual_assist_audio_player.play()
+	
+func play_manual_assist_click_feedback() -> void:
+	if manual_assist_feedback_tween != null:
+		if manual_assist_feedback_tween.is_valid():
+			manual_assist_feedback_tween.kill()
+
+	manual_crawl_assist_button.text = (
+		"+%.2f WORK  |  +%.2f LOAD"
+		% [
+			CrawlerManager.MANUAL_ASSIST_PROGRESS_PER_CLICK,
+			CrawlerManager.MANUAL_ASSIST_SERVER_LOAD_PER_CLICK
+		]
+	)
+
+	manual_crawl_assist_button.self_modulate = Color(
+		1.0,
+		1.0,
+		0.72,
+		1.0
+	)
+
+	manual_assist_feedback_tween = create_tween()
+
+	manual_assist_feedback_tween.tween_property(
+		manual_crawl_assist_button,
+		"self_modulate",
+		Color.WHITE,
+		MANUAL_ASSIST_FEEDBACK_DURATION
+	)
+
+	manual_assist_feedback_tween.finished.connect(
+		_on_manual_assist_feedback_finished
+	)
+	
+func _on_manual_assist_feedback_finished() -> void:
+	manual_assist_feedback_tween = null
+
+	refresh_manual_crawl_assist_button()
 		
 func refresh_manual_crawl_assist_button() -> void:
 	var assist_available: bool = (
@@ -499,8 +902,9 @@ func refresh_manual_crawl_assist_button() -> void:
 		not assist_available
 	)
 
-	manual_crawl_assist_button.text = (
-		"Manual Crawl Assist"
+	if manual_assist_feedback_tween == null:
+		manual_crawl_assist_button.text = (
+			"Manual Crawl Assist"
 	)
 
 	if assist_available:
