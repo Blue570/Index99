@@ -38,8 +38,8 @@ const OBJECTIVE_INDEX_100_PAGES: StringName = (
 	&"index_100_pages"
 )
 
-const OBJECTIVE_REACH_25_USERS: StringName = (
-	&"reach_25_active_users"
+const OBJECTIVE_REACH_40_USERS: StringName = (
+	&"reach_40_active_users"
 )
 
 const OBJECTIVE_PURCHASE_SERVER_UPGRADE: StringName = (
@@ -93,10 +93,10 @@ const OBJECTIVES: Array[Dictionary] = [
 		"target": 100
 	},
 	{
-		"id": OBJECTIVE_REACH_25_USERS,
-		"title": "Reach 25 Active Users",
-		"description": "Build an audience of 25 active users.",
-		"target": 25
+		"id": OBJECTIVE_REACH_40_USERS,
+		"title": "Reach 40 Active Users",
+		"description": "Build an audience of 40 active users.",
+		"target": 40
 	},
 	{
 		"id": OBJECTIVE_PURCHASE_SERVER_UPGRADE,
@@ -347,7 +347,7 @@ func get_current_progress() -> int:
 		OBJECTIVE_INDEX_100_PAGES:
 			return GameState.indexed_pages
 
-		OBJECTIVE_REACH_25_USERS:
+		OBJECTIVE_REACH_40_USERS:
 			return GameState.active_users
 
 		OBJECTIVE_PURCHASE_SERVER_UPGRADE:
@@ -522,7 +522,7 @@ func _on_active_users_changed(
 	)
 
 	if (
-		objective_id != OBJECTIVE_REACH_25_USERS
+		objective_id != OBJECTIVE_REACH_40_USERS
 		and objective_id != OBJECTIVE_REACH_100_USERS
 	):
 		return
