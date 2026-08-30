@@ -101,13 +101,13 @@ const OBJECTIVES: Array[Dictionary] = [
 	{
 		"id": OBJECTIVE_PURCHASE_SERVER_UPGRADE,
 		"title": "Purchase a Server Upgrade",
-		"description": "Purchase any upgrade from the Servers page.",
+		"description": "Purchase a server upgrade while this objective is active.",
 		"target": 1
 	},
 	{
 		"id": OBJECTIVE_COMPLETE_RESEARCH,
 		"title": "Complete a Research Upgrade",
-		"description": "Purchase one level of any research upgrade.",
+		"description": "Purchase a research upgrade while this objective is active.",
 		"target": 1
 	},
 	{
@@ -304,6 +304,47 @@ func get_current_objective_target() -> int:
 	return int(
 		objective["target"]
 	)
+	
+func get_objective_index_by_id(
+	objective_id: StringName
+) -> int:
+	for objective_index: int in range(
+		OBJECTIVES.size()
+	):
+		var objective_data: Dictionary = (
+			OBJECTIVES[objective_index]
+		)
+
+		var stored_id: StringName = StringName(
+			objective_data.get(
+				"id",
+				&""
+			)
+		)
+
+		if stored_id == objective_id:
+			return objective_index
+
+	return -1
+
+
+func is_server_purchasing_unlocked() -> bool:
+	if sequence_completed:
+		return true
+
+	var server_purchase_objective_index: int = (
+		get_objective_index_by_id(
+			OBJECTIVE_PURCHASE_SERVER_UPGRADE
+		)
+	)
+
+	if server_purchase_objective_index < 0:
+		return true
+
+	return (
+		current_objective_index
+		>= server_purchase_objective_index
+	)
 
 
 # -------------------------------------------------------------------
@@ -351,16 +392,10 @@ func get_current_progress() -> int:
 			return GameState.active_users
 
 		OBJECTIVE_PURCHASE_SERVER_UPGRADE:
-			if ServerManager.has_purchased_any_upgrade():
-				return 1
-
-			return 0
+			return current_event_progress
 
 		OBJECTIVE_COMPLETE_RESEARCH:
-			if ResearchManager.has_completed_any_upgrade():
-				return 1
-
-			return 0
+			return current_event_progress
 
 		OBJECTIVE_INDEX_500_PAGES:
 			return GameState.indexed_pages
@@ -563,14 +598,18 @@ func _on_server_upgrade_purchased(
 		get_current_objective_id()
 	)
 
-	if (
-		objective_id != OBJECTIVE_PURCHASE_SERVER_UPGRADE
-		and objective_id
-		!= OBJECTIVE_PURCHASE_TIER_2_SERVER_UPGRADE
-	):
+	if objective_id == OBJECTIVE_PURCHASE_SERVER_UPGRADE:
+		current_event_progress = 1
+
+		evaluate_current_objective()
+
 		return
 
-	evaluate_current_objective()
+	if (
+		objective_id
+		== OBJECTIVE_PURCHASE_TIER_2_SERVER_UPGRADE
+	):
+		evaluate_current_objective()
 
 
 # -------------------------------------------------------------------
@@ -586,14 +625,18 @@ func _on_research_upgrade_purchased(
 		get_current_objective_id()
 	)
 
-	if (
-		objective_id != OBJECTIVE_COMPLETE_RESEARCH
-		and objective_id
-		!= OBJECTIVE_COMPLETE_TIER_2_RESEARCH
-	):
+	if objective_id == OBJECTIVE_COMPLETE_RESEARCH:
+		current_event_progress = 1
+
+		evaluate_current_objective()
+
 		return
 
-	evaluate_current_objective()
+	if (
+		objective_id
+		== OBJECTIVE_COMPLETE_TIER_2_RESEARCH
+	):
+		evaluate_current_objective()
 	
 # -------------------------------------------------------------------
 # Progression Tiers

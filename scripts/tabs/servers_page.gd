@@ -1135,6 +1135,18 @@ func configure_purchase_button(
 	purchase_button: Button,
 	upgrade_cost: float
 ) -> void:
+	if not ObjectiveManager.is_server_purchasing_unlocked():
+		purchase_button.text = "LOCKED"
+		purchase_button.disabled = true
+
+		purchase_button.tooltip_text = (
+			"Server purchasing unlocks when the "
+			+ "\"Purchase a Server Upgrade\" "
+			+ "objective becomes active."
+		)
+
+		return
+
 	var can_afford: bool = (
 		ServerManager.can_afford_upgrade(
 			upgrade_cost
@@ -1178,6 +1190,15 @@ func configure_maxed_purchase_button(
 	)
 	
 func refresh_upgrade_panel_status() -> void:
+	if not ObjectiveManager.is_server_purchasing_unlocked():
+		server_upgrades_panel.set_status(
+			"PURCHASE LOCKED",
+			ThemeManager.TEXT_DISABLED
+		)
+
+		return
+	
+	
 	var maxed_upgrade_count: int = 0
 
 	if ServerManager.is_cooling_speed_maxed():
@@ -1222,9 +1243,27 @@ func connect_progression_signals() -> void:
 		ObjectiveManager.progression_tier_changed.connect(
 			_on_progression_tier_changed
 		)
+
+	if not ObjectiveManager.objective_changed.is_connected(
+		_on_objective_changed
+	):
+		ObjectiveManager.objective_changed.connect(
+			_on_objective_changed
+		)
+		
+
 		
 func _on_progression_tier_changed(
 	_new_tier: int
 ) -> void:
 	refresh_server_page()
+	refresh_server_upgrades()
+	
+func _on_objective_changed(
+	_objective_id: StringName,
+	_title: String,
+	_description: String,
+	_current_value: int,
+	_target_value: int
+) -> void:
 	refresh_server_upgrades()

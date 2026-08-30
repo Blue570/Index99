@@ -103,9 +103,10 @@ const TUTORIAL_STEPS: Array[Dictionary] = [
 		"id": STEP_SERVERS,
 		"title": "EXPLORER SERVER UPGRADES",
 		"message":
-			"Open the Servers tab now. Revenue can be invested "
-			+ "in Improved Colling, Efficient Crawling, and "
-			+ "Load Buffering to support larger workloads."
+			"Open the Servers tab now. Review Improved Cooling, "
+			+ "Efficient Crawling, and Load Buffering. "
+			+ "Server upgrade purchasing will unlock as you "
+			+ "progress through the early objectives."
 	},
 
 	{

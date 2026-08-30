@@ -343,6 +343,9 @@ func spend_revenue(
 
 func purchase_cooling_speed() -> bool:
 	
+	if not ObjectiveManager.is_server_purchasing_unlocked():
+		return false
+	
 	if cooling_speed_level >= MAX_UPGRADE_LEVEL:
 		return false
 		
@@ -380,6 +383,9 @@ func purchase_cooling_speed() -> bool:
 
 func purchase_crawler_efficiency() -> bool:
 	
+	if not ObjectiveManager.is_server_purchasing_unlocked():
+		return false
+	
 	if crawler_efficiency_level >= MAX_UPGRADE_LEVEL:
 		return false
 
@@ -416,6 +422,9 @@ func purchase_crawler_efficiency() -> bool:
 
 
 func purchase_maximum_safe_load() -> bool:
+	
+	if not ObjectiveManager.is_server_purchasing_unlocked():
+		return false
 	
 	if maximum_safe_load_level >= MAX_UPGRADE_LEVEL:
 		return false
