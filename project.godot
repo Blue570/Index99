@@ -26,6 +26,7 @@ CrawlerManager="*uid://ckn42y5ix4vn1"
 EventLogManager="*uid://icgylsds137r"
 NotificationManager="*uid://bc17nbpj2hy3i"
 TutorialManager="*uid://qdwa1trik6wf"
+AutomationManager="*uid://cbpuw2oijn5jh"
 SaveManager="*uid://dph2koncc6egq"
 
 [display]

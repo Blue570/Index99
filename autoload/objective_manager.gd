@@ -683,6 +683,11 @@ func set_progression_tier(
 		current_progression_tier
 	)
 	
+func is_auto_crawl_assist_unlocked() -> bool:
+	return is_progression_tier_unlocked(
+		PROGRESSION_TIER_2
+	)
+	
 func is_progression_tier_unlocked(
 	tier: int
 ) -> bool:

@@ -59,6 +59,13 @@ extends PanelContainer
 	+ "CrawlerControlLayout/ManualCrawlAssistButton"
 ) as Button
 
+@onready var auto_crawl_assist_status_label: Label = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerControlLayout/AutoCrawlAssistStatusLabel"
+) as Label
+
 var manual_assist_feedback_tween: Tween = null
 
 const MANUAL_ASSIST_FEEDBACK_DURATION: float = 0.16
@@ -349,6 +356,8 @@ func _on_progression_tier_changed(
 	_new_tier: int
 ) -> void:
 	refresh_crawl_job_selection()
+	refresh_auto_crawl_assist_status()
+	refresh_effective_crawler_rate()
 	
 func refresh_crawl_job_button(
 	button: Button,
@@ -564,6 +573,8 @@ func refresh_crawler_page() -> void:
 	)
 	
 	refresh_crawl_job_selection()
+	refresh_auto_crawl_assist_status()
+	refresh_effective_crawler_rate()
 
 
 # -------------------------------------------------------------------
@@ -937,6 +948,94 @@ func refresh_manual_crawl_assist_button() -> void:
 		"Start or resume the crawler to use "
 		+ "Manual Crawl Assist."
 	)
+	
+func refresh_auto_crawl_assist_status() -> void:
+	if not AutomationManager.is_auto_assist_unlocked():
+		auto_crawl_assist_status_label.text = (
+			"Auto Crawl Assist: LOCKED"
+		)
+
+		auto_crawl_assist_status_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.TEXT_DISABLED
+		)
+
+		auto_crawl_assist_status_label.tooltip_text = (
+			"Unlocks with Tier 2 after completing "
+			+ "the Index 500 Pages objective."
+		)
+
+		return
+
+	if CrawlerManager.paused_for_overload:
+		auto_crawl_assist_status_label.text = (
+			"Auto Crawl Assist: COOLING"
+		)
+
+		auto_crawl_assist_status_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_WARNING
+		)
+
+		auto_crawl_assist_status_label.tooltip_text = (
+			"Automation pauses while the "
+			+ "server cools down."
+		)
+
+		return
+
+	if CrawlerManager.is_current_job_complete():
+		auto_crawl_assist_status_label.text = (
+			"Auto Crawl Assist: IDLE"
+		)
+
+		auto_crawl_assist_status_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.TEXT_DISABLED
+		)
+
+		auto_crawl_assist_status_label.tooltip_text = (
+			"Start the next crawl to resume automation."
+		)
+
+		return
+
+	if GameState.crawler_running:
+		auto_crawl_assist_status_label.text = (
+			"Auto Crawl Assist: ACTIVE (+%.2f/sec)"
+			% AutomationManager.get_auto_assist_work_per_second()
+		)
+
+		auto_crawl_assist_status_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+		auto_crawl_assist_status_label.tooltip_text = (
+			"+%.2f work/sec | +%.2f server load/sec"
+			% [
+				AutomationManager
+				.get_auto_assist_work_per_second(),
+				AutomationManager
+				.get_auto_assist_load_per_second()
+			]
+		)
+
+		return
+
+	auto_crawl_assist_status_label.text = (
+		"Auto Crawl Assist: READY"
+	)
+
+	auto_crawl_assist_status_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_INFORMATION
+	)
+
+	auto_crawl_assist_status_label.tooltip_text = (
+		"Automation begins automatically "
+		+ "when the crawler is running."
+	)
 
 
 # -------------------------------------------------------------------
@@ -1016,6 +1115,8 @@ func update_crawler_state(
 		
 	refresh_crawl_job_selection()
 	refresh_manual_crawl_assist_button()
+	refresh_auto_crawl_assist_status()
+	refresh_effective_crawler_rate()
 
 
 func show_ready_state() -> void:
@@ -1271,13 +1372,28 @@ func _on_server_load_changed(
 	)
 
 
-func _on_crawler_rate_changed(new_value: float) -> void:
-	var rate_text: String = format_crawler_rate(
-		new_value
+func _on_crawler_rate_changed(
+	_new_value: float
+) -> void:
+	refresh_effective_crawler_rate()
+	
+func refresh_effective_crawler_rate() -> void:
+	var effective_rate: float = (
+		AutomationManager
+		.get_effective_total_crawl_rate()
 	)
 
-	crawler_control_rate_value_label.text = rate_text
-	statistics_crawler_rate_value_label.text = rate_text
+	var rate_text: String = format_crawler_rate(
+		effective_rate
+	)
+
+	crawler_control_rate_value_label.text = (
+		rate_text
+	)
+
+	statistics_crawler_rate_value_label.text = (
+		rate_text
+	)
 
 
 # -------------------------------------------------------------------

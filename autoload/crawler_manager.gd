@@ -347,7 +347,46 @@ func use_manual_crawl_assist() -> bool:
 	if is_current_job_complete():
 		return true
 
-	add_manual_assist_server_load()
+	add_crawl_assist_server_load(
+		MANUAL_ASSIST_SERVER_LOAD_PER_CLICK
+	)
+
+	return true
+	
+func apply_automated_crawl_assist(
+	work_amount: float,
+	server_load_amount: float
+) -> bool:
+	if not (
+		ObjectiveManager
+		.is_auto_crawl_assist_unlocked()
+	):
+		return false
+
+	if not GameState.crawler_running:
+		return false
+
+	if paused_for_overload:
+		return false
+
+	if is_current_job_complete():
+		return false
+
+	if work_amount <= 0.0:
+		return false
+
+	page_fraction_buffer += (
+		work_amount
+	)
+
+	process_page_fraction_buffer()
+
+	if is_current_job_complete():
+		return true
+
+	add_crawl_assist_server_load(
+		server_load_amount
+	)
 
 	return true
 
@@ -545,14 +584,19 @@ func _on_server_load_timer_timeout() -> void:
 	else:
 		decrease_server_load()
 		
-func add_manual_assist_server_load() -> void:
+func add_crawl_assist_server_load(
+	load_amount: float
+) -> void:
+	if load_amount <= 0.0:
+		return
+
 	var maximum_safe_load: float = (
 		get_effective_maximum_safe_load()
 	)
 
 	var new_server_load: float = minf(
 		GameState.server_load
-		+ MANUAL_ASSIST_SERVER_LOAD_PER_CLICK,
+		+ load_amount,
 		maximum_safe_load
 	)
 

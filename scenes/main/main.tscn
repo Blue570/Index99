@@ -922,7 +922,7 @@ layout_mode = 2
 [node name="CrawlerControlRateNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerControlRateRow" unique_id=1397468742]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Crawler Rate"
+text = "Effective Crawler Rate"
 vertical_alignment = 1
 
 [node name="CrawlerControlRateValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerControlRateRow" unique_id=1292074460]
@@ -957,6 +957,11 @@ layout_mode = 2
 tooltip_text = "Click repeatedly while the crawler is running to add manual indexing work. Manual assistance also increases server load."
 disabled = true
 text = "Manual Crawl Assist"
+
+[node name="AutoCrawlAssistStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout" unique_id=316639470]
+layout_mode = 2
+text = "Auto Crawl Assist: LOCKED"
+horizontal_alignment = 1
 
 [node name="CrawlJobSelectionContainer" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(256051415, 287423228) index="1" unique_id=773536557]
 layout_mode = 2
