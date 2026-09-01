@@ -450,6 +450,13 @@ func connect_crawler_signals() -> void:
 		CrawlerManager.crawl_job_completed.connect(
 			_on_crawl_job_completed
 		)
+		
+	if not AutomationManager.auto_crawl_assist_level_changed.is_connected(
+		_on_auto_crawl_assist_level_changed
+	):
+		AutomationManager.auto_crawl_assist_level_changed.connect(
+			_on_auto_crawl_assist_level_changed
+		)
 
 
 func connect_game_state_signals() -> void:
@@ -967,9 +974,18 @@ func refresh_auto_crawl_assist_status() -> void:
 
 		return
 
+	var assist_level: int = (
+		AutomationManager.get_auto_assist_level()
+	)
+
+	var status_prefix: String = (
+		"Auto Crawl Assist L%d"
+		% assist_level
+	)
+
 	if CrawlerManager.paused_for_overload:
 		auto_crawl_assist_status_label.text = (
-			"Auto Crawl Assist: COOLING"
+			status_prefix + ": COOLING"
 		)
 
 		auto_crawl_assist_status_label.add_theme_color_override(
@@ -986,7 +1002,7 @@ func refresh_auto_crawl_assist_status() -> void:
 
 	if CrawlerManager.is_current_job_complete():
 		auto_crawl_assist_status_label.text = (
-			"Auto Crawl Assist: IDLE"
+			status_prefix + ": IDLE"
 		)
 
 		auto_crawl_assist_status_label.add_theme_color_override(
@@ -1002,8 +1018,10 @@ func refresh_auto_crawl_assist_status() -> void:
 
 	if GameState.crawler_running:
 		auto_crawl_assist_status_label.text = (
-			"Auto Crawl Assist: ACTIVE (+%.2f/sec)"
-			% AutomationManager.get_auto_assist_work_per_second()
+			status_prefix
+			+ ": ACTIVE (+%.2f/sec)"
+			% AutomationManager
+			.get_auto_assist_work_per_second()
 		)
 
 		auto_crawl_assist_status_label.add_theme_color_override(
@@ -1012,19 +1030,20 @@ func refresh_auto_crawl_assist_status() -> void:
 		)
 
 		auto_crawl_assist_status_label.tooltip_text = (
-			"+%.2f work/sec | +%.2f server load/sec"
-			% [
-				AutomationManager
-				.get_auto_assist_work_per_second(),
-				AutomationManager
-				.get_auto_assist_load_per_second()
-			]
-		)
+			"Level %d | +%.2f work/sec | "
+			+ "+%.2f server load/sec"
+		) % [
+			assist_level,
+			AutomationManager
+			.get_auto_assist_work_per_second(),
+			AutomationManager
+			.get_auto_assist_load_per_second()
+		]
 
 		return
 
 	auto_crawl_assist_status_label.text = (
-		"Auto Crawl Assist: READY"
+		status_prefix + ": READY"
 	)
 
 	auto_crawl_assist_status_label.add_theme_color_override(
@@ -1033,9 +1052,17 @@ func refresh_auto_crawl_assist_status() -> void:
 	)
 
 	auto_crawl_assist_status_label.tooltip_text = (
-		"Automation begins automatically "
+		"Level %d | +%.2f work/sec | "
+		+ "+%.2f server load/sec. "
+		+ "Automation begins automatically "
 		+ "when the crawler is running."
-	)
+	) % [
+		assist_level,
+		AutomationManager
+		.get_auto_assist_work_per_second(),
+		AutomationManager
+		.get_auto_assist_load_per_second()
+	]
 
 
 # -------------------------------------------------------------------
@@ -1070,6 +1097,12 @@ func _on_crawl_job_completed() -> void:
 	)
 
 	update_crawler_state(false)
+	
+func _on_auto_crawl_assist_level_changed(
+	_new_level: int
+) -> void:
+	refresh_auto_crawl_assist_status()
+	refresh_effective_crawler_rate()
 
 
 # -------------------------------------------------------------------
