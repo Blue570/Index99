@@ -389,6 +389,81 @@ func apply_automated_crawl_assist(
 	)
 
 	return true
+	
+
+# -------------------------------------------------------------------
+# Crawler Event Effects
+# -------------------------------------------------------------------
+
+func apply_crawler_event_work(
+	work_amount: float
+) -> int:
+	if not GameState.crawler_running:
+		return 0
+
+	if paused_for_overload:
+		return 0
+
+	if is_current_job_complete():
+		return 0
+
+	if work_amount <= 0.0:
+		return 0
+
+	var pages_before: int = (
+		current_job_pages
+	)
+
+	page_fraction_buffer += (
+		work_amount
+	)
+
+	process_page_fraction_buffer()
+
+	var pages_added: int = maxi(
+		current_job_pages - pages_before,
+		0
+	)
+
+	return pages_added
+
+
+func apply_crawler_event_server_load(
+	load_amount: float
+) -> float:
+	if load_amount <= 0.0:
+		return 0.0
+
+	var previous_load: float = (
+		GameState.server_load
+	)
+
+	var maximum_safe_load: float = (
+		get_effective_maximum_safe_load()
+	)
+
+	var new_server_load: float = minf(
+		previous_load + load_amount,
+		maximum_safe_load
+	)
+
+	GameState.set_server_load(
+		new_server_load
+	)
+
+	var actual_load_added: float = maxf(
+		new_server_load - previous_load,
+		0.0
+	)
+
+	if (
+		GameState.crawler_running
+		and not is_current_job_complete()
+		and new_server_load >= maximum_safe_load
+	):
+		pause_crawler_for_overload()
+
+	return actual_load_added
 
 func start_crawler() -> void:
 	if GameState.crawler_running:

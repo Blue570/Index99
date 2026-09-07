@@ -272,6 +272,9 @@ var manual_assist_float_sequence: int = 0
 # -------------------------------------------------------------------
 
 var crawler_event_ui_timer: Timer = null
+var crawler_event_result_timer: Timer = null
+
+const CRAWLER_EVENT_RESULT_DURATION_SECONDS: float = 1.50
 
 
 # -------------------------------------------------------------------
@@ -288,6 +291,7 @@ func _ready() -> void:
 	setup_manual_assist_audio()
 	
 	setup_crawler_event_ui_timer()
+	setup_crawler_event_result_timer()
 	connect_crawler_event_signals()
 	
 	refresh_crawler_page()
@@ -394,6 +398,28 @@ func setup_crawler_event_ui_timer() -> void:
 
 	crawler_event_ui_timer.timeout.connect(
 		_on_crawler_event_ui_timer_timeout
+	)
+	
+func setup_crawler_event_result_timer() -> void:
+	crawler_event_result_timer = Timer.new()
+
+	crawler_event_result_timer.name = (
+		"CrawlerEventResultTimer"
+	)
+
+	crawler_event_result_timer.wait_time = (
+		CRAWLER_EVENT_RESULT_DURATION_SECONDS
+	)
+
+	crawler_event_result_timer.one_shot = true
+	crawler_event_result_timer.autostart = false
+
+	add_child(
+		crawler_event_result_timer
+	)
+
+	crawler_event_result_timer.timeout.connect(
+		_on_crawler_event_result_timer_timeout
 	)
 
 
@@ -1308,6 +1334,8 @@ func _on_crawler_event_started(
 func show_crawler_event(
 	event_data: Dictionary
 ) -> void:
+	if crawler_event_result_timer != null:
+		crawler_event_result_timer.stop()
 	var event_title: String = str(
 		event_data.get(
 			"title",
@@ -1335,13 +1363,25 @@ func show_crawler_event(
 			"Skip"
 		)
 	)
+	
+	var primary_effect_text: String = str(
+		event_data.get(
+			"primary_effect_text",
+			""
+		)
+	)
 
 	crawler_event_title_label.text = (
 		event_title
 	)
 
 	crawler_event_description_label.text = (
-		event_description
+		"%s\n%s: %s"
+		% [
+			event_description,
+			primary_action,
+			primary_effect_text
+		]
 	)
 
 	crawler_event_primary_button.text = (
@@ -1437,7 +1477,80 @@ func _on_crawler_event_resolved(
 	_event_id: StringName,
 	_action_id: StringName
 ) -> void:
-	show_crawler_event_idle_state()
+	var result_data: Dictionary = (
+		CrawlerEventManager
+		.get_last_event_result()
+	)
+
+	show_crawler_event_result(
+		result_data
+	)
+	
+func show_crawler_event_result(
+	result_data: Dictionary
+) -> void:
+	crawler_event_ui_timer.stop()
+
+	var result_title: String = str(
+		result_data.get(
+			"title",
+			"EVENT RESOLVED"
+		)
+	)
+
+	var result_message: String = str(
+		result_data.get(
+			"message",
+			"No changes applied."
+		)
+	)
+
+	var primary_result: bool = bool(
+		result_data.get(
+			"primary",
+			false
+		)
+	)
+
+	crawler_event_title_label.text = (
+		result_title
+	)
+
+	crawler_event_description_label.text = (
+		result_message
+	)
+
+	crawler_event_timer_label.text = (
+		"Result applied."
+	)
+
+	crawler_event_primary_button.text = (
+		"ACTION"
+	)
+
+	crawler_event_secondary_button.text = (
+		"SKIP"
+	)
+
+	crawler_event_primary_button.disabled = true
+	crawler_event_secondary_button.disabled = true
+
+	if primary_result:
+		live_crawler_event_panel.set_status(
+			"RESULT",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+	else:
+		live_crawler_event_panel.set_status(
+			"PASSED",
+			ThemeManager.TEXT_DISABLED
+		)
+
+	crawler_event_result_timer.start()
+	
+func _on_crawler_event_result_timer_timeout() -> void:
+	refresh_crawler_event_ui()
 
 
 # -------------------------------------------------------------------

@@ -46,6 +46,22 @@ const ACTION_SECONDARY: StringName = &"secondary"
 
 
 # -------------------------------------------------------------------
+# Event effect balance
+# -------------------------------------------------------------------
+
+const HIGH_TRAFFIC_WORK_REWARD: float = 8.0
+const HIGH_TRAFFIC_LOAD_COST: float = 5.0
+
+const COMMERCIAL_TREND_REVENUE_REWARD: float = 15.0
+const COMMERCIAL_TREND_LOAD_COST: float = 4.0
+
+const USER_CLUSTER_USER_REWARD: int = 3
+const USER_CLUSTER_LOAD_COST: float = 5.0
+
+const CLEAN_CRAWL_PATH_WORK_REWARD: float = 6.0
+
+
+# -------------------------------------------------------------------
 # Event timing
 # -------------------------------------------------------------------
 
@@ -70,7 +86,11 @@ const CRAWLER_EVENTS: Array[Dictionary] = [
 		"description":
 			"A heavily linked domain has been discovered.",
 		"primary_action": "Prioritize",
-		"secondary_action": "Skip"
+		"primary_effect_text":
+			"+8 WORK | +5 SERVER LOAD",
+		"secondary_action": "Skip",
+		"secondary_effect_text":
+			"No effect"
 	},
 	{
 		"id": EVENT_COMMERCIAL_TREND,
@@ -78,7 +98,11 @@ const CRAWLER_EVENTS: Array[Dictionary] = [
 		"description":
 			"Commercial search activity is increasing.",
 		"primary_action": "Index Now",
-		"secondary_action": "Ignore"
+		"primary_effect_text":
+			"+$15 REVENUE | +4 SERVER LOAD",
+		"secondary_action": "Ignore",
+		"secondary_effect_text":
+			"No effect"
 	},
 	{
 		"id": EVENT_USER_CLUSTER,
@@ -86,7 +110,11 @@ const CRAWLER_EVENTS: Array[Dictionary] = [
 		"description":
 			"A new group of users is discovering the index.",
 		"primary_action": "Analyze",
-		"secondary_action": "Continue"
+		"primary_effect_text":
+			"+3 ACTIVE USERS | +5 SERVER LOAD",
+		"secondary_action": "Continue",
+		"secondary_effect_text":
+			"No effect"
 	},
 	{
 		"id": EVENT_CLEAN_CRAWL_PATH,
@@ -94,7 +122,11 @@ const CRAWLER_EVENTS: Array[Dictionary] = [
 		"description":
 			"The crawler found an unusually efficient path.",
 		"primary_action": "Use Path",
-		"secondary_action": "Continue"
+		"primary_effect_text":
+			"+6 WORK | NO EXTRA LOAD",
+		"secondary_action": "Continue",
+		"secondary_effect_text":
+			"No effect"
 	}
 ]
 
@@ -107,6 +139,7 @@ var event_spawn_timer: Timer
 var event_response_timer: Timer
 
 var active_event: Dictionary = {}
+var last_event_result: Dictionary = {}
 
 var last_event_id: StringName = &""
 
@@ -410,6 +443,11 @@ func get_active_event() -> Dictionary:
 	return active_event.duplicate(
 		true
 	)
+	
+func get_last_event_result() -> Dictionary:
+	return last_event_result.duplicate(
+		true
+	)
 
 
 func get_event_time_remaining() -> float:
@@ -452,8 +490,126 @@ func reset_crawler_events() -> void:
 	event_response_timer.stop()
 
 	active_event.clear()
+	last_event_result.clear()
 
 	last_event_id = &""
+	
+	
+	
+# -------------------------------------------------------------------
+# Event effects
+# -------------------------------------------------------------------
+
+func apply_primary_event_effect(
+	event_id: StringName
+) -> Dictionary:
+	match event_id:
+		EVENT_HIGH_TRAFFIC_DOMAIN:
+			return apply_high_traffic_domain_effect()
+
+		EVENT_COMMERCIAL_TREND:
+			return apply_commercial_trend_effect()
+
+		EVENT_USER_CLUSTER:
+			return apply_user_cluster_effect()
+
+		EVENT_CLEAN_CRAWL_PATH:
+			return apply_clean_crawl_path_effect()
+
+	return {
+		"title": "EVENT RESOLVED",
+		"message": "No effect was applied.",
+		"primary": true
+	}
+
+
+func apply_high_traffic_domain_effect() -> Dictionary:
+	var work_added: int = (
+		CrawlerManager.apply_crawler_event_work(
+			HIGH_TRAFFIC_WORK_REWARD
+		)
+	)
+
+	var load_added: float = (
+		CrawlerManager.apply_crawler_event_server_load(
+			HIGH_TRAFFIC_LOAD_COST
+		)
+	)
+
+	return {
+		"title": "EVENT RESOLVED",
+		"message":
+			"+%d WORK | +%.0f SERVER LOAD"
+			% [
+				work_added,
+				load_added
+			],
+		"primary": true
+	}
+
+
+func apply_commercial_trend_effect() -> Dictionary:
+	GameState.set_revenue(
+		GameState.revenue
+		+ COMMERCIAL_TREND_REVENUE_REWARD
+	)
+
+	var load_added: float = (
+		CrawlerManager.apply_crawler_event_server_load(
+			COMMERCIAL_TREND_LOAD_COST
+		)
+	)
+
+	return {
+		"title": "EVENT RESOLVED",
+		"message":
+			"+$%.0f REVENUE | +%.0f SERVER LOAD"
+			% [
+				COMMERCIAL_TREND_REVENUE_REWARD,
+				load_added
+			],
+		"primary": true
+	}
+
+
+func apply_user_cluster_effect() -> Dictionary:
+	GameState.set_active_users(
+		GameState.active_users
+		+ USER_CLUSTER_USER_REWARD
+	)
+
+	var load_added: float = (
+		CrawlerManager.apply_crawler_event_server_load(
+			USER_CLUSTER_LOAD_COST
+		)
+	)
+
+	return {
+		"title": "EVENT RESOLVED",
+		"message":
+			"+%d ACTIVE USERS | +%.0f SERVER LOAD"
+			% [
+				USER_CLUSTER_USER_REWARD,
+				load_added
+			],
+		"primary": true
+	}
+
+
+func apply_clean_crawl_path_effect() -> Dictionary:
+	var work_added: int = (
+		CrawlerManager.apply_crawler_event_work(
+			CLEAN_CRAWL_PATH_WORK_REWARD
+		)
+	)
+
+	return {
+		"title": "EVENT RESOLVED",
+		"message":
+			"+%d WORK | NO EXTRA LOAD"
+			% work_added,
+		"primary": true
+	}
 	
 
 # -------------------------------------------------------------------
@@ -472,33 +628,63 @@ func resolve_active_event(
 	):
 		return false
 
+	var resolved_event: Dictionary = (
+		active_event.duplicate(true)
+	)
+
 	var event_id: StringName = StringName(
-		active_event.get(
+		resolved_event.get(
 			"id",
 			&""
 		)
 	)
 
+	var event_title: String = str(
+		resolved_event.get(
+			"title",
+			"Unknown Event"
+		)
+	)
+
 	event_response_timer.stop()
+
+	# Clear the active event before applying effects.
+	# An effect may complete the crawl or trigger an
+	# overload, both of which can emit crawler signals.
+	active_event.clear()
+
+	crawler_event_cleared.emit()
+
+	if action_id == ACTION_PRIMARY:
+		last_event_result = (
+			apply_primary_event_effect(
+				event_id
+			)
+		)
+
+	else:
+		last_event_result = {
+			"title": "EVENT PASSED",
+			"message": "No changes applied.",
+			"primary": false
+		}
 
 	print(
 		"CrawlerEventManager: event resolved - ",
-		active_event.get(
-			"title",
-			"Unknown Event"
-		),
+		event_title,
 		" | Action: ",
-		action_id
+		action_id,
+		" | Result: ",
+		last_event_result.get(
+			"message",
+			"No result"
+		)
 	)
-
-	active_event.clear()
 
 	crawler_event_resolved.emit(
 		event_id,
 		action_id
 	)
-
-	crawler_event_cleared.emit()
 
 	synchronize_event_generation()
 
