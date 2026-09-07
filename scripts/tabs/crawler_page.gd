@@ -78,14 +78,15 @@ const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
 	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
 	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
 	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CrawlerControlLayout/AutoCrawlAssistStatusLabel"
+	+ "CrawlerControlLayout/CrawlerAutomationStatusRow/"
+	+ "AutoCrawlAssistStatusLabel"
 ) as Label
 
 @onready var crawler_priority_status_label: Label = get_node(
 	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
 	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
 	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CrawlerControlLayout/CrawlerPriorityRow/"
+	+ "CrawlerControlLayout/CrawlerAutomationStatusRow/"
 	+ "CrawlerPriorityStatusLabel"
 ) as Label
 
@@ -93,24 +94,24 @@ const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
 	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
 	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
 	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CrawlerControlLayout/CrawlerPriorityRow/"
-	+ "CrawlerPriorityButtonsRow/SpeedPriorityButton"
+	+ "CrawlerControlLayout/CrawlerPriorityButtonsRow/"
+	+ "SpeedPriorityButton"
 ) as Button
 
 @onready var balanced_priority_button: Button = get_node(
 	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
 	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
 	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CrawlerControlLayout/CrawlerPriorityRow/"
-	+ "CrawlerPriorityButtonsRow/BalancedPriorityButton"
+	+ "CrawlerControlLayout/CrawlerPriorityButtonsRow/"
+	+ "BalancedPriorityButton"
 ) as Button
 
 @onready var efficiency_priority_button: Button = get_node(
 	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
 	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
 	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CrawlerControlLayout/CrawlerPriorityRow/"
-	+ "CrawlerPriorityButtonsRow/EfficiencyPriorityButton"
+	+ "CrawlerControlLayout/CrawlerPriorityButtonsRow/"
+	+ "EfficiencyPriorityButton"
 ) as Button
 
 
@@ -978,7 +979,7 @@ func refresh_crawler_priority_ui() -> void:
 		efficiency_priority_button.button_pressed = false
 
 		crawler_priority_status_label.text = (
-			"Priority: LOCKED | Unlocks at Tier 2"
+			"LOCKED | Unlocks at Tier 2"
 		)
 
 		crawler_priority_status_label.add_theme_color_override(
@@ -1029,7 +1030,7 @@ func refresh_crawler_priority_ui() -> void:
 	)
 
 	crawler_priority_status_label.text = (
-		"Priority: %s | Work: %s | Load: %s"
+		"%s | Work: %s | Load: %s"
 		% [
 			display_name.to_upper(),
 			crawl_modifier_text,

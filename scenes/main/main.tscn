@@ -958,48 +958,43 @@ tooltip_text = "Click repeatedly while the crawler is running to add manual inde
 disabled = true
 text = "Manual Crawl Assist"
 
-[node name="AutoCrawlAssistStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout" unique_id=316639470]
+[node name="CrawlerAutomationStatusRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout" unique_id=685822785]
 layout_mode = 2
+
+[node name="AutoCrawlAssistStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerAutomationStatusRow" unique_id=316639470]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Auto Crawl Assist: LOCKED"
-horizontal_alignment = 1
 
-[node name="CrawlerPriorityRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout" unique_id=257951495]
+[node name="CrawlerPriorityStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerAutomationStatusRow" unique_id=906092957]
 layout_mode = 2
-theme_override_constants/separation = 8
+size_flags_horizontal = 3
+text = "LOCKED | Unlocks at Tier 2"
+horizontal_alignment = 2
 
-[node name="CrawlerPriorityStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow" unique_id=906092957]
-layout_mode = 2
-text = "Crawler Priority: LOCKED - Unlocks at Tier 2"
-
-[node name="CrawlerPriorityButtonsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow" unique_id=1928257883]
+[node name="CrawlerPriorityButtonsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout" unique_id=1928257883]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="SpeedPriorityButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow/CrawlerPriorityButtonsRow" unique_id=337654150]
+[node name="SpeedPriorityButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityButtonsRow" unique_id=337654150]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
 disabled = true
 text = "SPEED"
 
-[node name="BalancedPriorityButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow/CrawlerPriorityButtonsRow" unique_id=1718862591]
+[node name="BalancedPriorityButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityButtonsRow" unique_id=1718862591]
 layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
 text = "BALANCED"
 
-[node name="EfficiencyPriorityButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow/CrawlerPriorityButtonsRow" unique_id=1785071968]
+[node name="EfficiencyPriorityButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityButtonsRow" unique_id=1785071968]
 layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
 text = "EFFICIENCY"
-
-[node name="CrawlerPriorityEffectLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow" unique_id=1603570069]
-visible = false
-layout_mode = 2
-text = "Unlocks at Tier 2."
-horizontal_alignment = 2
-autowrap_mode = 2
 
 [node name="CrawlJobSelectionContainer" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(256051415, 287423228) index="1" unique_id=773536557]
 layout_mode = 2
@@ -1007,6 +1002,7 @@ layout_mode = 2
 [node name="CrawlJobSelectionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer" unique_id=481396843]
 layout_mode = 2
 text = "CRAWL JOB"
+horizontal_alignment = 1
 
 [node name="CrawlJobSelectionButtonRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer" unique_id=496584244]
 layout_mode = 2
@@ -1079,9 +1075,10 @@ theme_override_font_sizes/font_size = 11
 text = "JOB PROGRESS"
 
 [node name="CurrentJobProgressBar" type="ProgressBar" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout" unique_id=835831724]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 size_flags_vertical = 1
+theme_override_font_sizes/font_size = 12
 step = 1.0
 
 [node name="CurrentJobProcessedRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout" unique_id=1908815672]

@@ -144,7 +144,12 @@ func build_save_data() -> Dictionary:
 			"selected_job_id":
 				str(
 				CrawlerManager.get_selected_job_id()
-			)
+			),
+			
+			"priority_id":
+				str(
+					CrawlerManager.get_current_crawler_priority()
+				)
 		},
 
 		"server_upgrades": {
@@ -579,6 +584,10 @@ func restore_save_data(
 	restore_objective(
 		objective_data
 	)
+	
+	restore_crawler_priority(
+		crawler_data
+	)
 
 	restore_tutorial(
 		tutorial_data
@@ -787,6 +796,47 @@ func restore_crawler(
 		saved_job_id
 	)
 	
+# -------------------------------------------------------------------
+# Restore Crawler Priority
+# -------------------------------------------------------------------
+
+func restore_crawler_priority(
+	data: Dictionary
+) -> void:
+	var saved_priority: StringName = StringName(
+		str(
+			data.get(
+				"priority_id",
+				"balanced"
+			)
+		)
+	)
+
+	# Protect against an invalid or outdated value.
+	if not CrawlerManager.is_crawler_priority_valid(
+		saved_priority
+	):
+		push_warning(
+			"SaveManager: Invalid crawler priority '%s'. "
+			+ "Falling back to Balanced."
+			% str(saved_priority)
+		)
+
+		saved_priority = (
+			CrawlerManager.PRIORITY_BALANCED
+		)
+
+	# Speed and Efficiency are Tier 2 mechanics.
+	# A Tier 1 save must always use Balanced.
+	if not CrawlerManager.is_crawler_priority_unlocked():
+		saved_priority = (
+			CrawlerManager.PRIORITY_BALANCED
+		)
+
+	CrawlerManager.set_crawler_priority(
+		saved_priority
+	)
+	
 func restore_objective(
 	data: Dictionary
 ) -> void:
@@ -896,6 +946,13 @@ func connect_event_autosave_signals() -> void:
 			_on_crawl_job_completed_for_save
 		)
 		
+	if not CrawlerManager.crawler_priority_changed.is_connected(
+		_on_crawler_priority_changed_for_save
+	):
+		CrawlerManager.crawler_priority_changed.connect(
+			_on_crawler_priority_changed_for_save
+		)
+		
 	if not TutorialManager.tutorial_step_changed.is_connected(
 		_on_tutorial_step_changed_for_save
 	):
@@ -941,6 +998,11 @@ func _on_objective_completed_for_save(
 
 
 func _on_crawl_job_completed_for_save() -> void:
+	request_event_autosave()
+	
+func _on_crawler_priority_changed_for_save(
+	_new_priority: StringName
+) -> void:
 	request_event_autosave()
 	
 func _on_tutorial_step_changed_for_save(
