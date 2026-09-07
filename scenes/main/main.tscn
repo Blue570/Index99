@@ -1148,6 +1148,52 @@ layout_mode = 2
 text = "0%"
 horizontal_alignment = 2
 
+[node name="LiveCrawlerEventPanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn" unique_id=11044416 instance=ExtResource("4_l3cfh")]
+layout_mode = 2
+section_title = "Live Crawler Event"
+status_text = "LIVE"
+show_status = true
+minimum_panel_height = 175.0
+
+[node name="CrawlerEventLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(11044416, 287423228) index="0" unique_id=690054150]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="CrawlerEventTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout" unique_id=362036956]
+layout_mode = 2
+text = "MONITORING CRAWL ACTIVITY"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CrawlerEventDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout" unique_id=680423228]
+layout_mode = 2
+text = "No active crawler event."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="CrawlerEventTimerLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout" unique_id=1159233904]
+layout_mode = 2
+text = "Waiting for event..."
+horizontal_alignment = 1
+
+[node name="CrawlerEventButtonsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout" unique_id=1438505326]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CrawlerEventPrimaryButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout/CrawlerEventButtonsRow" unique_id=1821398159]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "ACTION"
+
+[node name="CrawlerEventSecondaryButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout/CrawlerEventButtonsRow" unique_id=1467890911]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "SKIP"
+
 [node name="CrawlQueuePanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn" unique_id=698738578 instance=ExtResource("4_l3cfh")]
 layout_mode = 2
 size_flags_vertical = 3
@@ -2721,6 +2767,7 @@ layout_mode = 1
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel"]

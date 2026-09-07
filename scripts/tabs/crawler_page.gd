@@ -87,6 +87,8 @@ const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
 	"res://audio/manual_assist_click.wav"
 )
 
+var crawler_event_ui_timer: Timer = null
+
 
 # -------------------------------------------------------------------
 # Current Crawl Job panel
@@ -207,6 +209,53 @@ const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
 
 
 # -------------------------------------------------------------------
+# Live Crawler Event panel
+# -------------------------------------------------------------------
+
+@onready var live_crawler_event_panel: SectionPanel = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerRightColumn/LiveCrawlerEventPanel"
+) as SectionPanel
+
+@onready var crawler_event_title_label: Label = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerEventLayout/CrawlerEventTitleLabel"
+) as Label
+
+@onready var crawler_event_description_label: Label = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerEventLayout/CrawlerEventDescriptionLabel"
+) as Label
+
+@onready var crawler_event_timer_label: Label = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerEventLayout/CrawlerEventTimerLabel"
+) as Label
+
+@onready var crawler_event_primary_button: Button = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerEventLayout/CrawlerEventButtonsRow/"
+	+ "CrawlerEventPrimaryButton"
+) as Button
+
+@onready var crawler_event_secondary_button: Button = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerEventLayout/CrawlerEventButtonsRow/"
+	+ "CrawlerEventSecondaryButton"
+) as Button
+
+
+# -------------------------------------------------------------------
 # Setup
 # -------------------------------------------------------------------
 
@@ -219,6 +268,9 @@ func _ready() -> void:
 	setup_manual_assist_feedback()
 	setup_manual_assist_audio()
 	
+	setup_crawler_event_ui_timer()
+	connect_crawler_event_signals()
+	
 	refresh_crawler_page()
 	connect_progression_signals()
 
@@ -228,6 +280,25 @@ func setup_progress_bar() -> void:
 	current_job_progress_bar.max_value = 100.0
 	current_job_progress_bar.step = 1.0
 	current_job_progress_bar.show_percentage = true
+	
+func setup_crawler_event_ui_timer() -> void:
+	crawler_event_ui_timer = Timer.new()
+
+	crawler_event_ui_timer.name = (
+		"CrawlerEventUITimer"
+	)
+
+	crawler_event_ui_timer.wait_time = 0.25
+	crawler_event_ui_timer.one_shot = false
+	crawler_event_ui_timer.autostart = false
+
+	add_child(
+		crawler_event_ui_timer
+	)
+
+	crawler_event_ui_timer.timeout.connect(
+		_on_crawler_event_ui_timer_timeout
+	)
 
 
 func connect_buttons() -> void:
@@ -273,6 +344,20 @@ func connect_buttons() -> void:
 			_on_deep_crawl_button_pressed
 	)
 	
+	if not crawler_event_primary_button.pressed.is_connected(
+		_on_crawler_event_primary_button_pressed
+	):
+		crawler_event_primary_button.pressed.connect(
+			_on_crawler_event_primary_button_pressed
+		)
+
+	if not crawler_event_secondary_button.pressed.is_connected(
+		_on_crawler_event_secondary_button_pressed
+	):
+		crawler_event_secondary_button.pressed.connect(
+			_on_crawler_event_secondary_button_pressed
+		)
+	
 func _on_basic_crawl_button_pressed() -> void:
 	var selection_changed: bool = (
 		CrawlerManager.select_crawl_job(
@@ -304,6 +389,17 @@ func _on_deep_crawl_button_pressed() -> void:
 
 	if selection_changed:
 		refresh_crawler_page()
+		
+func _on_crawler_event_primary_button_pressed() -> void:
+	CrawlerEventManager.resolve_active_event(
+		CrawlerEventManager.ACTION_PRIMARY
+	)
+
+
+func _on_crawler_event_secondary_button_pressed() -> void:
+	CrawlerEventManager.resolve_active_event(
+		CrawlerEventManager.ACTION_SECONDARY
+	)
 		
 func refresh_crawl_job_selection() -> void:
 	var selected_job_id: StringName = (
@@ -457,6 +553,35 @@ func connect_crawler_signals() -> void:
 		AutomationManager.auto_crawl_assist_level_changed.connect(
 			_on_auto_crawl_assist_level_changed
 		)
+		
+func connect_crawler_event_signals() -> void:
+	if not CrawlerEventManager.crawler_event_started.is_connected(
+		_on_crawler_event_started
+	):
+		CrawlerEventManager.crawler_event_started.connect(
+			_on_crawler_event_started
+		)
+
+	if not CrawlerEventManager.crawler_event_cleared.is_connected(
+		_on_crawler_event_cleared
+	):
+		CrawlerEventManager.crawler_event_cleared.connect(
+			_on_crawler_event_cleared
+		)
+
+	if not CrawlerEventManager.crawler_event_expired.is_connected(
+		_on_crawler_event_expired
+	):
+		CrawlerEventManager.crawler_event_expired.connect(
+			_on_crawler_event_expired
+		)
+
+	if not CrawlerEventManager.crawler_event_resolved.is_connected(
+		_on_crawler_event_resolved
+	):
+		CrawlerEventManager.crawler_event_resolved.connect(
+			_on_crawler_event_resolved
+		)
 
 
 func connect_game_state_signals() -> void:
@@ -582,6 +707,17 @@ func refresh_crawler_page() -> void:
 	refresh_crawl_job_selection()
 	refresh_auto_crawl_assist_status()
 	refresh_effective_crawler_rate()
+	
+	refresh_crawler_event_ui()
+	
+func refresh_crawler_event_ui() -> void:
+	if CrawlerEventManager.has_active_event():
+		show_crawler_event(
+			CrawlerEventManager.get_active_event()
+		)
+		return
+
+	show_crawler_event_idle_state()
 
 
 # -------------------------------------------------------------------
@@ -1103,6 +1239,143 @@ func _on_auto_crawl_assist_level_changed(
 ) -> void:
 	refresh_auto_crawl_assist_status()
 	refresh_effective_crawler_rate()
+	
+func _on_crawler_event_started(
+	event_data: Dictionary
+) -> void:
+	show_crawler_event(
+		event_data
+	)
+	
+func show_crawler_event(
+	event_data: Dictionary
+) -> void:
+	var event_title: String = str(
+		event_data.get(
+			"title",
+			"CRAWLER EVENT"
+		)
+	)
+
+	var event_description: String = str(
+		event_data.get(
+			"description",
+			"An event has occurred."
+		)
+	)
+
+	var primary_action: String = str(
+		event_data.get(
+			"primary_action",
+			"Action"
+		)
+	)
+
+	var secondary_action: String = str(
+		event_data.get(
+			"secondary_action",
+			"Skip"
+		)
+	)
+
+	crawler_event_title_label.text = (
+		event_title
+	)
+
+	crawler_event_description_label.text = (
+		event_description
+	)
+
+	crawler_event_primary_button.text = (
+		primary_action
+	)
+
+	crawler_event_secondary_button.text = (
+		secondary_action
+	)
+
+	crawler_event_primary_button.disabled = false
+	crawler_event_secondary_button.disabled = false
+
+	live_crawler_event_panel.set_status(
+		"EVENT",
+		ThemeManager.STATUS_WARNING
+	)
+
+	refresh_crawler_event_countdown()
+
+	crawler_event_ui_timer.start()
+	
+func _on_crawler_event_ui_timer_timeout() -> void:
+	refresh_crawler_event_countdown()
+	
+func refresh_crawler_event_countdown() -> void:
+	if not CrawlerEventManager.has_active_event():
+		crawler_event_ui_timer.stop()
+		return
+
+	var time_remaining: float = (
+		CrawlerEventManager
+		.get_event_time_remaining()
+	)
+
+	var seconds_remaining: int = maxi(
+		ceili(time_remaining),
+		0
+	)
+
+	crawler_event_timer_label.text = (
+		"Expires in: %d sec"
+		% seconds_remaining
+	)
+	
+func show_crawler_event_idle_state() -> void:
+	if crawler_event_ui_timer != null:
+		crawler_event_ui_timer.stop()
+
+	crawler_event_title_label.text = (
+		"MONITORING CRAWL ACTIVITY"
+	)
+
+	crawler_event_description_label.text = (
+		"No active crawler event."
+	)
+
+	crawler_event_timer_label.text = (
+		"Waiting for event..."
+	)
+
+	crawler_event_primary_button.text = (
+		"ACTION"
+	)
+
+	crawler_event_secondary_button.text = (
+		"SKIP"
+	)
+
+	crawler_event_primary_button.disabled = true
+	crawler_event_secondary_button.disabled = true
+
+	live_crawler_event_panel.set_status(
+		"MONITORING",
+		ThemeManager.TEXT_DISABLED
+	)
+	
+func _on_crawler_event_cleared() -> void:
+	show_crawler_event_idle_state()
+
+
+func _on_crawler_event_expired(
+	_event_id: StringName
+) -> void:
+	show_crawler_event_idle_state()
+
+
+func _on_crawler_event_resolved(
+	_event_id: StringName,
+	_action_id: StringName
+) -> void:
+	show_crawler_event_idle_state()
 
 
 # -------------------------------------------------------------------
