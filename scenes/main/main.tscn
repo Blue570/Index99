@@ -963,6 +963,44 @@ layout_mode = 2
 text = "Auto Crawl Assist: LOCKED"
 horizontal_alignment = 1
 
+[node name="CrawlerPriorityRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout" unique_id=257951495]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CrawlerPriorityStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow" unique_id=906092957]
+layout_mode = 2
+text = "Crawler Priority: LOCKED - Unlocks at Tier 2"
+
+[node name="CrawlerPriorityButtonsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow" unique_id=1928257883]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="SpeedPriorityButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow/CrawlerPriorityButtonsRow" unique_id=337654150]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "SPEED"
+
+[node name="BalancedPriorityButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow/CrawlerPriorityButtonsRow" unique_id=1718862591]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "BALANCED"
+
+[node name="EfficiencyPriorityButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow/CrawlerPriorityButtonsRow" unique_id=1785071968]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "EFFICIENCY"
+
+[node name="CrawlerPriorityEffectLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerPriorityRow" unique_id=1603570069]
+visible = false
+layout_mode = 2
+text = "Unlocks at Tier 2."
+horizontal_alignment = 2
+autowrap_mode = 2
+
 [node name="CrawlJobSelectionContainer" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(256051415, 287423228) index="1" unique_id=773536557]
 layout_mode = 2
 

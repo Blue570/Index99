@@ -81,6 +81,38 @@ const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
 	+ "CrawlerControlLayout/AutoCrawlAssistStatusLabel"
 ) as Label
 
+@onready var crawler_priority_status_label: Label = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerControlLayout/CrawlerPriorityRow/"
+	+ "CrawlerPriorityStatusLabel"
+) as Label
+
+@onready var speed_priority_button: Button = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerControlLayout/CrawlerPriorityRow/"
+	+ "CrawlerPriorityButtonsRow/SpeedPriorityButton"
+) as Button
+
+@onready var balanced_priority_button: Button = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerControlLayout/CrawlerPriorityRow/"
+	+ "CrawlerPriorityButtonsRow/BalancedPriorityButton"
+) as Button
+
+@onready var efficiency_priority_button: Button = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerControlLayout/CrawlerPriorityRow/"
+	+ "CrawlerPriorityButtonsRow/EfficiencyPriorityButton"
+) as Button
+
 
 # -------------------------------------------------------------------
 # Current Crawl Job Nodes
@@ -251,6 +283,12 @@ const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
 	+ "CrawlerEventSecondaryButton"
 ) as Button
 
+# -------------------------------------------------------------------
+# Crawler Priority UI Runtime State
+# -------------------------------------------------------------------
+
+var crawler_priority_button_group: ButtonGroup = null
+
 
 # -------------------------------------------------------------------
 # Manual Crawl Assist Runtime State
@@ -283,6 +321,8 @@ const CRAWLER_EVENT_RESULT_DURATION_SECONDS: float = 1.50
 
 func _ready() -> void:
 	setup_progress_bar()
+	setup_crawler_priority_buttons()
+	
 	connect_buttons()
 	connect_crawler_signals()
 	connect_game_state_signals()
@@ -307,6 +347,45 @@ func setup_progress_bar() -> void:
 	current_job_progress_bar.max_value = 100.0
 	current_job_progress_bar.step = 1.0
 	current_job_progress_bar.show_percentage = true
+	
+func setup_crawler_priority_buttons() -> void:
+	crawler_priority_button_group = ButtonGroup.new()
+
+	crawler_priority_button_group.allow_unpress = false
+
+	speed_priority_button.toggle_mode = true
+	balanced_priority_button.toggle_mode = true
+	efficiency_priority_button.toggle_mode = true
+
+	speed_priority_button.button_group = (
+		crawler_priority_button_group
+	)
+
+	balanced_priority_button.button_group = (
+		crawler_priority_button_group
+	)
+
+	efficiency_priority_button.button_group = (
+		crawler_priority_button_group
+	)
+
+	speed_priority_button.tooltip_text = (
+		"Speed Priority\n"
+		+ "+25% automatic work\n"
+		+ "+30% automatic server load"
+	)
+
+	balanced_priority_button.tooltip_text = (
+		"Balanced Priority\n"
+		+ "Normal automatic work\n"
+		+ "Normal automatic server load"
+	)
+
+	efficiency_priority_button.tooltip_text = (
+		"Efficiency Priority\n"
+		+ "-15% automatic work\n"
+		+ "-30% automatic server load"
+	)
 
 
 func setup_manual_assist_feedback() -> void:
@@ -421,6 +500,7 @@ func setup_crawler_event_result_timer() -> void:
 	crawler_event_result_timer.timeout.connect(
 		_on_crawler_event_result_timer_timeout
 	)
+	
 
 
 # -------------------------------------------------------------------
@@ -483,6 +563,27 @@ func connect_buttons() -> void:
 		crawler_event_secondary_button.pressed.connect(
 			_on_crawler_event_secondary_button_pressed
 		)
+		
+	if not speed_priority_button.pressed.is_connected(
+		_on_speed_priority_button_pressed
+	):
+		speed_priority_button.pressed.connect(
+			_on_speed_priority_button_pressed
+		)
+
+	if not balanced_priority_button.pressed.is_connected(
+		_on_balanced_priority_button_pressed
+	):
+		balanced_priority_button.pressed.connect(
+			_on_balanced_priority_button_pressed
+		)
+
+	if not efficiency_priority_button.pressed.is_connected(
+		_on_efficiency_priority_button_pressed
+	):
+		efficiency_priority_button.pressed.connect(
+			_on_efficiency_priority_button_pressed
+		)
 
 
 func connect_crawler_signals() -> void:
@@ -512,6 +613,13 @@ func connect_crawler_signals() -> void:
 	):
 		AutomationManager.auto_crawl_assist_level_changed.connect(
 			_on_auto_crawl_assist_level_changed
+		)
+		
+	if not CrawlerManager.crawler_priority_changed.is_connected(
+		_on_crawler_priority_changed
+	):
+		CrawlerManager.crawler_priority_changed.connect(
+			_on_crawler_priority_changed
 		)
 
 
@@ -605,9 +713,10 @@ func refresh_crawler_page() -> void:
 	)
 	
 	refresh_crawl_job_selection()
+	refresh_crawler_priority_ui()
 	refresh_auto_crawl_assist_status()
 	refresh_effective_crawler_rate()
-	
+
 	refresh_crawler_event_ui()
 
 
@@ -796,8 +905,190 @@ func _on_progression_tier_changed(
 	_new_tier: int
 ) -> void:
 	refresh_crawl_job_selection()
+	refresh_crawler_priority_ui()
 	refresh_auto_crawl_assist_status()
 	refresh_effective_crawler_rate()
+	
+# -------------------------------------------------------------------
+# Crawler Priority Controls and Display
+# -------------------------------------------------------------------
+
+func _on_speed_priority_button_pressed() -> void:
+	select_crawler_priority(
+		CrawlerManager.PRIORITY_SPEED
+	)
+
+
+func _on_balanced_priority_button_pressed() -> void:
+	select_crawler_priority(
+		CrawlerManager.PRIORITY_BALANCED
+	)
+
+
+func _on_efficiency_priority_button_pressed() -> void:
+	select_crawler_priority(
+		CrawlerManager.PRIORITY_EFFICIENCY
+	)
+
+
+func select_crawler_priority(
+	priority_id: StringName
+) -> void:
+	CrawlerManager.set_crawler_priority(
+		priority_id
+	)
+
+	refresh_crawler_priority_ui()
+	refresh_auto_crawl_assist_status()
+	refresh_effective_crawler_rate()
+
+
+func _on_crawler_priority_changed(
+	_new_priority: StringName
+) -> void:
+	refresh_crawler_priority_ui()
+	refresh_auto_crawl_assist_status()
+	refresh_effective_crawler_rate()
+
+
+func refresh_crawler_priority_ui() -> void:
+	var priority_unlocked: bool = (
+		CrawlerManager.is_crawler_priority_unlocked()
+	)
+
+	var current_priority: StringName = (
+		CrawlerManager.get_current_crawler_priority()
+	)
+
+	speed_priority_button.disabled = (
+		not priority_unlocked
+	)
+
+	balanced_priority_button.disabled = (
+		not priority_unlocked
+	)
+
+	efficiency_priority_button.disabled = (
+		not priority_unlocked
+	)
+
+	if not priority_unlocked:
+		speed_priority_button.button_pressed = false
+		balanced_priority_button.button_pressed = false
+		efficiency_priority_button.button_pressed = false
+
+		crawler_priority_status_label.text = (
+			"Priority: LOCKED | Unlocks at Tier 2"
+		)
+
+		crawler_priority_status_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.TEXT_DISABLED
+		)
+
+		return
+
+	speed_priority_button.button_pressed = (
+		current_priority
+		== CrawlerManager.PRIORITY_SPEED
+	)
+
+	balanced_priority_button.button_pressed = (
+		current_priority
+		== CrawlerManager.PRIORITY_BALANCED
+	)
+
+	efficiency_priority_button.button_pressed = (
+		current_priority
+		== CrawlerManager.PRIORITY_EFFICIENCY
+	)
+
+	var display_name: String = (
+		CrawlerManager
+		.get_current_crawler_priority_display_name()
+	)
+
+	var crawl_multiplier: float = (
+		CrawlerManager.get_priority_crawl_multiplier()
+	)
+
+	var load_multiplier: float = (
+		CrawlerManager.get_priority_load_multiplier()
+	)
+
+	var crawl_modifier_text: String = (
+		format_priority_multiplier(
+			crawl_multiplier
+		)
+	)
+
+	var load_modifier_text: String = (
+		format_priority_multiplier(
+			load_multiplier
+		)
+	)
+
+	crawler_priority_status_label.text = (
+		"Priority: %s | Work: %s | Load: %s"
+		% [
+			display_name.to_upper(),
+			crawl_modifier_text,
+			load_modifier_text
+		]
+	)
+
+	refresh_crawler_priority_color(
+		current_priority
+	)
+
+
+func format_priority_multiplier(
+	multiplier: float
+) -> String:
+	var modifier_percent: int = roundi(
+		(multiplier - 1.0)
+		* 100.0
+	)
+
+	if modifier_percent > 0:
+		return (
+			"+%d%%"
+			% modifier_percent
+		)
+
+	if modifier_percent < 0:
+		return (
+			"%d%%"
+			% modifier_percent
+		)
+
+	return "Normal"
+
+
+func refresh_crawler_priority_color(
+	priority_id: StringName
+) -> void:
+	var priority_color: Color = (
+		ThemeManager.STATUS_INFORMATION
+	)
+
+	if priority_id == CrawlerManager.PRIORITY_SPEED:
+		priority_color = (
+			ThemeManager.STATUS_WARNING
+		)
+
+	elif (
+		priority_id
+		== CrawlerManager.PRIORITY_EFFICIENCY
+	):
+		priority_color = (
+			ThemeManager.STATUS_SUCCESS
+		)
+
+	crawler_priority_status_label.add_theme_color_override(
+		"font_color",
+		priority_color
+	)
 
 
 # -------------------------------------------------------------------
