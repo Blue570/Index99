@@ -288,18 +288,28 @@ func get_auto_assist_load_per_second_for_level(
 
 
 func get_auto_assist_work_per_second() -> float:
-	return (
+	var base_work_per_second: float = (
 		get_auto_assist_work_per_second_for_level(
 			auto_crawl_assist_level
 		)
 	)
 
+	return (
+		base_work_per_second
+		* CrawlerManager.get_priority_crawl_multiplier()
+	)
+
 
 func get_auto_assist_load_per_second() -> float:
-	return (
+	var base_load_per_second: float = (
 		get_auto_assist_load_per_second_for_level(
 			auto_crawl_assist_level
 		)
+	)
+
+	return (
+		base_load_per_second
+		* CrawlerManager.get_priority_load_multiplier()
 	)
 
 
@@ -323,7 +333,7 @@ func get_auto_assist_load_per_tick() -> float:
 
 func get_effective_total_crawl_rate() -> float:
 	var total_rate: float = (
-		GameState.crawler_rate
+		CrawlerManager.get_effective_automatic_crawl_rate()
 	)
 
 	if is_auto_assist_active():

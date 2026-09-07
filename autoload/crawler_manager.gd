@@ -27,6 +27,10 @@ signal crawl_job_selection_changed(
 	target_pages: int
 )
 
+signal crawler_priority_changed(
+	priority_id: StringName
+)
+
 
 # -------------------------------------------------------------------
 # Temporary balance values
@@ -62,6 +66,35 @@ const REVENUE_PER_PAGE: float = 1.0
 const ACTIVE_USERS_PER_PAGE: float = 0.15
 
 const BASE_CRAWLER_RATE: float = 1.0
+
+
+# -------------------------------------------------------------------
+# Crawler Priorities
+# -------------------------------------------------------------------
+
+const PRIORITY_SPEED: StringName = &"speed"
+const PRIORITY_BALANCED: StringName = &"balanced"
+const PRIORITY_EFFICIENCY: StringName = &"efficiency"
+
+const CRAWLER_PRIORITIES: Dictionary = {
+	PRIORITY_SPEED: {
+		"display_name": "Speed",
+		"crawl_multiplier": 1.25,
+		"load_multiplier": 1.30
+	},
+
+	PRIORITY_BALANCED: {
+		"display_name": "Balanced",
+		"crawl_multiplier": 1.00,
+		"load_multiplier": 1.00
+	},
+
+	PRIORITY_EFFICIENCY: {
+		"display_name": "Efficiency",
+		"crawl_multiplier": 0.85,
+		"load_multiplier": 0.70
+	}
+}
 
 # -------------------------------------------------------------------
 # Manual Crawl Assist
@@ -108,7 +141,9 @@ var active_user_fraction_buffer: float = 0.0
 
 var paused_for_overload: bool = false
 
-
+var current_crawler_priority: StringName = (
+	PRIORITY_BALANCED
+)
 
 
 
@@ -248,6 +283,129 @@ func get_selected_job_display_name() -> String:
 	)
 	
 # -------------------------------------------------------------------
+# Crawler Priorities
+# -------------------------------------------------------------------
+
+func get_current_crawler_priority() -> StringName:
+	return current_crawler_priority
+
+
+func is_crawler_priority_unlocked() -> bool:
+	return (
+		ObjectiveManager.get_current_progression_tier()
+		>= ObjectiveManager.PROGRESSION_TIER_2
+	)
+
+
+func is_crawler_priority_valid(
+	priority_id: StringName
+) -> bool:
+	return CRAWLER_PRIORITIES.has(
+		priority_id
+	)
+
+
+func set_crawler_priority(
+	priority_id: StringName
+) -> bool:
+	if not is_crawler_priority_valid(
+		priority_id
+	):
+		return false
+
+	# Balanced is always allowed internally so the
+	# crawler has a safe default before Tier 2.
+	if (
+		priority_id != PRIORITY_BALANCED
+		and not is_crawler_priority_unlocked()
+	):
+		return false
+
+	if priority_id == current_crawler_priority:
+		return false
+
+	current_crawler_priority = priority_id
+
+	crawler_priority_changed.emit(
+		current_crawler_priority
+	)
+
+	return true
+
+
+func get_crawler_priority_display_name(
+	priority_id: StringName
+) -> String:
+	if not CRAWLER_PRIORITIES.has(
+		priority_id
+	):
+		return "Balanced"
+
+	var priority_data: Dictionary = (
+		CRAWLER_PRIORITIES[priority_id]
+	)
+
+	return str(
+		priority_data.get(
+			"display_name",
+			"Balanced"
+		)
+	)
+
+
+func get_current_crawler_priority_display_name() -> String:
+	return get_crawler_priority_display_name(
+		current_crawler_priority
+	)
+
+
+func get_priority_crawl_multiplier() -> float:
+	if not CRAWLER_PRIORITIES.has(
+		current_crawler_priority
+	):
+		return 1.0
+
+	var priority_data: Dictionary = (
+		CRAWLER_PRIORITIES[
+			current_crawler_priority
+		]
+	)
+
+	return float(
+		priority_data.get(
+			"crawl_multiplier",
+			1.0
+		)
+	)
+
+
+func get_priority_load_multiplier() -> float:
+	if not CRAWLER_PRIORITIES.has(
+		current_crawler_priority
+	):
+		return 1.0
+
+	var priority_data: Dictionary = (
+		CRAWLER_PRIORITIES[
+			current_crawler_priority
+		]
+	)
+
+	return float(
+		priority_data.get(
+			"load_multiplier",
+			1.0
+		)
+	)
+
+
+func get_effective_automatic_crawl_rate() -> float:
+	return (
+		GameState.crawler_rate
+		* get_priority_crawl_multiplier()
+	)
+	
+# -------------------------------------------------------------------
 # Effective server values
 # -------------------------------------------------------------------
 
@@ -264,8 +422,13 @@ func get_effective_server_load_generation() -> float:
 		- ServerManager.get_crawler_efficiency_reduction()
 	)
 
+	var priority_adjusted_load: float = (
+		reduced_load
+		* get_priority_load_multiplier()
+	)
+
 	return maxf(
-		reduced_load,
+		priority_adjusted_load,
 		0.1
 	)
 
@@ -560,7 +723,7 @@ func _on_crawler_timer_timeout() -> void:
 		return
 
 	page_fraction_buffer += (
-		GameState.crawler_rate
+		get_effective_automatic_crawl_rate()
 		* TIMER_INTERVAL_SECONDS
 	)
 
@@ -972,6 +1135,14 @@ func reset_crawler_state() -> void:
 	active_user_fraction_buffer = 0.0
 
 	paused_for_overload = false
+	
+	current_crawler_priority = (
+		PRIORITY_BALANCED
+	)
+	
+	crawler_priority_changed.emit(
+		current_crawler_priority
+	)
 	
 	selected_job_id = CRAWL_JOB_BASIC
 
