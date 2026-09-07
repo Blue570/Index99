@@ -2,7 +2,22 @@ extends PanelContainer
 
 
 # -------------------------------------------------------------------
-# Page header
+# Manual Crawl Assist Constants
+# -------------------------------------------------------------------
+
+const MANUAL_ASSIST_FEEDBACK_DURATION: float = 0.16
+
+const MANUAL_ASSIST_FLOAT_DURATION: float = 0.55
+
+const MANUAL_ASSIST_COMBO_RESET_SECONDS: float = 0.75
+
+const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
+	"res://audio/manual_assist_click.wav"
+)
+
+
+# -------------------------------------------------------------------
+# Page Header Nodes
 # -------------------------------------------------------------------
 
 @onready var crawler_page_status_label: Label = get_node(
@@ -12,7 +27,7 @@ extends PanelContainer
 
 
 # -------------------------------------------------------------------
-# Crawler Control panel
+# Crawler Control Nodes
 # -------------------------------------------------------------------
 
 @onready var crawler_control_panel: SectionPanel = get_node(
@@ -66,32 +81,9 @@ extends PanelContainer
 	+ "CrawlerControlLayout/AutoCrawlAssistStatusLabel"
 ) as Label
 
-var manual_assist_feedback_tween: Tween = null
-
-const MANUAL_ASSIST_FEEDBACK_DURATION: float = 0.16
-
-var manual_assist_feedback_layer: Control = null
-var manual_assist_combo_label: Label = null
-var manual_assist_audio_player: AudioStreamPlayer = null
-
-var manual_assist_combo_count: int = 0
-var manual_assist_combo_generation: int = 0
-var manual_assist_float_sequence: int = 0
-
-
-const MANUAL_ASSIST_FLOAT_DURATION: float = 0.55
-
-const MANUAL_ASSIST_COMBO_RESET_SECONDS: float = 0.75
-
-const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
-	"res://audio/manual_assist_click.wav"
-)
-
-var crawler_event_ui_timer: Timer = null
-
 
 # -------------------------------------------------------------------
-# Current Crawl Job panel
+# Current Crawl Job Nodes
 # -------------------------------------------------------------------
 
 @onready var current_crawl_job_panel: SectionPanel = get_node(
@@ -140,7 +132,7 @@ var crawler_event_ui_timer: Timer = null
 
 
 # -------------------------------------------------------------------
-# Crawler Statistics panel
+# Crawler Statistics Nodes
 # -------------------------------------------------------------------
 
 @onready var statistics_indexed_pages_value_label: Label = get_node(
@@ -174,6 +166,11 @@ var crawler_event_ui_timer: Timer = null
 	+ "CrawlerStatisticsLayout/StatisticsServerLoadRow/"
 	+ "StatisticsServerLoadValueLabel"
 ) as Label
+
+
+# -------------------------------------------------------------------
+# Crawl Job Selection Nodes
+# -------------------------------------------------------------------
 
 @onready var basic_crawl_button: Button = (
 	find_child(
@@ -209,7 +206,7 @@ var crawler_event_ui_timer: Timer = null
 
 
 # -------------------------------------------------------------------
-# Live Crawler Event panel
+# Live Crawler Event Nodes
 # -------------------------------------------------------------------
 
 @onready var live_crawler_event_panel: SectionPanel = get_node(
@@ -256,7 +253,29 @@ var crawler_event_ui_timer: Timer = null
 
 
 # -------------------------------------------------------------------
-# Setup
+# Manual Crawl Assist Runtime State
+# -------------------------------------------------------------------
+
+var manual_assist_feedback_tween: Tween = null
+
+var manual_assist_feedback_layer: Control = null
+var manual_assist_combo_label: Label = null
+var manual_assist_audio_player: AudioStreamPlayer = null
+
+var manual_assist_combo_count: int = 0
+var manual_assist_combo_generation: int = 0
+var manual_assist_float_sequence: int = 0
+
+
+# -------------------------------------------------------------------
+# Crawler Event UI Runtime State
+# -------------------------------------------------------------------
+
+var crawler_event_ui_timer: Timer = null
+
+
+# -------------------------------------------------------------------
+# Lifecycle / Main Setup
 # -------------------------------------------------------------------
 
 func _ready() -> void:
@@ -275,12 +294,89 @@ func _ready() -> void:
 	connect_progression_signals()
 
 
+# -------------------------------------------------------------------
+# Setup Helpers
+# -------------------------------------------------------------------
+
 func setup_progress_bar() -> void:
 	current_job_progress_bar.min_value = 0.0
 	current_job_progress_bar.max_value = 100.0
 	current_job_progress_bar.step = 1.0
 	current_job_progress_bar.show_percentage = true
-	
+
+
+func setup_manual_assist_feedback() -> void:
+	manual_assist_feedback_layer = Control.new()
+
+	manual_assist_feedback_layer.name = (
+		"ManualAssistFeedbackLayer"
+	)
+
+	manual_assist_feedback_layer.set_anchors_and_offsets_preset(
+		Control.PRESET_FULL_RECT
+	)
+
+	manual_assist_feedback_layer.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	manual_assist_feedback_layer.z_index = 50
+
+	add_child(
+		manual_assist_feedback_layer
+	)
+
+	manual_assist_combo_label = Label.new()
+
+	manual_assist_combo_label.name = (
+		"ManualAssistComboLabel"
+	)
+
+	manual_assist_combo_label.text = ""
+
+	manual_assist_combo_label.visible = false
+
+	manual_assist_combo_label.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	manual_assist_combo_label.horizontal_alignment = (
+		HORIZONTAL_ALIGNMENT_CENTER
+	)
+
+	manual_assist_combo_label.custom_minimum_size = Vector2(
+		150.0,
+		26.0
+	)
+
+	manual_assist_combo_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_INFORMATION
+	)
+
+	manual_assist_feedback_layer.add_child(
+		manual_assist_combo_label
+	)
+
+
+func setup_manual_assist_audio() -> void:
+	manual_assist_audio_player = AudioStreamPlayer.new()
+
+	manual_assist_audio_player.name = (
+		"ManualAssistAudioPlayer"
+	)
+
+	manual_assist_audio_player.stream = (
+		MANUAL_ASSIST_CLICK_SOUND
+	)
+
+	manual_assist_audio_player.volume_db = -8.0
+
+	add_child(
+		manual_assist_audio_player
+	)
+
+
 func setup_crawler_event_ui_timer() -> void:
 	crawler_event_ui_timer = Timer.new()
 
@@ -300,6 +396,10 @@ func setup_crawler_event_ui_timer() -> void:
 		_on_crawler_event_ui_timer_timeout
 	)
 
+
+# -------------------------------------------------------------------
+# Signal Connections
+# -------------------------------------------------------------------
 
 func connect_buttons() -> void:
 	if not start_crawler_button.pressed.is_connected(
@@ -357,7 +457,168 @@ func connect_buttons() -> void:
 		crawler_event_secondary_button.pressed.connect(
 			_on_crawler_event_secondary_button_pressed
 		)
+
+
+func connect_crawler_signals() -> void:
+	if not CrawlerManager.crawler_state_changed.is_connected(
+		_on_crawler_state_changed
+	):
+		CrawlerManager.crawler_state_changed.connect(
+			_on_crawler_state_changed
+		)
+
+	if not CrawlerManager.crawler_progress_changed.is_connected(
+		_on_crawler_progress_changed
+	):
+		CrawlerManager.crawler_progress_changed.connect(
+			_on_crawler_progress_changed
+		)
+
+	if not CrawlerManager.crawl_job_completed.is_connected(
+		_on_crawl_job_completed
+	):
+		CrawlerManager.crawl_job_completed.connect(
+			_on_crawl_job_completed
+		)
+		
+	if not AutomationManager.auto_crawl_assist_level_changed.is_connected(
+		_on_auto_crawl_assist_level_changed
+	):
+		AutomationManager.auto_crawl_assist_level_changed.connect(
+			_on_auto_crawl_assist_level_changed
+		)
+
+
+func connect_crawler_event_signals() -> void:
+	if not CrawlerEventManager.crawler_event_started.is_connected(
+		_on_crawler_event_started
+	):
+		CrawlerEventManager.crawler_event_started.connect(
+			_on_crawler_event_started
+		)
+
+	if not CrawlerEventManager.crawler_event_cleared.is_connected(
+		_on_crawler_event_cleared
+	):
+		CrawlerEventManager.crawler_event_cleared.connect(
+			_on_crawler_event_cleared
+		)
+
+	if not CrawlerEventManager.crawler_event_expired.is_connected(
+		_on_crawler_event_expired
+	):
+		CrawlerEventManager.crawler_event_expired.connect(
+			_on_crawler_event_expired
+		)
+
+	if not CrawlerEventManager.crawler_event_resolved.is_connected(
+		_on_crawler_event_resolved
+	):
+		CrawlerEventManager.crawler_event_resolved.connect(
+			_on_crawler_event_resolved
+		)
+
+
+func connect_game_state_signals() -> void:
+	if not GameState.indexed_pages_changed.is_connected(
+		_on_indexed_pages_changed
+	):
+		GameState.indexed_pages_changed.connect(
+			_on_indexed_pages_changed
+		)
+
+	if not GameState.active_users_changed.is_connected(
+		_on_active_users_changed
+	):
+		GameState.active_users_changed.connect(
+			_on_active_users_changed
+		)
+
+	if not GameState.server_load_changed.is_connected(
+		_on_server_load_changed
+	):
+		GameState.server_load_changed.connect(
+			_on_server_load_changed
+		)
+
+	if not GameState.crawler_rate_changed.is_connected(
+		_on_crawler_rate_changed
+	):
+		GameState.crawler_rate_changed.connect(
+			_on_crawler_rate_changed
+		)
+
+
+func connect_progression_signals() -> void:
+	if not ObjectiveManager.progression_tier_changed.is_connected(
+		_on_progression_tier_changed
+	):
+		ObjectiveManager.progression_tier_changed.connect(
+			_on_progression_tier_changed
+	)
+
+
+# -------------------------------------------------------------------
+# Initial Page Refresh
+# -------------------------------------------------------------------
+
+func refresh_crawler_page() -> void:
+	_on_indexed_pages_changed(GameState.indexed_pages)
+	_on_active_users_changed(GameState.active_users)
+	_on_server_load_changed(GameState.server_load)
+	_on_crawler_rate_changed(GameState.crawler_rate)
+
+	update_crawler_progress(
+		CrawlerManager.current_job_pages,
+		CrawlerManager.get_current_job_target_pages(),
+		CrawlerManager.get_progress_percent()
+	)
+
+	update_crawler_state(
+		GameState.crawler_running
+	)
 	
+	refresh_crawl_job_selection()
+	refresh_auto_crawl_assist_status()
+	refresh_effective_crawler_rate()
+	
+	refresh_crawler_event_ui()
+
+
+# -------------------------------------------------------------------
+# Crawler Control Button Callbacks
+# -------------------------------------------------------------------
+
+func _on_start_crawler_button_pressed() -> void:
+	CrawlerManager.start_crawler()
+
+
+func _on_pause_crawler_button_pressed() -> void:
+	CrawlerManager.pause_crawler()
+
+
+func _on_manual_crawl_assist_button_pressed() -> void:
+	var assist_used: bool = (
+		CrawlerManager.use_manual_crawl_assist()
+	)
+
+	if not assist_used:
+		refresh_manual_crawl_assist_button()
+		return
+
+	register_manual_assist_combo()
+
+	spawn_manual_assist_floating_feedback()
+
+	play_manual_assist_sound()
+
+	play_manual_assist_click_feedback()
+
+
+# -------------------------------------------------------------------
+# Crawl Job Selection
+# -------------------------------------------------------------------
+
 func _on_basic_crawl_button_pressed() -> void:
 	var selection_changed: bool = (
 		CrawlerManager.select_crawl_job(
@@ -389,18 +650,8 @@ func _on_deep_crawl_button_pressed() -> void:
 
 	if selection_changed:
 		refresh_crawler_page()
-		
-func _on_crawler_event_primary_button_pressed() -> void:
-	CrawlerEventManager.resolve_active_event(
-		CrawlerEventManager.ACTION_PRIMARY
-	)
 
 
-func _on_crawler_event_secondary_button_pressed() -> void:
-	CrawlerEventManager.resolve_active_event(
-		CrawlerEventManager.ACTION_SECONDARY
-	)
-		
 func refresh_crawl_job_selection() -> void:
 	var selected_job_id: StringName = (
 		CrawlerManager.get_selected_job_id()
@@ -439,22 +690,8 @@ func refresh_crawl_job_selection() -> void:
 		CrawlerManager.CRAWL_JOB_DEEP,
 		selected_job_id
 	)
-	
-func connect_progression_signals() -> void:
-	if not ObjectiveManager.progression_tier_changed.is_connected(
-		_on_progression_tier_changed
-	):
-		ObjectiveManager.progression_tier_changed.connect(
-			_on_progression_tier_changed
-	)
-	
-func _on_progression_tier_changed(
-	_new_tier: int
-) -> void:
-	refresh_crawl_job_selection()
-	refresh_auto_crawl_assist_status()
-	refresh_effective_crawler_rate()
-	
+
+
 func refresh_crawl_job_button(
 	button: Button,
 	job_id: StringName,
@@ -525,229 +762,22 @@ func refresh_crawl_job_button(
 	button.disabled = selection_locked
 
 
-func connect_crawler_signals() -> void:
-	if not CrawlerManager.crawler_state_changed.is_connected(
-		_on_crawler_state_changed
-	):
-		CrawlerManager.crawler_state_changed.connect(
-			_on_crawler_state_changed
-		)
-
-	if not CrawlerManager.crawler_progress_changed.is_connected(
-		_on_crawler_progress_changed
-	):
-		CrawlerManager.crawler_progress_changed.connect(
-			_on_crawler_progress_changed
-		)
-
-	if not CrawlerManager.crawl_job_completed.is_connected(
-		_on_crawl_job_completed
-	):
-		CrawlerManager.crawl_job_completed.connect(
-			_on_crawl_job_completed
-		)
-		
-	if not AutomationManager.auto_crawl_assist_level_changed.is_connected(
-		_on_auto_crawl_assist_level_changed
-	):
-		AutomationManager.auto_crawl_assist_level_changed.connect(
-			_on_auto_crawl_assist_level_changed
-		)
-		
-func connect_crawler_event_signals() -> void:
-	if not CrawlerEventManager.crawler_event_started.is_connected(
-		_on_crawler_event_started
-	):
-		CrawlerEventManager.crawler_event_started.connect(
-			_on_crawler_event_started
-		)
-
-	if not CrawlerEventManager.crawler_event_cleared.is_connected(
-		_on_crawler_event_cleared
-	):
-		CrawlerEventManager.crawler_event_cleared.connect(
-			_on_crawler_event_cleared
-		)
-
-	if not CrawlerEventManager.crawler_event_expired.is_connected(
-		_on_crawler_event_expired
-	):
-		CrawlerEventManager.crawler_event_expired.connect(
-			_on_crawler_event_expired
-		)
-
-	if not CrawlerEventManager.crawler_event_resolved.is_connected(
-		_on_crawler_event_resolved
-	):
-		CrawlerEventManager.crawler_event_resolved.connect(
-			_on_crawler_event_resolved
-		)
-
-
-func connect_game_state_signals() -> void:
-	if not GameState.indexed_pages_changed.is_connected(
-		_on_indexed_pages_changed
-	):
-		GameState.indexed_pages_changed.connect(
-			_on_indexed_pages_changed
-		)
-
-	if not GameState.active_users_changed.is_connected(
-		_on_active_users_changed
-	):
-		GameState.active_users_changed.connect(
-			_on_active_users_changed
-		)
-
-	if not GameState.server_load_changed.is_connected(
-		_on_server_load_changed
-	):
-		GameState.server_load_changed.connect(
-			_on_server_load_changed
-		)
-
-	if not GameState.crawler_rate_changed.is_connected(
-		_on_crawler_rate_changed
-	):
-		GameState.crawler_rate_changed.connect(
-			_on_crawler_rate_changed
-		)
-		
-func setup_manual_assist_feedback() -> void:
-	manual_assist_feedback_layer = Control.new()
-
-	manual_assist_feedback_layer.name = (
-		"ManualAssistFeedbackLayer"
-	)
-
-	manual_assist_feedback_layer.set_anchors_and_offsets_preset(
-		Control.PRESET_FULL_RECT
-	)
-
-	manual_assist_feedback_layer.mouse_filter = (
-		Control.MOUSE_FILTER_IGNORE
-	)
-
-	manual_assist_feedback_layer.z_index = 50
-
-	add_child(
-		manual_assist_feedback_layer
-	)
-
-	manual_assist_combo_label = Label.new()
-
-	manual_assist_combo_label.name = (
-		"ManualAssistComboLabel"
-	)
-
-	manual_assist_combo_label.text = ""
-
-	manual_assist_combo_label.visible = false
-
-	manual_assist_combo_label.mouse_filter = (
-		Control.MOUSE_FILTER_IGNORE
-	)
-
-	manual_assist_combo_label.horizontal_alignment = (
-		HORIZONTAL_ALIGNMENT_CENTER
-	)
-
-	manual_assist_combo_label.custom_minimum_size = Vector2(
-		150.0,
-		26.0
-	)
-
-	manual_assist_combo_label.add_theme_color_override(
-		"font_color",
-		ThemeManager.STATUS_INFORMATION
-	)
-
-	manual_assist_feedback_layer.add_child(
-		manual_assist_combo_label
-	)
-	
-func setup_manual_assist_audio() -> void:
-	manual_assist_audio_player = AudioStreamPlayer.new()
-
-	manual_assist_audio_player.name = (
-		"ManualAssistAudioPlayer"
-	)
-
-	manual_assist_audio_player.stream = (
-		MANUAL_ASSIST_CLICK_SOUND
-	)
-
-	manual_assist_audio_player.volume_db = -8.0
-
-	add_child(
-		manual_assist_audio_player
-	)
-
-
 # -------------------------------------------------------------------
-# Initial refresh
+# Progression
 # -------------------------------------------------------------------
 
-func refresh_crawler_page() -> void:
-	_on_indexed_pages_changed(GameState.indexed_pages)
-	_on_active_users_changed(GameState.active_users)
-	_on_server_load_changed(GameState.server_load)
-	_on_crawler_rate_changed(GameState.crawler_rate)
-
-	update_crawler_progress(
-		CrawlerManager.current_job_pages,
-		CrawlerManager.get_current_job_target_pages(),
-		CrawlerManager.get_progress_percent()
-	)
-
-	update_crawler_state(
-		GameState.crawler_running
-	)
-	
+func _on_progression_tier_changed(
+	_new_tier: int
+) -> void:
 	refresh_crawl_job_selection()
 	refresh_auto_crawl_assist_status()
 	refresh_effective_crawler_rate()
-	
-	refresh_crawler_event_ui()
-	
-func refresh_crawler_event_ui() -> void:
-	if CrawlerEventManager.has_active_event():
-		show_crawler_event(
-			CrawlerEventManager.get_active_event()
-		)
-		return
-
-	show_crawler_event_idle_state()
 
 
 # -------------------------------------------------------------------
-# Button callbacks
+# Manual Crawl Assist Feedback
 # -------------------------------------------------------------------
 
-func _on_start_crawler_button_pressed() -> void:
-	CrawlerManager.start_crawler()
-
-
-func _on_pause_crawler_button_pressed() -> void:
-	CrawlerManager.pause_crawler()
-	
-func _on_manual_crawl_assist_button_pressed() -> void:
-	var assist_used: bool = (
-		CrawlerManager.use_manual_crawl_assist()
-	)
-
-	if not assist_used:
-		refresh_manual_crawl_assist_button()
-		return
-
-	register_manual_assist_combo()
-
-	spawn_manual_assist_floating_feedback()
-
-	play_manual_assist_sound()
-
-	play_manual_assist_click_feedback()
-	
 func register_manual_assist_combo() -> void:
 	manual_assist_combo_count += 1
 
@@ -762,7 +792,8 @@ func register_manual_assist_combo() -> void:
 	reset_manual_assist_combo_after_delay(
 		current_generation
 	)
-	
+
+
 func reset_manual_assist_combo_after_delay(
 	expected_generation: int
 ) -> void:
@@ -780,7 +811,8 @@ func reset_manual_assist_combo_after_delay(
 
 	if manual_assist_combo_label != null:
 		manual_assist_combo_label.visible = false
-		
+
+
 func refresh_manual_assist_combo_label() -> void:
 	if manual_assist_combo_label == null:
 		return
@@ -816,7 +848,8 @@ func refresh_manual_assist_combo_label() -> void:
 		)
 
 	position_manual_assist_combo_label()
-	
+
+
 func position_manual_assist_combo_label() -> void:
 	if manual_assist_combo_label == null:
 		return
@@ -845,7 +878,8 @@ func position_manual_assist_combo_label() -> void:
 		- layer_position.y
 		- 30.0
 	)
-	
+
+
 func spawn_manual_assist_floating_feedback() -> void:
 	manual_assist_float_sequence += 1
 
@@ -879,7 +913,8 @@ func spawn_manual_assist_floating_feedback() -> void:
 			-42.0
 		)
 	)
-	
+
+
 func spawn_manual_assist_float_label(
 	label_text: String,
 	label_color: Color,
@@ -986,7 +1021,8 @@ func spawn_manual_assist_float_label(
 	floating_tween.finished.connect(
 		floating_label.queue_free
 	)
-	
+
+
 func play_manual_assist_sound() -> void:
 	if manual_assist_audio_player == null:
 		return
@@ -1008,7 +1044,8 @@ func play_manual_assist_sound() -> void:
 	manual_assist_audio_player.stop()
 
 	manual_assist_audio_player.play()
-	
+
+
 func play_manual_assist_click_feedback() -> void:
 	if manual_assist_feedback_tween != null:
 		if manual_assist_feedback_tween.is_valid():
@@ -1041,12 +1078,14 @@ func play_manual_assist_click_feedback() -> void:
 	manual_assist_feedback_tween.finished.connect(
 		_on_manual_assist_feedback_finished
 	)
-	
+
+
 func _on_manual_assist_feedback_finished() -> void:
 	manual_assist_feedback_tween = null
 
 	refresh_manual_crawl_assist_button()
-		
+
+
 func refresh_manual_crawl_assist_button() -> void:
 	var assist_available: bool = (
 		CrawlerManager.can_use_manual_crawl_assist()
@@ -1091,7 +1130,19 @@ func refresh_manual_crawl_assist_button() -> void:
 		"Start or resume the crawler to use "
 		+ "Manual Crawl Assist."
 	)
-	
+
+
+# -------------------------------------------------------------------
+# Auto Crawl Assist Display
+# -------------------------------------------------------------------
+
+func _on_auto_crawl_assist_level_changed(
+	_new_level: int
+) -> void:
+	refresh_auto_crawl_assist_status()
+	refresh_effective_crawler_rate()
+
+
 func refresh_auto_crawl_assist_status() -> void:
 	if not AutomationManager.is_auto_assist_unlocked():
 		auto_crawl_assist_status_label.text = (
@@ -1201,52 +1252,59 @@ func refresh_auto_crawl_assist_status() -> void:
 	]
 
 
+func refresh_effective_crawler_rate() -> void:
+	var effective_rate: float = (
+		AutomationManager
+		.get_effective_total_crawl_rate()
+	)
+
+	var rate_text: String = format_crawler_rate(
+		effective_rate
+	)
+
+	crawler_control_rate_value_label.text = (
+		rate_text
+	)
+
+	statistics_crawler_rate_value_label.text = (
+		rate_text
+	)
+
+
 # -------------------------------------------------------------------
-# Crawler signal callbacks
+# Live Crawler Event UI
 # -------------------------------------------------------------------
 
-func _on_crawler_state_changed(is_running: bool) -> void:
-	update_crawler_state(is_running)
+func refresh_crawler_event_ui() -> void:
+	if CrawlerEventManager.has_active_event():
+		show_crawler_event(
+			CrawlerEventManager.get_active_event()
+		)
+		return
+
+	show_crawler_event_idle_state()
 
 
-func _on_crawler_progress_changed(
-	pages_processed: int,
-	target_pages: int,
-	progress_percent: float
-) -> void:
-	update_crawler_progress(
-		pages_processed,
-		target_pages,
-		progress_percent
-	)
-
-	update_crawler_state(
-		GameState.crawler_running
+func _on_crawler_event_primary_button_pressed() -> void:
+	CrawlerEventManager.resolve_active_event(
+		CrawlerEventManager.ACTION_PRIMARY
 	)
 
 
-func _on_crawl_job_completed() -> void:
-	update_crawler_progress(
-		CrawlerManager.current_job_pages,
-		CrawlerManager.get_current_job_target_pages(),
-		CrawlerManager.get_progress_percent()
+func _on_crawler_event_secondary_button_pressed() -> void:
+	CrawlerEventManager.resolve_active_event(
+		CrawlerEventManager.ACTION_SECONDARY
 	)
 
-	update_crawler_state(false)
-	
-func _on_auto_crawl_assist_level_changed(
-	_new_level: int
-) -> void:
-	refresh_auto_crawl_assist_status()
-	refresh_effective_crawler_rate()
-	
+
 func _on_crawler_event_started(
 	event_data: Dictionary
 ) -> void:
 	show_crawler_event(
 		event_data
 	)
-	
+
+
 func show_crawler_event(
 	event_data: Dictionary
 ) -> void:
@@ -1305,10 +1363,12 @@ func show_crawler_event(
 	refresh_crawler_event_countdown()
 
 	crawler_event_ui_timer.start()
-	
+
+
 func _on_crawler_event_ui_timer_timeout() -> void:
 	refresh_crawler_event_countdown()
-	
+
+
 func refresh_crawler_event_countdown() -> void:
 	if not CrawlerEventManager.has_active_event():
 		crawler_event_ui_timer.stop()
@@ -1328,7 +1388,8 @@ func refresh_crawler_event_countdown() -> void:
 		"Expires in: %d sec"
 		% seconds_remaining
 	)
-	
+
+
 func show_crawler_event_idle_state() -> void:
 	if crawler_event_ui_timer != null:
 		crawler_event_ui_timer.stop()
@@ -1360,7 +1421,8 @@ func show_crawler_event_idle_state() -> void:
 		"MONITORING",
 		ThemeManager.TEXT_DISABLED
 	)
-	
+
+
 func _on_crawler_event_cleared() -> void:
 	show_crawler_event_idle_state()
 
@@ -1379,7 +1441,41 @@ func _on_crawler_event_resolved(
 
 
 # -------------------------------------------------------------------
-# Crawler page status
+# Crawler Manager Signal Callbacks
+# -------------------------------------------------------------------
+
+func _on_crawler_state_changed(is_running: bool) -> void:
+	update_crawler_state(is_running)
+
+
+func _on_crawler_progress_changed(
+	pages_processed: int,
+	target_pages: int,
+	progress_percent: float
+) -> void:
+	update_crawler_progress(
+		pages_processed,
+		target_pages,
+		progress_percent
+	)
+
+	update_crawler_state(
+		GameState.crawler_running
+	)
+
+
+func _on_crawl_job_completed() -> void:
+	update_crawler_progress(
+		CrawlerManager.current_job_pages,
+		CrawlerManager.get_current_job_target_pages(),
+		CrawlerManager.get_progress_percent()
+	)
+
+	update_crawler_state(false)
+
+
+# -------------------------------------------------------------------
+# Crawler Page State Display
 # -------------------------------------------------------------------
 
 func update_crawler_state(
@@ -1535,7 +1631,8 @@ func show_completed_state() -> void:
 	start_crawler_button.disabled = false
 
 	pause_crawler_button.disabled = true
-	
+
+
 func show_warning_state() -> void:
 	crawler_page_status_label.text = (
 		"SERVER LOAD WARNING"
@@ -1572,7 +1669,8 @@ func show_warning_state() -> void:
 	start_crawler_button.disabled = true
 
 	pause_crawler_button.disabled = false
-	
+
+
 func show_overloaded_state() -> void:
 	crawler_page_status_label.text = (
 		"CRAWLER AUTO-PAUSED"
@@ -1612,7 +1710,7 @@ func show_overloaded_state() -> void:
 
 
 # -------------------------------------------------------------------
-# Progress
+# Crawl Progress Display
 # -------------------------------------------------------------------
 
 func update_crawler_progress(
@@ -1651,7 +1749,7 @@ func update_crawler_progress(
 
 
 # -------------------------------------------------------------------
-# Statistics
+# GameState / Statistics Callbacks
 # -------------------------------------------------------------------
 
 func _on_indexed_pages_changed(new_value: int) -> void:
@@ -1682,28 +1780,10 @@ func _on_crawler_rate_changed(
 	_new_value: float
 ) -> void:
 	refresh_effective_crawler_rate()
-	
-func refresh_effective_crawler_rate() -> void:
-	var effective_rate: float = (
-		AutomationManager
-		.get_effective_total_crawl_rate()
-	)
-
-	var rate_text: String = format_crawler_rate(
-		effective_rate
-	)
-
-	crawler_control_rate_value_label.text = (
-		rate_text
-	)
-
-	statistics_crawler_rate_value_label.text = (
-		rate_text
-	)
 
 
 # -------------------------------------------------------------------
-# Formatting
+# Formatting Helpers
 # -------------------------------------------------------------------
 
 func format_whole_number(value: int) -> String:
