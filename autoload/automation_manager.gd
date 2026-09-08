@@ -281,6 +281,7 @@ func synchronize_scheduler_with_progression() -> void:
 	var progression_allows_scheduler: bool = (
 		ObjectiveManager.get_current_progression_tier()
 		>= ObjectiveManager.PROGRESSION_TIER_2
+		and is_auto_restart_unlocked()
 	)
 
 	if progression_allows_scheduler:
@@ -415,6 +416,9 @@ func unlock_scheduler() -> bool:
 	):
 		return false
 
+	if not is_auto_restart_unlocked():
+		return false
+
 	scheduler_unlocked = true
 
 	scheduler_unlock_changed.emit(
@@ -485,6 +489,8 @@ func unlock_auto_restart() -> bool:
 	)
 
 	auto_restart_unlock_earned.emit()
+	
+	synchronize_scheduler_with_progression()
 
 	return true
 
@@ -573,6 +579,9 @@ func _on_crawl_job_completed_for_scheduler() -> void:
 	if not is_scheduler_enabled():
 		return
 
+	if not is_auto_restart_unlocked():
+		return
+
 	if (
 		CrawlerManager.get_crawl_job_queue_size()
 		<= 0
@@ -587,6 +596,9 @@ func _on_crawl_job_completed_for_scheduler() -> void:
 	
 func _on_scheduler_timer_timeout() -> void:
 	if not is_scheduler_enabled():
+		return
+
+	if not is_auto_restart_unlocked():
 		return
 
 	if GameState.crawler_running:
@@ -708,6 +720,7 @@ func restore_scheduler_state(
 	var progression_allows_scheduler: bool = (
 		ObjectiveManager.get_current_progression_tier()
 		>= ObjectiveManager.PROGRESSION_TIER_2
+		and is_auto_restart_unlocked()
 	)
 
 	var restored_unlocked: bool = (
