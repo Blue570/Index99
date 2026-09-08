@@ -1744,8 +1744,6 @@ func _on_crawler_event_started(
 func show_crawler_event(
 	event_data: Dictionary
 ) -> void:
-	if crawler_event_result_timer != null:
-		crawler_event_result_timer.stop()
 	var event_title: String = str(
 		event_data.get(
 			"title",
@@ -1773,25 +1771,13 @@ func show_crawler_event(
 			"Skip"
 		)
 	)
-	
-	var primary_effect_text: String = str(
-		event_data.get(
-			"primary_effect_text",
-			""
-		)
-	)
 
 	crawler_event_title_label.text = (
 		event_title
 	)
 
 	crawler_event_description_label.text = (
-		"%s\n%s: %s"
-		% [
-			event_description,
-			primary_action,
-			primary_effect_text
-		]
+		event_description
 	)
 
 	crawler_event_primary_button.text = (
@@ -1834,9 +1820,31 @@ func refresh_crawler_event_countdown() -> void:
 		0
 	)
 
+	var active_event: Dictionary = (
+		CrawlerEventManager.get_active_event()
+	)
+
+	var effect_text: String = str(
+		active_event.get(
+			"primary_effect_text",
+			""
+		)
+	)
+
+	if effect_text.is_empty():
+		crawler_event_timer_label.text = (
+			"Expires in: %d sec"
+			% seconds_remaining
+		)
+
+		return
+
 	crawler_event_timer_label.text = (
-		"Expires in: %d sec"
-		% seconds_remaining
+		"Effect: %s   |   Expires: %d sec"
+		% [
+			effect_text,
+			seconds_remaining
+		]
 	)
 
 

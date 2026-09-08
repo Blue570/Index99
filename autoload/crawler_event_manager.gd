@@ -86,11 +86,9 @@ const CRAWLER_EVENTS: Array[Dictionary] = [
 		"description":
 			"A heavily linked domain has been discovered.",
 		"primary_action": "Prioritize",
-		"primary_effect_text":
-			"+8 WORK | +5 SERVER LOAD",
 		"secondary_action": "Skip",
-		"secondary_effect_text":
-			"No effect"
+		"primary_effect_text":
+			"+8 WORK | +5 SERVER LOAD"
 	},
 	{
 		"id": EVENT_COMMERCIAL_TREND,
@@ -98,11 +96,9 @@ const CRAWLER_EVENTS: Array[Dictionary] = [
 		"description":
 			"Commercial search activity is increasing.",
 		"primary_action": "Index Now",
-		"primary_effect_text":
-			"+$15 REVENUE | +4 SERVER LOAD",
 		"secondary_action": "Ignore",
-		"secondary_effect_text":
-			"No effect"
+		"primary_effect_text":
+			"+$15 REVENUE | +4 SERVER LOAD"
 	},
 	{
 		"id": EVENT_USER_CLUSTER,
@@ -110,11 +106,9 @@ const CRAWLER_EVENTS: Array[Dictionary] = [
 		"description":
 			"A new group of users is discovering the index.",
 		"primary_action": "Analyze",
-		"primary_effect_text":
-			"+3 ACTIVE USERS | +5 SERVER LOAD",
 		"secondary_action": "Continue",
-		"secondary_effect_text":
-			"No effect"
+		"primary_effect_text":
+			"+3 ACTIVE USERS | +5 SERVER LOAD"
 	},
 	{
 		"id": EVENT_CLEAN_CRAWL_PATH,
@@ -122,11 +116,9 @@ const CRAWLER_EVENTS: Array[Dictionary] = [
 		"description":
 			"The crawler found an unusually efficient path.",
 		"primary_action": "Use Path",
-		"primary_effect_text":
-			"+6 WORK | NO EXTRA LOAD",
 		"secondary_action": "Continue",
-		"secondary_effect_text":
-			"No effect"
+		"primary_effect_text":
+			"+6 WORK"
 	}
 ]
 

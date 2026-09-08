@@ -215,6 +215,7 @@ size_flags_horizontal = 3
 
 [node name="PageArea" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=2019311367]
 custom_minimum_size = Vector2(0, 300)
+clip_contents = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_6gwxi")
@@ -851,6 +852,7 @@ theme_override_constants/separation = 1
 
 [node name="CrawlerPageTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageHeader/CrawlerPageTitleLayout" unique_id=881569741]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 22
 text = "Web Crawler"
 vertical_alignment = 1

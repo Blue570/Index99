@@ -430,6 +430,55 @@ func _on_auto_restart_timer_timeout() -> void:
 
 	if GameState.crawler_running:
 		auto_restart_triggered.emit()
+		
+# -------------------------------------------------------------------
+# Auto-Restart Save Restore
+# -------------------------------------------------------------------
+
+func restore_auto_restart_state(
+	saved_unlocked: bool,
+	saved_enabled: bool
+) -> void:
+	var progression_allows_auto_restart: bool = (
+		ObjectiveManager.get_current_progression_tier()
+		>= ObjectiveManager.PROGRESSION_TIER_2
+	)
+
+	var restored_unlocked: bool = (
+		saved_unlocked
+		and progression_allows_auto_restart
+	)
+
+	var restored_enabled: bool = (
+		saved_enabled
+		and restored_unlocked
+	)
+
+	var unlock_changed: bool = (
+		auto_restart_unlocked
+		!= restored_unlocked
+	)
+
+	var enabled_changed: bool = (
+		auto_restart_enabled
+		!= restored_enabled
+	)
+
+	if auto_restart_timer != null:
+		auto_restart_timer.stop()
+
+	auto_restart_unlocked = restored_unlocked
+	auto_restart_enabled = restored_enabled
+
+	if unlock_changed:
+		auto_restart_unlock_changed.emit(
+			auto_restart_unlocked
+		)
+
+	if enabled_changed:
+		auto_restart_enabled_changed.emit(
+			auto_restart_enabled
+		)
 
 
 # -------------------------------------------------------------------

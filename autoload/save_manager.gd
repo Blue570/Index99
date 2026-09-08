@@ -151,6 +151,14 @@ func build_save_data() -> Dictionary:
 					CrawlerManager.get_current_crawler_priority()
 				)
 		},
+		
+		"automation": {
+			"auto_restart_unlocked":
+				AutomationManager.is_auto_restart_unlocked(),
+
+			"auto_restart_enabled":
+				AutomationManager.is_auto_restart_enabled()
+		},
 
 		"server_upgrades": {
 			"cooling_speed_level":
@@ -553,6 +561,15 @@ func restore_save_data(
 		save_data,
 		"objective"
 	)
+	
+	var automation_data: Dictionary = {}
+
+	if (
+		save_data.has("automation")
+		and typeof(save_data["automation"])
+		== TYPE_DICTIONARY
+	):
+		automation_data = save_data["automation"]
 
 	var tutorial_data: Dictionary = {}
 
@@ -587,6 +604,10 @@ func restore_save_data(
 	
 	restore_crawler_priority(
 		crawler_data
+	)
+	
+	restore_automation(
+		automation_data
 	)
 
 	restore_tutorial(
@@ -913,6 +934,43 @@ func restore_tutorial(
 		saved_completed
 	)
 	
+	
+# -------------------------------------------------------------------
+# Restore Automation
+# -------------------------------------------------------------------
+
+func restore_automation(
+	data: Dictionary
+) -> void:
+	var saved_auto_restart_unlocked: bool = false
+
+	if data.has(
+		"auto_restart_unlocked"
+	):
+		saved_auto_restart_unlocked = read_bool(
+			data,
+			"auto_restart_unlocked",
+			false
+		)
+
+	var saved_auto_restart_enabled: bool = (
+		saved_auto_restart_unlocked
+	)
+
+	if data.has(
+		"auto_restart_enabled"
+	):
+		saved_auto_restart_enabled = read_bool(
+			data,
+			"auto_restart_enabled",
+			saved_auto_restart_unlocked
+		)
+
+	AutomationManager.restore_auto_restart_state(
+		saved_auto_restart_unlocked,
+		saved_auto_restart_enabled
+	)
+	
 # -------------------------------------------------------------------
 # Event autosave connections
 # -------------------------------------------------------------------
@@ -972,6 +1030,20 @@ func connect_event_autosave_signals() -> void:
 	):
 		TutorialManager.tutorial_skipped.connect(
 			_on_tutorial_skipped_for_save
+		)
+		
+	if not AutomationManager.auto_restart_unlock_changed.is_connected(
+		_on_auto_restart_unlock_changed_for_save
+	):
+		AutomationManager.auto_restart_unlock_changed.connect(
+			_on_auto_restart_unlock_changed_for_save
+		)
+
+	if not AutomationManager.auto_restart_enabled_changed.is_connected(
+		_on_auto_restart_enabled_changed_for_save
+	):
+		AutomationManager.auto_restart_enabled_changed.connect(
+			_on_auto_restart_enabled_changed_for_save
 		)
 		
 func _on_server_upgrade_purchased_for_save(
@@ -1041,6 +1113,17 @@ func perform_event_autosave() -> void:
 		return
 
 	save_game()
+	
+func _on_auto_restart_unlock_changed_for_save(
+	_is_unlocked: bool
+) -> void:
+	request_event_autosave()
+
+
+func _on_auto_restart_enabled_changed_for_save(
+	_is_enabled: bool
+) -> void:
+	request_event_autosave()
 	
 # -------------------------------------------------------------------
 # Controlled new-game reset
