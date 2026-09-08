@@ -829,7 +829,6 @@ text = "0 / 100"
 horizontal_alignment = 2
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1022,20 +1021,20 @@ horizontal_alignment = 1
 [node name="CrawlJobSelectionButtonRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer" unique_id=496584244]
 layout_mode = 2
 
-[node name="BasicCrawlButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer/CrawlJobSelectionButtonRow" unique_id=969069115]
+[node name="QuickCrawlSlot1Button" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer/CrawlJobSelectionButtonRow" unique_id=969069115]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Basic Crawl"
+text = "QuickCrawlSlot1Button"
 
-[node name="ExpandedCrawlButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer/CrawlJobSelectionButtonRow" unique_id=653287964]
+[node name="QuickCrawlSlot2Button" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer/CrawlJobSelectionButtonRow" unique_id=653287964]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Expanded Crawl"
+text = "QuickCrawlSlot2Button"
 
-[node name="DeepCrawlButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer/CrawlJobSelectionButtonRow" unique_id=1539555892]
+[node name="QuickCrawlSlot3Button" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer/CrawlJobSelectionButtonRow" unique_id=1539555892]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Deep Crawl"
+text = "QuickCrawlSlot3Button"
 
 [node name="CrawlJobSelectionInfoLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlJobSelectionContainer" unique_id=579883207]
 layout_mode = 2
@@ -1300,6 +1299,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="CrawlerJobsPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=909825187]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1339,11 +1339,91 @@ text = "JOB CATALOG"
 [node name="CrawlerJobsPageBody" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout" unique_id=110156150]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/separation = 12
 
-[node name="CrawlerJobsPlaceholderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody" unique_id=270172030]
+[node name="AvailableCrawlsPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody" unique_id=1833981724]
+custom_minimum_size = Vector2(680, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "Crawl Job Management"
+size_flags_horizontal = 3
+
+[node name="AvailableCrawlsPanelLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/AvailableCrawlsPanel" unique_id=2012954148]
+layout_mode = 2
+
+[node name="AvailableCrawlsHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/AvailableCrawlsPanel/AvailableCrawlsPanelLayout" unique_id=402361182]
+layout_mode = 2
+text = "AVAILABLE CRAWLS"
+
+[node name="AvailableCrawlsInfoLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/AvailableCrawlsPanel/AvailableCrawlsPanelLayout" unique_id=350111295]
+layout_mode = 2
+text = "Choose Quick Crawls or add unlocked jobs to the scheduler."
+
+[node name="AvailableCrawlsScroll" type="ScrollContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/AvailableCrawlsPanel/AvailableCrawlsPanelLayout" unique_id=2052857131]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="AvailableCrawlsList" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/AvailableCrawlsPanel/AvailableCrawlsPanelLayout/AvailableCrawlsScroll" unique_id=263513378]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CrawlerJobsRightColumn" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody" unique_id=137572656]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="QuickCrawlsPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn" unique_id=842860599]
+layout_mode = 2
+
+[node name="QuickCrawlsPanelLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/QuickCrawlsPanel" unique_id=1477785426]
+layout_mode = 2
+
+[node name="QuickCrawlsHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/QuickCrawlsPanel/QuickCrawlsPanelLayout" unique_id=1090354642]
+layout_mode = 2
+text = "QUICK CRAWLS"
+
+[node name="QuickCrawlsInfoLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/QuickCrawlsPanel/QuickCrawlsPanelLayout" unique_id=1697143310]
+layout_mode = 2
+text = "These three jobs appear on the Crawler tab."
+
+[node name="QuickCrawlSlot1Label" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/QuickCrawlsPanel/QuickCrawlsPanelLayout" unique_id=964900935]
+layout_mode = 2
+text = "1. Basic Crawl"
+
+[node name="QuickCrawlSlot2Label" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/QuickCrawlsPanel/QuickCrawlsPanelLayout" unique_id=1275605721]
+layout_mode = 2
+text = "2. Expanded Crawl"
+
+[node name="QuickCrawlSlot3Label" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/QuickCrawlsPanel/QuickCrawlsPanelLayout" unique_id=1442609944]
+layout_mode = 2
+text = "3. Deep Crawl"
+
+[node name="SchedulerManagementPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn" unique_id=463894460]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SchedulerManagementLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel" unique_id=807722172]
+layout_mode = 2
+
+[node name="SchedulerHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=1040624274]
+layout_mode = 2
+text = "SCHEDULER QUEUE"
+
+[node name="SchedulerSummaryLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=289668234]
+layout_mode = 2
+text = "Queue: 0 / 10"
+
+[node name="SchedulerQueueScroll" type="ScrollContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=2122650865]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="SchedulerQueueList" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout/SchedulerQueueScroll" unique_id=605470216]
+layout_mode = 2
+
+[node name="ClearSchedulerQueueButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=1424416853]
+layout_mode = 2
+text = "Clear Queue"
 
 [node name="IndexPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=945400770]
 visible = false

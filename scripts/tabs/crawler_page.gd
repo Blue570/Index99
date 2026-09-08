@@ -213,25 +213,25 @@ const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
 # Crawl Job Selection Nodes
 # -------------------------------------------------------------------
 
-@onready var basic_crawl_button: Button = (
+@onready var quick_crawl_slot_1_button: Button = (
 	find_child(
-		"BasicCrawlButton",
+		"QuickCrawlSlot1Button",
 		true,
 		false
 	) as Button
 )
 
-@onready var expanded_crawl_button: Button = (
+@onready var quick_crawl_slot_2_button: Button = (
 	find_child(
-		"ExpandedCrawlButton",
+		"QuickCrawlSlot2Button",
 		true,
 		false
 	) as Button
 )
 
-@onready var deep_crawl_button: Button = (
+@onready var quick_crawl_slot_3_button: Button = (
 	find_child(
-		"DeepCrawlButton",
+		"QuickCrawlSlot3Button",
 		true,
 		false
 	) as Button
@@ -538,26 +538,26 @@ func connect_buttons() -> void:
 			_on_manual_crawl_assist_button_pressed
 		)
 		
-	if not basic_crawl_button.pressed.is_connected(
-		_on_basic_crawl_button_pressed
+	if not quick_crawl_slot_1_button.pressed.is_connected(
+		_on_quick_crawl_slot_1_button_pressed
 	):
-		basic_crawl_button.pressed.connect(
-			_on_basic_crawl_button_pressed
-	)
+		quick_crawl_slot_1_button.pressed.connect(
+			_on_quick_crawl_slot_1_button_pressed
+		)
 
-	if not expanded_crawl_button.pressed.is_connected(
-		_on_expanded_crawl_button_pressed
+	if not quick_crawl_slot_2_button.pressed.is_connected(
+		_on_quick_crawl_slot_2_button_pressed
 	):
-		expanded_crawl_button.pressed.connect(
-			_on_expanded_crawl_button_pressed
-	)
+		quick_crawl_slot_2_button.pressed.connect(
+			_on_quick_crawl_slot_2_button_pressed
+		)
 
-	if not deep_crawl_button.pressed.is_connected(
-		_on_deep_crawl_button_pressed
+	if not quick_crawl_slot_3_button.pressed.is_connected(
+		_on_quick_crawl_slot_3_button_pressed
 	):
-		deep_crawl_button.pressed.connect(
-			_on_deep_crawl_button_pressed
-	)
+		quick_crawl_slot_3_button.pressed.connect(
+			_on_quick_crawl_slot_3_button_pressed
+		)
 	
 	if not crawler_event_primary_button.pressed.is_connected(
 		_on_crawler_event_primary_button_pressed
@@ -651,6 +651,16 @@ func connect_crawler_signals() -> void:
 		AutomationManager.auto_restart_enabled_changed.connect(
 			_on_auto_restart_enabled_changed
 		)
+		
+	if not CrawlerManager.quick_crawl_jobs_changed.is_connected(
+		_on_quick_crawl_jobs_changed
+	):
+		CrawlerManager.quick_crawl_jobs_changed.connect(
+			_on_quick_crawl_jobs_changed
+		)
+		
+func _on_quick_crawl_jobs_changed() -> void:
+	refresh_crawl_job_selection()
 
 
 func connect_crawler_event_signals() -> void:
@@ -785,32 +795,39 @@ func _on_manual_crawl_assist_button_pressed() -> void:
 # Crawl Job Selection
 # -------------------------------------------------------------------
 
-func _on_basic_crawl_button_pressed() -> void:
-	var selection_changed: bool = (
-		CrawlerManager.select_crawl_job(
-			CrawlerManager.CRAWL_JOB_BASIC
+func _on_quick_crawl_slot_1_button_pressed() -> void:
+	select_quick_crawl_slot(
+		0
+	)
+
+
+func _on_quick_crawl_slot_2_button_pressed() -> void:
+	select_quick_crawl_slot(
+		1
+	)
+
+
+func _on_quick_crawl_slot_3_button_pressed() -> void:
+	select_quick_crawl_slot(
+		2
+	)
+
+
+func select_quick_crawl_slot(
+	slot_index: int
+) -> void:
+	var job_id: StringName = (
+		CrawlerManager.get_quick_crawl_job_id(
+			slot_index
 		)
 	)
 
-	if selection_changed:
-		refresh_crawler_page()
+	if job_id == &"":
+		return
 
-
-func _on_expanded_crawl_button_pressed() -> void:
 	var selection_changed: bool = (
 		CrawlerManager.select_crawl_job(
-			CrawlerManager.CRAWL_JOB_EXPANDED
-		)
-	)
-
-	if selection_changed:
-		refresh_crawler_page()
-
-
-func _on_deep_crawl_button_pressed() -> void:
-	var selection_changed: bool = (
-		CrawlerManager.select_crawl_job(
-			CrawlerManager.CRAWL_JOB_DEEP
+			job_id
 		)
 	)
 
@@ -840,20 +857,26 @@ func refresh_crawl_job_selection() -> void:
 	)
 
 	refresh_crawl_job_button(
-		basic_crawl_button,
-		CrawlerManager.CRAWL_JOB_BASIC,
+		quick_crawl_slot_1_button,
+		CrawlerManager.get_quick_crawl_job_id(
+			0
+		),
 		selected_job_id
 	)
 
 	refresh_crawl_job_button(
-		expanded_crawl_button,
-		CrawlerManager.CRAWL_JOB_EXPANDED,
+		quick_crawl_slot_2_button,
+		CrawlerManager.get_quick_crawl_job_id(
+			1
+		),
 		selected_job_id
 	)
 
 	refresh_crawl_job_button(
-		deep_crawl_button,
-		CrawlerManager.CRAWL_JOB_DEEP,
+		quick_crawl_slot_3_button,
+		CrawlerManager.get_quick_crawl_job_id(
+			2
+		),
 		selected_job_id
 	)
 
@@ -863,6 +886,11 @@ func refresh_crawl_job_button(
 	job_id: StringName,
 	selected_job_id: StringName
 ) -> void:
+	if job_id == &"":
+		button.text = "EMPTY SLOT"
+		button.disabled = true
+		return
+	
 	var unlocked: bool = (
 		CrawlerManager.is_crawl_job_unlocked(
 			job_id
