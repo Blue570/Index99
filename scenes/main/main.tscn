@@ -1259,7 +1259,7 @@ size_flags_horizontal = 3
 disabled = true
 text = "SKIP"
 
-[node name="CrawlQueuePanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn" unique_id=698738578 instance=ExtResource("4_l3cfh")]
+[node name="CrawlerQueuePanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn" unique_id=698738578 instance=ExtResource("4_l3cfh")]
 layout_mode = 2
 size_flags_vertical = 3
 section_title = "Crawl Queue"
@@ -1268,35 +1268,22 @@ show_status = true
 status_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
 minimum_panel_height = 175.0
 
-[node name="CrawlQueueLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(698738578, 287423228) index="0" unique_id=375009246]
+[node name="CrawlQueueLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(698738578, 287423228) index="0" unique_id=375009246]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="CrawlQueueCountRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout" unique_id=2129662910]
+[node name="CrawlerQueueNextLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout" unique_id=149799322]
 layout_mode = 2
 
-[node name="CrawlQueueCountNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout/CrawlQueueCountRow" unique_id=879927163]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Queued Jobs"
-
-[node name="CrawlQueueCountValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout/CrawlQueueCountRow" unique_id=1055888846]
-custom_minimum_size = Vector2(50, 0)
-layout_mode = 2
-text = "0"
-horizontal_alignment = 2
-
-[node name="CrawlQueueSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout" unique_id=2050741137]
+[node name="CrawlerQueueSecondLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout" unique_id=302834683]
 layout_mode = 2
 
-[node name="CrawlQueueEmptyLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout" unique_id=1918427405]
+[node name="CrawlerQueueThirdLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout" unique_id=1250815744]
 layout_mode = 2
-size_flags_vertical = 3
-text = "No crawl jobs are waiting."
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
+
+[node name="CrawlerQueueFooterLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerQueuePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlQueueLayout" unique_id=1234446982]
+layout_mode = 2
 
 [node name="CrawlerJobsPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=909825187]
 visible = false
@@ -2960,7 +2947,7 @@ layout_mode = 1
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerStatisticsPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel"]
-[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlQueuePanel"]
+[editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/CrawlerQueuePanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexOverviewPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexOverviewRow/IndexHealthPanel"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/IndexPage/IndexMargin/IndexPageLayout/IndexDetailsRow/IndexCategoriesPanel"]

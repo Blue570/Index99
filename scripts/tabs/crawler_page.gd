@@ -292,6 +292,51 @@ const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
 	+ "CrawlerEventSecondaryButton"
 ) as Button
 
+
+# -------------------------------------------------------------------
+# Crawler Queue Nodes
+# -------------------------------------------------------------------
+
+@onready var crawler_queue_panel: SectionPanel = (
+	find_child(
+		"CrawlerQueuePanel",
+		true,
+		false
+	) as SectionPanel
+)
+
+@onready var crawler_queue_next_label: Label = (
+	find_child(
+		"CrawlerQueueNextLabel",
+		true,
+		false
+	) as Label
+)
+
+@onready var crawler_queue_second_label: Label = (
+	find_child(
+		"CrawlerQueueSecondLabel",
+		true,
+		false
+	) as Label
+)
+
+@onready var crawler_queue_third_label: Label = (
+	find_child(
+		"CrawlerQueueThirdLabel",
+		true,
+		false
+	) as Label
+)
+
+@onready var crawler_queue_footer_label: Label = (
+	find_child(
+		"CrawlerQueueFooterLabel",
+		true,
+		false
+	) as Label
+)
+
 # -------------------------------------------------------------------
 # Crawler Priority UI Runtime State
 # -------------------------------------------------------------------
@@ -659,6 +704,13 @@ func connect_crawler_signals() -> void:
 			_on_quick_crawl_jobs_changed
 		)
 		
+	if not CrawlerManager.crawl_job_queue_changed.is_connected(
+		_on_crawl_job_queue_changed
+	):
+		CrawlerManager.crawl_job_queue_changed.connect(
+			_on_crawl_job_queue_changed
+		)
+		
 func _on_quick_crawl_jobs_changed() -> void:
 	refresh_crawl_job_selection()
 
@@ -753,6 +805,7 @@ func refresh_crawler_page() -> void:
 	)
 	
 	refresh_crawl_job_selection()
+	refresh_crawler_queue_monitor()
 	refresh_crawler_priority_ui()
 	refresh_auto_crawl_assist_status()
 	refresh_auto_restart_ui()
@@ -954,6 +1007,130 @@ func refresh_crawl_job_button(
 	)
 
 	button.disabled = selection_locked
+	
+	
+# -------------------------------------------------------------------
+# Crawler Queue Monitor
+# -------------------------------------------------------------------
+
+func refresh_crawler_queue_monitor() -> void:
+	var queue: Array[StringName] = (
+		CrawlerManager.get_crawl_job_queue()
+	)
+
+	var queue_size: int = queue.size()
+
+	if queue_size <= 0:
+		show_empty_crawler_queue()
+		return
+
+	crawler_queue_next_label.text = (
+		"NEXT: %s"
+		% CrawlerManager.get_job_display_name(
+			queue[0]
+		)
+	)
+
+	if queue_size >= 2:
+		crawler_queue_second_label.text = (
+			"2. %s"
+			% CrawlerManager.get_job_display_name(
+				queue[1]
+			)
+		)
+	else:
+		crawler_queue_second_label.text = "2. —"
+
+	if queue_size >= 3:
+		crawler_queue_third_label.text = (
+			"3. %s"
+			% CrawlerManager.get_job_display_name(
+				queue[2]
+			)
+		)
+	else:
+		crawler_queue_third_label.text = "3. —"
+
+	var additional_jobs: int = maxi(
+		queue_size - 3,
+		0
+	)
+
+	if additional_jobs > 0:
+		crawler_queue_footer_label.text = (
+			"+%d MORE | Manage from Jobs tab"
+			% additional_jobs
+		)
+	else:
+		crawler_queue_footer_label.text = (
+			"Manage queue from the Jobs tab."
+		)
+
+	crawler_queue_panel.set_status(
+		"%d QUEUED" % queue_size,
+		ThemeManager.STATUS_INFORMATION
+	)
+
+	refresh_crawler_queue_colors(
+		true
+	)
+
+
+func show_empty_crawler_queue() -> void:
+	crawler_queue_next_label.text = (
+		"NEXT: No scheduled crawl jobs"
+	)
+
+	crawler_queue_second_label.text = "2. —"
+	crawler_queue_third_label.text = "3. —"
+
+	crawler_queue_footer_label.text = (
+		"Manage queue from the Jobs tab."
+	)
+
+	crawler_queue_panel.set_status(
+		"EMPTY",
+		ThemeManager.TEXT_DISABLED
+	)
+
+	refresh_crawler_queue_colors(
+		false
+	)
+
+
+func refresh_crawler_queue_colors(
+	has_queued_jobs: bool
+) -> void:
+	crawler_queue_next_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_INFORMATION
+		if has_queued_jobs
+		else ThemeManager.TEXT_DISABLED
+	)
+
+	crawler_queue_second_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_PRIMARY
+		if has_queued_jobs
+		else ThemeManager.TEXT_DISABLED
+	)
+
+	crawler_queue_third_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_PRIMARY
+		if has_queued_jobs
+		else ThemeManager.TEXT_DISABLED
+	)
+
+	crawler_queue_footer_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_SECONDARY
+	)
+
+	crawler_queue_footer_label.add_theme_font_size_override(
+		"font_size",
+		ThemeManager.FONT_SIZE_SMALL
+	)
 
 
 # -------------------------------------------------------------------
@@ -2031,6 +2208,9 @@ func _on_crawl_job_completed() -> void:
 	)
 
 	update_crawler_state(false)
+	
+func _on_crawl_job_queue_changed() -> void:
+	refresh_crawler_queue_monitor()
 
 
 # -------------------------------------------------------------------
