@@ -26,6 +26,18 @@ signal auto_restart_unlock_earned
 
 signal auto_restart_triggered
 
+signal scheduler_unlock_changed(
+	is_unlocked: bool
+)
+
+signal scheduler_enabled_changed(
+	is_enabled: bool
+)
+
+signal scheduler_triggered(
+	job_id: StringName
+)
+
 
 # -------------------------------------------------------------------
 # Auto Crawl Assist levels
@@ -75,6 +87,13 @@ const AUTO_RESTART_DELAY_SECONDS: float = 1.0
 
 
 # -------------------------------------------------------------------
+# Crawl Scheduler
+# -------------------------------------------------------------------
+
+const SCHEDULER_DELAY_SECONDS: float = 1.0
+
+
+# -------------------------------------------------------------------
 # Runtime
 # -------------------------------------------------------------------
 
@@ -89,6 +108,11 @@ var auto_restart_timer: Timer
 var auto_restart_unlocked: bool = false
 var auto_restart_enabled: bool = false
 
+var scheduler_timer: Timer
+
+var scheduler_unlocked: bool = false
+var scheduler_enabled: bool = false
+
 
 # -------------------------------------------------------------------
 # Setup
@@ -97,12 +121,17 @@ var auto_restart_enabled: bool = false
 func _ready() -> void:
 	create_auto_assist_timer()
 	create_auto_restart_timer()
+	create_scheduler_timer()
 
 	connect_progression_signals()
 	connect_crawler_signals()
 
 	call_deferred(
 		"synchronize_auto_assist_with_progression"
+	)
+
+	call_deferred(
+		"synchronize_scheduler_with_progression"
 	)
 
 
@@ -151,6 +180,28 @@ func create_auto_restart_timer() -> void:
 	auto_restart_timer.timeout.connect(
 		_on_auto_restart_timer_timeout
 	)
+	
+func create_scheduler_timer() -> void:
+	scheduler_timer = Timer.new()
+
+	scheduler_timer.name = (
+		"CrawlSchedulerTimer"
+	)
+
+	scheduler_timer.wait_time = (
+		SCHEDULER_DELAY_SECONDS
+	)
+
+	scheduler_timer.one_shot = true
+	scheduler_timer.autostart = false
+
+	add_child(
+		scheduler_timer
+	)
+
+	scheduler_timer.timeout.connect(
+		_on_scheduler_timer_timeout
+	)
 
 
 func connect_progression_signals() -> void:
@@ -175,12 +226,20 @@ func connect_crawler_signals() -> void:
 		CrawlerManager.crawl_job_completed.connect(
 			_on_crawl_job_completed_for_auto_restart
 		)
+		
+	if not CrawlerManager.crawl_job_completed.is_connected(
+		_on_crawl_job_completed_for_scheduler
+	):
+		CrawlerManager.crawl_job_completed.connect(
+			_on_crawl_job_completed_for_scheduler
+		)
 
 
 func _on_progression_tier_changed(
 	new_tier: int
 ) -> void:
 	synchronize_auto_assist_with_progression()
+	synchronize_scheduler_with_progression()
 
 	if (
 		new_tier
@@ -217,6 +276,18 @@ func synchronize_auto_assist_with_progression() -> void:
 		set_auto_assist_level(
 			AUTO_ASSIST_MIN_LEVEL
 		)
+		
+func synchronize_scheduler_with_progression() -> void:
+	var progression_allows_scheduler: bool = (
+		ObjectiveManager.get_current_progression_tier()
+		>= ObjectiveManager.PROGRESSION_TIER_2
+	)
+
+	if progression_allows_scheduler:
+		unlock_scheduler()
+		return
+
+	reset_scheduler()
 
 
 # -------------------------------------------------------------------
@@ -315,6 +386,64 @@ func is_auto_assist_active() -> bool:
 
 	if CrawlerManager.is_current_job_complete():
 		return false
+
+	return true
+	
+	
+# -------------------------------------------------------------------
+# Crawl Scheduler State
+# -------------------------------------------------------------------
+
+func is_scheduler_unlocked() -> bool:
+	return scheduler_unlocked
+
+
+func is_scheduler_enabled() -> bool:
+	return (
+		scheduler_unlocked
+		and scheduler_enabled
+	)
+
+
+func unlock_scheduler() -> bool:
+	if scheduler_unlocked:
+		return false
+
+	if (
+		ObjectiveManager.get_current_progression_tier()
+		< ObjectiveManager.PROGRESSION_TIER_2
+	):
+		return false
+
+	scheduler_unlocked = true
+
+	scheduler_unlock_changed.emit(
+		true
+	)
+
+	return true
+
+
+func set_scheduler_enabled(
+	new_enabled: bool
+) -> bool:
+	if not scheduler_unlocked:
+		return false
+
+	if scheduler_enabled == new_enabled:
+		return false
+
+	scheduler_enabled = new_enabled
+
+	if (
+		not scheduler_enabled
+		and scheduler_timer != null
+	):
+		scheduler_timer.stop()
+
+	scheduler_enabled_changed.emit(
+		scheduler_enabled
+	)
 
 	return true
 	
@@ -434,6 +563,90 @@ func _on_auto_restart_timer_timeout() -> void:
 
 	if GameState.crawler_running:
 		auto_restart_triggered.emit()
+		
+		
+# -------------------------------------------------------------------
+# Crawl Scheduler Processing
+# -------------------------------------------------------------------
+
+func _on_crawl_job_completed_for_scheduler() -> void:
+	if not is_scheduler_enabled():
+		return
+
+	if (
+		CrawlerManager.get_crawl_job_queue_size()
+		<= 0
+	):
+		return
+
+	if scheduler_timer == null:
+		return
+
+	scheduler_timer.stop()
+	scheduler_timer.start()
+	
+func _on_scheduler_timer_timeout() -> void:
+	if not is_scheduler_enabled():
+		return
+
+	if GameState.crawler_running:
+		return
+
+	if CrawlerManager.paused_for_overload:
+		return
+
+	if not CrawlerManager.is_current_job_complete():
+		return
+
+	if (
+		CrawlerManager.get_crawl_job_queue_size()
+		<= 0
+	):
+		return
+
+	if (
+		GameState.server_load
+		>= CrawlerManager.get_effective_maximum_safe_load()
+	):
+		scheduler_timer.start()
+		return
+
+	var next_job_id: StringName = (
+		CrawlerManager.peek_next_queued_crawl_job()
+	)
+
+	if next_job_id == &"":
+		return
+
+	if not CrawlerManager.is_crawl_job_unlocked(
+		next_job_id
+	):
+		return
+
+	var selection_successful: bool = (
+		CrawlerManager.select_crawl_job(
+			next_job_id
+		)
+	)
+
+	if not selection_successful:
+		return
+
+	CrawlerManager.start_crawler()
+
+	if not GameState.crawler_running:
+		return
+
+	var consumed_job_id: StringName = (
+		CrawlerManager.take_next_queued_crawl_job()
+	)
+
+	if consumed_job_id != next_job_id:
+		return
+
+	scheduler_triggered.emit(
+		next_job_id
+	)
 		
 # -------------------------------------------------------------------
 # Auto-Restart Save Restore
@@ -623,6 +836,7 @@ func reset_automation() -> void:
 	)
 
 	reset_auto_restart()
+	reset_scheduler()
 	
 func reset_auto_restart() -> void:
 	if auto_restart_timer != null:
@@ -646,5 +860,30 @@ func reset_auto_restart() -> void:
 
 	if was_enabled:
 		auto_restart_enabled_changed.emit(
+			false
+		)
+		
+func reset_scheduler() -> void:
+	if scheduler_timer != null:
+		scheduler_timer.stop()
+
+	var was_unlocked: bool = (
+		scheduler_unlocked
+	)
+
+	var was_enabled: bool = (
+		scheduler_enabled
+	)
+
+	scheduler_unlocked = false
+	scheduler_enabled = false
+
+	if was_unlocked:
+		scheduler_unlock_changed.emit(
+			false
+		)
+
+	if was_enabled:
+		scheduler_enabled_changed.emit(
 			false
 		)

@@ -125,6 +125,13 @@ extends PanelContainer
 	+ "SchedulerSummaryLabel"
 ) as Label
 
+@onready var scheduler_toggle_button: Button = get_node(
+	"CrawlerJobsMargin/CrawlerJobsPageLayout/"
+	+ "CrawlerJobsPageBody/CrawlerJobsRightColumn/"
+	+ "SchedulerManagementPanel/SchedulerManagementLayout/"
+	+ "SchedulerToggleButton"
+) as Button
+
 @onready var scheduler_queue_list: VBoxContainer = get_node(
 	"CrawlerJobsMargin/CrawlerJobsPageLayout/"
 	+ "CrawlerJobsPageBody/CrawlerJobsRightColumn/"
@@ -173,6 +180,20 @@ func connect_crawler_job_signals() -> void:
 		ObjectiveManager.progression_tier_changed.connect(
 			_on_progression_tier_changed
 		)
+		
+	if not AutomationManager.scheduler_unlock_changed.is_connected(
+		_on_scheduler_unlock_changed
+	):
+		AutomationManager.scheduler_unlock_changed.connect(
+			_on_scheduler_unlock_changed
+		)
+
+	if not AutomationManager.scheduler_enabled_changed.is_connected(
+		_on_scheduler_enabled_changed
+	):
+		AutomationManager.scheduler_enabled_changed.connect(
+			_on_scheduler_enabled_changed
+		)
 
 
 func connect_buttons() -> void:
@@ -181,6 +202,13 @@ func connect_buttons() -> void:
 	):
 		clear_scheduler_queue_button.pressed.connect(
 			_on_clear_scheduler_queue_button_pressed
+		)
+		
+	if not scheduler_toggle_button.pressed.is_connected(
+		_on_scheduler_toggle_button_pressed
+	):
+		scheduler_toggle_button.pressed.connect(
+			_on_scheduler_toggle_button_pressed
 		)
 
 
@@ -274,6 +302,7 @@ func apply_page_theme() -> void:
 func refresh_jobs_page() -> void:
 	refresh_available_crawls()
 	refresh_quick_crawls()
+	refresh_scheduler_controls()
 	refresh_scheduler_queue()
 	refresh_page_status()
 
@@ -621,6 +650,52 @@ func refresh_quick_crawl_label(
 		if unlocked
 		else ThemeManager.TEXT_DISABLED
 	)
+	
+	
+# -------------------------------------------------------------------
+# Scheduler Controls
+# -------------------------------------------------------------------
+
+func refresh_scheduler_controls() -> void:
+	var scheduler_unlocked: bool = (
+		AutomationManager.is_scheduler_unlocked()
+	)
+
+	if not scheduler_unlocked:
+		scheduler_toggle_button.text = (
+			"SCHEDULER: LOCKED — TIER 2"
+		)
+
+		scheduler_toggle_button.disabled = true
+
+		scheduler_toggle_button.tooltip_text = (
+			"Reach Tier 2 to unlock automatic "
+			+ "crawl scheduling."
+		)
+
+		return
+
+	scheduler_toggle_button.disabled = false
+
+	if AutomationManager.is_scheduler_enabled():
+		scheduler_toggle_button.text = (
+			"SCHEDULER: ON"
+		)
+
+		scheduler_toggle_button.tooltip_text = (
+			"Queued crawls will automatically "
+			+ "start after the current crawl finishes."
+		)
+
+	else:
+		scheduler_toggle_button.text = (
+			"SCHEDULER: OFF"
+		)
+
+		scheduler_toggle_button.tooltip_text = (
+			"Queued crawls will remain stored "
+			+ "until the Scheduler is enabled."
+		)
 
 
 # -------------------------------------------------------------------
@@ -881,6 +956,18 @@ func _on_remove_queue_job_pressed(
 
 func _on_clear_scheduler_queue_button_pressed() -> void:
 	CrawlerManager.clear_crawl_job_queue()
+	
+func _on_scheduler_toggle_button_pressed() -> void:
+	if not AutomationManager.is_scheduler_unlocked():
+		return
+
+	var new_enabled: bool = (
+		not AutomationManager.is_scheduler_enabled()
+	)
+
+	AutomationManager.set_scheduler_enabled(
+		new_enabled
+	)
 
 
 # -------------------------------------------------------------------
@@ -902,6 +989,17 @@ func _on_progression_tier_changed(
 	_new_tier: int
 ) -> void:
 	refresh_jobs_page()
+	
+func _on_scheduler_unlock_changed(
+	_is_unlocked: bool
+) -> void:
+	refresh_scheduler_controls()
+
+
+func _on_scheduler_enabled_changed(
+	_is_enabled: bool
+) -> void:
+	refresh_scheduler_controls()
 
 
 # -------------------------------------------------------------------

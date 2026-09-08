@@ -829,6 +829,7 @@ text = "0 / 100"
 horizontal_alignment = 2
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1286,7 +1287,6 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="CrawlerJobsPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=909825187]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1399,6 +1399,10 @@ text = "SCHEDULER QUEUE"
 [node name="SchedulerSummaryLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=289668234]
 layout_mode = 2
 text = "Queue: 0 / 10"
+
+[node name="SchedulerToggleButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=936602328]
+layout_mode = 2
+text = "SCHEDULER: OFF"
 
 [node name="SchedulerQueueScroll" type="ScrollContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=2122650865]
 layout_mode = 2
