@@ -120,6 +120,13 @@ var current_page_id: StringName = &""
 	) as TabButton
 )
 
+@onready var jobs_tab := (
+	get_node(
+		"MainApplicationWindow/MainLayout/TabBar/"
+		+ "TabRow/JobsTab"
+	) as TabButton
+)
+
 @onready var index_tab := (
 	get_node(
 		"MainApplicationWindow/MainLayout/TabBar/"
@@ -152,6 +159,13 @@ var current_page_id: StringName = &""
 	get_node(
 		"MainApplicationWindow/MainLayout/PageArea/"
 		+ "PageStack/CrawlerPage"
+	) as PanelContainer
+)
+
+@onready var jobs_page := (
+	get_node(
+		"MainApplicationWindow/MainLayout/PageArea/"
+		+ "PageStack/CrawlerJobsPage"
 	) as PanelContainer
 )
 
@@ -825,6 +839,7 @@ func setup_tabs() -> void:
 	tab_buttons = {
 		&"dashboard": dashboard_tab,
 		&"crawler": crawler_tab,
+		&"jobs": jobs_tab,
 		&"index": index_tab,
 		&"servers": servers_tab,
 		&"research": research_tab
@@ -833,13 +848,18 @@ func setup_tabs() -> void:
 	pages = {
 		&"dashboard": dashboard_page,
 		&"crawler": crawler_page,
+		&"jobs": jobs_page,
 		&"index": index_page,
 		&"servers": servers_page,
 		&"research": research_page
 	}
 
 	for tab_id: StringName in tab_buttons:
-		var tab_button := tab_buttons[tab_id] as TabButton
+		var tab_button := (
+			tab_buttons[
+				tab_id
+			] as TabButton
+		)
 
 		if not tab_button.tab_selected.is_connected(
 			_on_tab_selected

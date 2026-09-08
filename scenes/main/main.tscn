@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://ym5imyiwd2jr" path="res://scripts/tabs/dashboard_page.gd" id="4_6q06x"]
 [ext_resource type="PackedScene" uid="uid://e2d0iq6wxrof" path="res://scenes/components/section_panel.tscn" id="4_l3cfh"]
 [ext_resource type="Script" uid="uid://ckgps5y2xuknd" path="res://scripts/tabs/crawler_page.gd" id="6_ow5a4"]
+[ext_resource type="Script" uid="uid://d07n6eusyx0lf" path="res://scripts/tabs/crawler_jobs_page.gd" id="7_blune"]
 [ext_resource type="Script" uid="uid://cc4fl2orgeyr1" path="res://scripts/tabs/index_page.gd" id="7_hujxm"]
 [ext_resource type="Script" uid="uid://ckpsxyajlcgtx" path="res://scripts/tabs/servers_page.gd" id="8_yyfjg"]
 [ext_resource type="Script" uid="uid://be702lt0vde0f" path="res://scripts/tabs/research_page.gd" id="9_b1x3f"]
@@ -193,6 +194,12 @@ layout_mode = 2
 layout_mode = 2
 tab_id = &"crawler"
 tab_text = "Crawler"
+
+[node name="JobsTab" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1322766281 instance=ExtResource("3_k2fmo")]
+layout_mode = 2
+text = "Jobs"
+tab_id = &"jobs"
+tab_text = "Jobs"
 
 [node name="IndexTab" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=583557641 instance=ExtResource("3_k2fmo")]
 layout_mode = 2
@@ -822,6 +829,7 @@ text = "0 / 100"
 horizontal_alignment = 2
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1290,6 +1298,52 @@ text = "No crawl jobs are waiting."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
+
+[node name="CrawlerJobsPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=909825187]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_blune")
+
+[node name="CrawlerJobsMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage" unique_id=732024704]
+layout_mode = 2
+
+[node name="CrawlerJobsPageLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin" unique_id=1549945567]
+layout_mode = 2
+
+[node name="CrawlerJobsPageHeader" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout" unique_id=906908973]
+layout_mode = 2
+
+[node name="CrawlerJobsPageTitleLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageHeader" unique_id=1520183459]
+layout_mode = 2
+
+[node name="CrawlerJobsPageTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageHeader/CrawlerJobsPageTitleLayout" unique_id=1520884677]
+layout_mode = 2
+text = "CRAWL JOBS"
+
+[node name="CrawlerJobsPageSubtitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageHeader/CrawlerJobsPageTitleLayout" unique_id=1692935652]
+layout_mode = 2
+text = "Configure quick crawls and manage scheduled crawl operations."
+
+[node name="CrawlerJobsHeaderSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageHeader" unique_id=572644809]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CrawlerJobsPageStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageHeader" unique_id=163224644]
+layout_mode = 2
+text = "JOB CATALOG"
+
+[node name="CrawlerJobsPageBody" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout" unique_id=110156150]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CrawlerJobsPlaceholderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody" unique_id=270172030]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Crawl Job Management"
 
 [node name="IndexPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=945400770]
 visible = false

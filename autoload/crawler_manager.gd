@@ -33,6 +33,9 @@ signal crawler_priority_changed(
 
 signal crawler_recovered_from_overload
 
+signal quick_crawl_jobs_changed
+signal crawl_job_queue_changed
+
 
 # -------------------------------------------------------------------
 # Temporary balance values
@@ -47,22 +50,41 @@ const CRAWL_JOB_DEEP: StringName = &"deep"
 const CRAWL_JOBS: Dictionary = {
 	CRAWL_JOB_BASIC: {
 		"display_name": "Basic Crawl",
+		"description":
+			"A small general-purpose crawl with a short "
+			+ "completion time.",
 		"target_pages": 100,
 		"required_tier": 1
 	},
 
 	CRAWL_JOB_EXPANDED: {
 		"display_name": "Expanded Crawl",
+		"description":
+			"A broader crawl that searches more linked "
+			+ "domains and takes longer to finish.",
 		"target_pages": 250,
 		"required_tier": 2
 	},
 
 	CRAWL_JOB_DEEP: {
 		"display_name": "Deep Crawl",
+		"description":
+			"A long crawl that follows deeper link paths "
+			+ "for sustained indexing.",
 		"target_pages": 500,
 		"required_tier": 2
 	}
 }
+
+const CRAWL_JOB_ORDER: Array[StringName] = [
+	CRAWL_JOB_BASIC,
+	CRAWL_JOB_EXPANDED,
+	CRAWL_JOB_DEEP
+]
+
+const QUICK_CRAWL_SLOT_COUNT: int = 3
+
+const MAX_CRAWL_JOB_QUEUE_SIZE: int = 10
 
 const REVENUE_PER_PAGE: float = 1.0
 const ACTIVE_USERS_PER_PAGE: float = 0.15
@@ -137,6 +159,14 @@ var selected_job_id: StringName = (
 var current_job_target_pages: int = (
 	DEFAULT_JOB_TARGET_PAGES
 )
+
+var quick_crawl_job_ids: Array[StringName] = [
+	CRAWL_JOB_BASIC,
+	CRAWL_JOB_EXPANDED,
+	CRAWL_JOB_DEEP
+]
+
+var crawl_job_queue: Array[StringName] = []
 
 var page_fraction_buffer: float = 0.0
 var active_user_fraction_buffer: float = 0.0
@@ -283,6 +313,321 @@ func get_selected_job_display_name() -> String:
 			"Basic Crawl"
 		)
 	)
+	
+# -------------------------------------------------------------------
+# Crawl Job Catalog
+# -------------------------------------------------------------------
+
+func get_all_crawl_job_ids() -> Array[StringName]:
+	var job_ids: Array[StringName] = []
+
+	for job_id: StringName in CRAWL_JOB_ORDER:
+		job_ids.append(
+			job_id
+		)
+
+	return job_ids
+
+
+func get_crawl_job_description(
+	job_id: StringName
+) -> String:
+	if not CRAWL_JOBS.has(
+		job_id
+	):
+		return ""
+
+	var job_data: Dictionary = (
+		CRAWL_JOBS[job_id]
+	)
+
+	return str(
+		job_data.get(
+			"description",
+			""
+		)
+	)
+
+
+func get_crawl_job_required_tier(
+	job_id: StringName
+) -> int:
+	if not CRAWL_JOBS.has(
+		job_id
+	):
+		return 999
+
+	var job_data: Dictionary = (
+		CRAWL_JOBS[job_id]
+	)
+
+	return int(
+		job_data.get(
+			"required_tier",
+			1
+		)
+	)
+	
+# -------------------------------------------------------------------
+# Quick Crawl Slots
+# -------------------------------------------------------------------
+
+func get_quick_crawl_job_ids() -> Array[StringName]:
+	var job_ids: Array[StringName] = []
+
+	for job_id: StringName in quick_crawl_job_ids:
+		job_ids.append(
+			job_id
+		)
+
+	return job_ids
+
+
+func get_quick_crawl_job_id(
+	slot_index: int
+) -> StringName:
+	if (
+		slot_index < 0
+		or slot_index
+		>= quick_crawl_job_ids.size()
+	):
+		return &""
+
+	return quick_crawl_job_ids[
+		slot_index
+	]
+
+
+func is_crawl_job_quick_selected(
+	job_id: StringName
+) -> bool:
+	return quick_crawl_job_ids.has(
+		job_id
+	)
+
+
+func get_crawl_job_quick_slot(
+	job_id: StringName
+) -> int:
+	return quick_crawl_job_ids.find(
+		job_id
+	)
+
+
+func set_quick_crawl_job(
+	slot_index: int,
+	job_id: StringName
+) -> bool:
+	if (
+		slot_index < 0
+		or slot_index >= QUICK_CRAWL_SLOT_COUNT
+	):
+		return false
+
+	if not CRAWL_JOBS.has(
+		job_id
+	):
+		return false
+
+	if (
+		quick_crawl_job_ids[
+			slot_index
+		]
+		== job_id
+	):
+		return true
+
+	var existing_slot_index: int = (
+		quick_crawl_job_ids.find(
+			job_id
+		)
+	)
+
+	if existing_slot_index >= 0:
+		var replaced_job_id: StringName = (
+			quick_crawl_job_ids[
+				slot_index
+			]
+		)
+
+		quick_crawl_job_ids[
+			slot_index
+		] = job_id
+
+		quick_crawl_job_ids[
+			existing_slot_index
+		] = replaced_job_id
+
+	else:
+		quick_crawl_job_ids[
+			slot_index
+		] = job_id
+
+	quick_crawl_jobs_changed.emit()
+
+	return true
+	
+# -------------------------------------------------------------------
+# Crawl Job Queue
+# -------------------------------------------------------------------
+
+func get_crawl_job_queue() -> Array[StringName]:
+	var queued_jobs: Array[StringName] = []
+
+	for job_id: StringName in crawl_job_queue:
+		queued_jobs.append(
+			job_id
+		)
+
+	return queued_jobs
+
+
+func get_crawl_job_queue_size() -> int:
+	return crawl_job_queue.size()
+
+
+func is_crawl_job_queue_full() -> bool:
+	return (
+		crawl_job_queue.size()
+		>= MAX_CRAWL_JOB_QUEUE_SIZE
+	)
+
+
+func can_add_crawl_job_to_queue(
+	job_id: StringName
+) -> bool:
+	if not CRAWL_JOBS.has(
+		job_id
+	):
+		return false
+
+	if not is_crawl_job_unlocked(
+		job_id
+	):
+		return false
+
+	if is_crawl_job_queue_full():
+		return false
+
+	return true
+
+
+func add_crawl_job_to_queue(
+	job_id: StringName
+) -> bool:
+	if not can_add_crawl_job_to_queue(
+		job_id
+	):
+		return false
+
+	crawl_job_queue.append(
+		job_id
+	)
+
+	crawl_job_queue_changed.emit()
+
+	return true
+
+
+func remove_crawl_job_from_queue(
+	queue_index: int
+) -> bool:
+	if (
+		queue_index < 0
+		or queue_index
+		>= crawl_job_queue.size()
+	):
+		return false
+
+	crawl_job_queue.remove_at(
+		queue_index
+	)
+
+	crawl_job_queue_changed.emit()
+
+	return true
+
+
+func move_crawl_job_in_queue(
+	from_index: int,
+	to_index: int
+) -> bool:
+	if (
+		from_index < 0
+		or from_index
+		>= crawl_job_queue.size()
+	):
+		return false
+
+	if (
+		to_index < 0
+		or to_index
+		>= crawl_job_queue.size()
+	):
+		return false
+
+	if from_index == to_index:
+		return true
+
+	var job_id: StringName = (
+		crawl_job_queue[
+			from_index
+		]
+	)
+
+	crawl_job_queue.remove_at(
+		from_index
+	)
+
+	crawl_job_queue.insert(
+		to_index,
+		job_id
+	)
+
+	crawl_job_queue_changed.emit()
+
+	return true
+
+
+func clear_crawl_job_queue() -> void:
+	if crawl_job_queue.is_empty():
+		return
+
+	crawl_job_queue.clear()
+
+	crawl_job_queue_changed.emit()
+
+
+func peek_next_queued_crawl_job() -> StringName:
+	if crawl_job_queue.is_empty():
+		return &""
+
+	return crawl_job_queue[0]
+
+
+func take_next_queued_crawl_job() -> StringName:
+	if crawl_job_queue.is_empty():
+		return &""
+
+	var job_id: StringName = (
+		crawl_job_queue.pop_front()
+	)
+
+	crawl_job_queue_changed.emit()
+
+	return job_id
+	
+func reset_crawl_job_configuration() -> void:
+	quick_crawl_job_ids = [
+		CRAWL_JOB_BASIC,
+		CRAWL_JOB_EXPANDED,
+		CRAWL_JOB_DEEP
+	]
+
+	crawl_job_queue.clear()
+
+	quick_crawl_jobs_changed.emit()
+	crawl_job_queue_changed.emit()
 	
 # -------------------------------------------------------------------
 # Crawler Priorities
@@ -1161,6 +1506,8 @@ func reset_crawler_state() -> void:
 	current_job_target_pages = (
 		DEFAULT_JOB_TARGET_PAGES
 	)
+	
+	reset_crawl_job_configuration()
 
 	GameState.set_crawler_running(
 		false
