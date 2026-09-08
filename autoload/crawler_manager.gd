@@ -31,6 +31,8 @@ signal crawler_priority_changed(
 	priority_id: StringName
 )
 
+signal crawler_recovered_from_overload
+
 
 # -------------------------------------------------------------------
 # Temporary balance values
@@ -871,6 +873,12 @@ func decrease_server_load() -> void:
 		if paused_for_overload:
 			paused_for_overload = false
 
+			crawler_state_changed.emit(
+				false
+			)
+
+			crawler_recovered_from_overload.emit()
+
 		return
 
 	var cooled_server_load: float = maxf(
@@ -893,7 +901,11 @@ func decrease_server_load() -> void:
 	)
 
 	if recovered_from_overload:
-		crawler_state_changed.emit(false)
+		crawler_state_changed.emit(
+			false
+		)
+
+		crawler_recovered_from_overload.emit()
 	
 # -------------------------------------------------------------------
 # Progress

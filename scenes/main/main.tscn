@@ -966,6 +966,11 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Auto Crawl Assist: LOCKED"
 
+[node name="AutoRestartToggleButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerAutomationStatusRow" unique_id=323123296]
+custom_minimum_size = Vector2(175, 0)
+layout_mode = 2
+text = "AUTO-RESTART: LOCKED"
+
 [node name="CrawlerPriorityStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerControlLayout/CrawlerAutomationStatusRow" unique_id=906092957]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1197,12 +1202,14 @@ theme_override_constants/separation = 6
 
 [node name="CrawlerEventTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout" unique_id=362036956]
 layout_mode = 2
+theme_override_font_sizes/font_size = 14
 text = "MONITORING CRAWL ACTIVITY"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="CrawlerEventDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout" unique_id=680423228]
 layout_mode = 2
+theme_override_font_sizes/font_size = 14
 text = "No active crawler event."
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -1210,6 +1217,7 @@ autowrap_mode = 3
 
 [node name="CrawlerEventTimerLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout" unique_id=1159233904]
 layout_mode = 2
+theme_override_font_sizes/font_size = 14
 text = "Waiting for event..."
 horizontal_alignment = 1
 

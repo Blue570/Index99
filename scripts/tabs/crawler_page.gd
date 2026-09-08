@@ -82,6 +82,14 @@ const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
 	+ "AutoCrawlAssistStatusLabel"
 ) as Label
 
+@onready var auto_restart_toggle_button: Button = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerControlLayout/CrawlerAutomationStatusRow/"
+	+ "AutoRestartToggleButton"
+) as Button
+
 @onready var crawler_priority_status_label: Label = get_node(
 	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
 	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
@@ -585,6 +593,13 @@ func connect_buttons() -> void:
 		efficiency_priority_button.pressed.connect(
 			_on_efficiency_priority_button_pressed
 		)
+		
+	if not auto_restart_toggle_button.pressed.is_connected(
+		_on_auto_restart_toggle_button_pressed
+	):
+		auto_restart_toggle_button.pressed.connect(
+			_on_auto_restart_toggle_button_pressed
+		)
 
 
 func connect_crawler_signals() -> void:
@@ -621,6 +636,20 @@ func connect_crawler_signals() -> void:
 	):
 		CrawlerManager.crawler_priority_changed.connect(
 			_on_crawler_priority_changed
+		)
+		
+	if not AutomationManager.auto_restart_unlock_changed.is_connected(
+		_on_auto_restart_unlock_changed
+	):
+		AutomationManager.auto_restart_unlock_changed.connect(
+			_on_auto_restart_unlock_changed
+		)
+
+	if not AutomationManager.auto_restart_enabled_changed.is_connected(
+		_on_auto_restart_enabled_changed
+	):
+		AutomationManager.auto_restart_enabled_changed.connect(
+			_on_auto_restart_enabled_changed
 		)
 
 
@@ -716,6 +745,7 @@ func refresh_crawler_page() -> void:
 	refresh_crawl_job_selection()
 	refresh_crawler_priority_ui()
 	refresh_auto_crawl_assist_status()
+	refresh_auto_restart_ui()
 	refresh_effective_crawler_rate()
 
 	refresh_crawler_event_ui()
@@ -908,6 +938,7 @@ func _on_progression_tier_changed(
 	refresh_crawl_job_selection()
 	refresh_crawler_priority_ui()
 	refresh_auto_crawl_assist_status()
+	refresh_auto_restart_ui()
 	refresh_effective_crawler_rate()
 	
 # -------------------------------------------------------------------
@@ -1447,6 +1478,93 @@ func refresh_manual_crawl_assist_button() -> void:
 	manual_crawl_assist_button.tooltip_text = (
 		"Start or resume the crawler to use "
 		+ "Manual Crawl Assist."
+	)
+	
+
+# -------------------------------------------------------------------
+# Auto-Restart Controls and Display
+# -------------------------------------------------------------------
+
+func _on_auto_restart_toggle_button_pressed() -> void:
+	if not AutomationManager.is_auto_restart_unlocked():
+		refresh_auto_restart_ui()
+		return
+
+	var new_enabled_state: bool = (
+		not AutomationManager.is_auto_restart_enabled()
+	)
+
+	AutomationManager.set_auto_restart_enabled(
+		new_enabled_state
+	)
+
+	refresh_auto_restart_ui()
+	
+func _on_auto_restart_unlock_changed(
+	_is_unlocked: bool
+) -> void:
+	refresh_auto_restart_ui()
+
+
+func _on_auto_restart_enabled_changed(
+	_is_enabled: bool
+) -> void:
+	refresh_auto_restart_ui()
+	
+func refresh_auto_restart_ui() -> void:
+	if not AutomationManager.is_auto_restart_unlocked():
+		auto_restart_toggle_button.text = (
+			"AUTO-RESTART: LOCKED"
+		)
+
+		auto_restart_toggle_button.disabled = true
+
+		auto_restart_toggle_button.add_theme_color_override(
+			"font_disabled_color",
+			ThemeManager.TEXT_DISABLED
+		)
+
+		auto_restart_toggle_button.tooltip_text = (
+			"Complete your first Expanded Crawl "
+			+ "to unlock Auto-Restart."
+		)
+
+		return
+
+	auto_restart_toggle_button.disabled = false
+
+	if AutomationManager.is_auto_restart_enabled():
+		auto_restart_toggle_button.text = (
+			"AUTO-RESTART: ON"
+		)
+
+		auto_restart_toggle_button.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+		auto_restart_toggle_button.tooltip_text = (
+			"Auto-Restart is enabled.\n"
+			+ "After an overload, the crawler will "
+			+ "automatically resume once the server "
+			+ "has recovered."
+		)
+
+		return
+
+	auto_restart_toggle_button.text = (
+		"AUTO-RESTART: OFF"
+	)
+
+	auto_restart_toggle_button.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_WARNING
+	)
+
+	auto_restart_toggle_button.tooltip_text = (
+		"Auto-Restart is disabled.\n"
+		+ "Click to automatically resume the crawler "
+		+ "after overload recovery."
 	)
 
 
