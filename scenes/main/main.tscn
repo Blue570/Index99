@@ -1201,37 +1201,50 @@ size_flags_vertical = 3
 theme_override_constants/separation = 6
 
 [node name="CrawlerEventTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout" unique_id=362036956]
+custom_minimum_size = Vector2(0, 22)
+custom_maximum_size = Vector2(-1, 22)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "MONITORING CRAWL ACTIVITY"
 horizontal_alignment = 1
 vertical_alignment = 1
+max_lines_visible = 1
 
 [node name="CrawlerEventDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout" unique_id=680423228]
+custom_minimum_size = Vector2(0, 40)
+custom_maximum_size = Vector2(-1, 40)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "No active crawler event."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
+max_lines_visible = 2
 
 [node name="CrawlerEventTimerLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout" unique_id=1159233904]
+custom_minimum_size = Vector2(0, 22)
+custom_maximum_size = Vector2(-1, 22)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Waiting for event..."
 horizontal_alignment = 1
+max_lines_visible = 1
 
 [node name="CrawlerEventButtonsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout" unique_id=1438505326]
 layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="CrawlerEventPrimaryButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout/CrawlerEventButtonsRow" unique_id=1821398159]
+custom_minimum_size = Vector2(0, 30)
+custom_maximum_size = Vector2(-1, 30)
 layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
 text = "ACTION"
 
 [node name="CrawlerEventSecondaryButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerRightColumn/LiveCrawlerEventPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CrawlerEventLayout/CrawlerEventButtonsRow" unique_id=1467890911]
+custom_minimum_size = Vector2(0, 30)
+custom_maximum_size = Vector2(-1, 30)
 layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
