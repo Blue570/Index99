@@ -113,6 +113,18 @@ func _on_autosave_timeout() -> void:
 # Build save data
 # -------------------------------------------------------------------
 
+func string_name_array_to_strings(
+	values: Array[StringName]
+) -> Array[String]:
+	var result: Array[String] = []
+
+	for value: StringName in values:
+		result.append(
+			str(value)
+		)
+
+	return result
+
 func build_save_data() -> Dictionary:
 	return {
 		"save_version": SAVE_VERSION,
@@ -149,15 +161,28 @@ func build_save_data() -> Dictionary:
 			"priority_id":
 				str(
 					CrawlerManager.get_current_crawler_priority()
+				),
+
+			"quick_crawl_job_ids":
+				string_name_array_to_strings(
+					CrawlerManager.get_quick_crawl_job_ids()
+				),
+
+			"crawl_job_queue":
+				string_name_array_to_strings(
+					CrawlerManager.get_crawl_job_queue()
 				)
 		},
 		
-		"automation": {
-			"auto_restart_unlocked":
-				AutomationManager.is_auto_restart_unlocked(),
+			"automation": {
+				"auto_restart_unlocked":
+					AutomationManager.is_auto_restart_unlocked(),
 
-			"auto_restart_enabled":
-				AutomationManager.is_auto_restart_enabled()
+				"auto_restart_enabled":
+					AutomationManager.is_auto_restart_enabled(),
+
+				"scheduler_enabled":
+					AutomationManager.is_scheduler_enabled()
 		},
 
 		"server_upgrades": {
@@ -399,6 +424,71 @@ func read_bool(
 
 	return bool(value)
 	
+func copy_string_name_array(
+	values: Array[StringName]
+) -> Array[StringName]:
+	var result: Array[StringName] = []
+
+	for value: StringName in values:
+		result.append(
+			value
+		)
+
+	return result
+
+
+func read_string_name_array(
+	data: Dictionary,
+	key: String,
+	fallback: Array[StringName]
+) -> Array[StringName]:
+	if not data.has(
+		key
+	):
+		return copy_string_name_array(
+			fallback
+		)
+
+	var value: Variant = data[
+		key
+	]
+
+	if typeof(value) != TYPE_ARRAY:
+		push_warning(
+			"SaveManager: Invalid array '%s'."
+			% key
+		)
+
+		return copy_string_name_array(
+			fallback
+		)
+
+	var raw_values: Array = value
+
+	var result: Array[StringName] = []
+
+	for raw_value: Variant in raw_values:
+		if (
+			typeof(raw_value) != TYPE_STRING
+			and typeof(raw_value)
+			!= TYPE_STRING_NAME
+		):
+			push_warning(
+				"SaveManager: Invalid value "
+				+ "inside array '%s'."
+				% key
+			)
+
+			continue
+
+		result.append(
+			StringName(
+				str(raw_value)
+			)
+		)
+
+	return result
+	
 # -------------------------------------------------------------------
 # Load game
 # -------------------------------------------------------------------
@@ -600,6 +690,10 @@ func restore_save_data(
 
 	restore_objective(
 		objective_data
+	)
+	
+	restore_crawl_job_configuration(
+		crawler_data
 	)
 	
 	restore_crawler_priority(
@@ -817,6 +911,43 @@ func restore_crawler(
 		saved_job_id
 	)
 	
+	
+# -------------------------------------------------------------------
+# Restore Crawl Job Configuration
+# -------------------------------------------------------------------
+
+func restore_crawl_job_configuration(
+	data: Dictionary
+) -> void:
+	var default_quick_job_ids: Array[StringName] = [
+		CrawlerManager.CRAWL_JOB_BASIC,
+		CrawlerManager.CRAWL_JOB_EXPANDED,
+		CrawlerManager.CRAWL_JOB_DEEP
+	]
+
+	var default_queue: Array[StringName] = []
+
+	var saved_quick_job_ids: Array[StringName] = (
+		read_string_name_array(
+			data,
+			"quick_crawl_job_ids",
+			default_quick_job_ids
+		)
+	)
+
+	var saved_queue: Array[StringName] = (
+		read_string_name_array(
+			data,
+			"crawl_job_queue",
+			default_queue
+		)
+	)
+
+	CrawlerManager.restore_crawl_job_configuration(
+		saved_quick_job_ids,
+		saved_queue
+	)
+	
 # -------------------------------------------------------------------
 # Restore Crawler Priority
 # -------------------------------------------------------------------
@@ -966,9 +1097,24 @@ func restore_automation(
 			saved_auto_restart_unlocked
 		)
 
+	var saved_scheduler_enabled: bool = false
+
+	if data.has(
+		"scheduler_enabled"
+	):
+		saved_scheduler_enabled = read_bool(
+			data,
+			"scheduler_enabled",
+			false
+		)
+
 	AutomationManager.restore_auto_restart_state(
 		saved_auto_restart_unlocked,
 		saved_auto_restart_enabled
+	)
+
+	AutomationManager.restore_scheduler_state(
+		saved_scheduler_enabled
 	)
 	
 # -------------------------------------------------------------------
@@ -1046,6 +1192,27 @@ func connect_event_autosave_signals() -> void:
 			_on_auto_restart_enabled_changed_for_save
 		)
 		
+	if not CrawlerManager.quick_crawl_jobs_changed.is_connected(
+		_on_quick_crawl_jobs_changed_for_save
+	):
+		CrawlerManager.quick_crawl_jobs_changed.connect(
+			_on_quick_crawl_jobs_changed_for_save
+		)
+
+	if not CrawlerManager.crawl_job_queue_changed.is_connected(
+		_on_crawl_job_queue_changed_for_save
+	):
+		CrawlerManager.crawl_job_queue_changed.connect(
+			_on_crawl_job_queue_changed_for_save
+		)
+
+	if not AutomationManager.scheduler_enabled_changed.is_connected(
+		_on_scheduler_enabled_changed_for_save
+	):
+		AutomationManager.scheduler_enabled_changed.connect(
+			_on_scheduler_enabled_changed_for_save
+		)
+		
 func _on_server_upgrade_purchased_for_save(
 	_upgrade_id: StringName,
 	_new_level: int,
@@ -1090,6 +1257,19 @@ func _on_tutorial_completed_for_save() -> void:
 
 
 func _on_tutorial_skipped_for_save() -> void:
+	request_event_autosave()
+	
+func _on_quick_crawl_jobs_changed_for_save() -> void:
+	request_event_autosave()
+
+
+func _on_crawl_job_queue_changed_for_save() -> void:
+	request_event_autosave()
+
+
+func _on_scheduler_enabled_changed_for_save(
+	_is_enabled: bool
+) -> void:
 	request_event_autosave()
 	
 func request_event_autosave() -> void:

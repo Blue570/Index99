@@ -696,6 +696,54 @@ func restore_auto_restart_state(
 		auto_restart_enabled_changed.emit(
 			auto_restart_enabled
 		)
+		
+
+# -------------------------------------------------------------------
+# Scheduler Save Restore
+# -------------------------------------------------------------------
+
+func restore_scheduler_state(
+	saved_enabled: bool
+) -> void:
+	var progression_allows_scheduler: bool = (
+		ObjectiveManager.get_current_progression_tier()
+		>= ObjectiveManager.PROGRESSION_TIER_2
+	)
+
+	var restored_unlocked: bool = (
+		progression_allows_scheduler
+	)
+
+	var restored_enabled: bool = (
+		saved_enabled
+		and restored_unlocked
+	)
+
+	var unlock_changed: bool = (
+		scheduler_unlocked
+		!= restored_unlocked
+	)
+
+	var enabled_changed: bool = (
+		scheduler_enabled
+		!= restored_enabled
+	)
+
+	if scheduler_timer != null:
+		scheduler_timer.stop()
+
+	scheduler_unlocked = restored_unlocked
+	scheduler_enabled = restored_enabled
+
+	if unlock_changed:
+		scheduler_unlock_changed.emit(
+			scheduler_unlocked
+		)
+
+	if enabled_changed:
+		scheduler_enabled_changed.emit(
+			scheduler_enabled
+		)
 
 
 # -------------------------------------------------------------------

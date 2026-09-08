@@ -629,6 +629,83 @@ func reset_crawl_job_configuration() -> void:
 	quick_crawl_jobs_changed.emit()
 	crawl_job_queue_changed.emit()
 	
+func restore_crawl_job_configuration(
+	saved_quick_job_ids: Array[StringName],
+	saved_queue: Array[StringName]
+) -> void:
+	var default_quick_job_ids: Array[StringName] = [
+		CRAWL_JOB_BASIC,
+		CRAWL_JOB_EXPANDED,
+		CRAWL_JOB_DEEP
+	]
+
+	var restored_quick_job_ids: Array[StringName] = []
+
+	for job_id: StringName in saved_quick_job_ids:
+		if (
+			restored_quick_job_ids.size()
+			>= QUICK_CRAWL_SLOT_COUNT
+		):
+			break
+
+		if not CRAWL_JOBS.has(
+			job_id
+		):
+			continue
+
+		if restored_quick_job_ids.has(
+			job_id
+		):
+			continue
+
+		restored_quick_job_ids.append(
+			job_id
+		)
+
+	for default_job_id: StringName in default_quick_job_ids:
+		if (
+			restored_quick_job_ids.size()
+			>= QUICK_CRAWL_SLOT_COUNT
+		):
+			break
+
+		if restored_quick_job_ids.has(
+			default_job_id
+		):
+			continue
+
+		restored_quick_job_ids.append(
+			default_job_id
+		)
+
+	quick_crawl_job_ids = restored_quick_job_ids
+
+	crawl_job_queue.clear()
+
+	for job_id: StringName in saved_queue:
+		if (
+			crawl_job_queue.size()
+			>= MAX_CRAWL_JOB_QUEUE_SIZE
+		):
+			break
+
+		if not CRAWL_JOBS.has(
+			job_id
+		):
+			continue
+
+		if not is_crawl_job_unlocked(
+			job_id
+		):
+			continue
+
+		crawl_job_queue.append(
+			job_id
+		)
+
+	quick_crawl_jobs_changed.emit()
+	crawl_job_queue_changed.emit()
+	
 # -------------------------------------------------------------------
 # Crawler Priorities
 # -------------------------------------------------------------------
