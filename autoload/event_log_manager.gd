@@ -93,6 +93,20 @@ func connect_event_signals() -> void:
 		ObjectiveManager.progression_tier_changed.connect(
 			_on_progression_tier_changed
 		)
+		
+	if not AutomationManager.auto_restart_unlock_earned.is_connected(
+		_on_auto_restart_unlock_earned
+	):
+		AutomationManager.auto_restart_unlock_earned.connect(
+			_on_auto_restart_unlock_earned
+		)
+
+	if not AutomationManager.auto_restart_triggered.is_connected(
+		_on_auto_restart_triggered
+	):
+		AutomationManager.auto_restart_triggered.connect(
+			_on_auto_restart_triggered
+		)
 
 
 # -------------------------------------------------------------------
@@ -344,4 +358,44 @@ func _on_progression_tier_changed(
 		"Progression Tier %d unlocked."
 		% new_tier,
 		&"progression"
+	)
+	
+
+# -------------------------------------------------------------------
+# Automation events
+# -------------------------------------------------------------------
+
+func _on_auto_restart_unlock_earned() -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	add_event(
+		"Auto-Restart unlocked after completing Expanded Crawl.",
+		&"progression"
+	)
+
+
+func _on_auto_restart_triggered() -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	var generic_start_message: String = (
+		"Crawler started: %s"
+		% get_current_crawl_job_name()
+	)
+
+	if not events.is_empty():
+		var newest_event_message: String = str(
+			events[0].get(
+				"message",
+				""
+			)
+		)
+
+		if newest_event_message == generic_start_message:
+			events.pop_front()
+
+	add_event(
+		"Crawler automatically restarted after server recovery.",
+		&"crawler"
 	)

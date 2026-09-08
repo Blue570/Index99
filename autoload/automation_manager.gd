@@ -22,6 +22,8 @@ signal auto_restart_enabled_changed(
 	is_enabled: bool
 )
 
+signal auto_restart_unlock_earned
+
 signal auto_restart_triggered
 
 
@@ -352,6 +354,8 @@ func unlock_auto_restart() -> bool:
 	auto_restart_enabled_changed.emit(
 		true
 	)
+
+	auto_restart_unlock_earned.emit()
 
 	return true
 

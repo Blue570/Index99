@@ -159,6 +159,20 @@ func connect_notification_signals() -> void:
 		CrawlerManager.crawl_job_completed.connect(
 			_on_crawl_job_completed
 		)
+		
+	if not AutomationManager.auto_restart_unlock_earned.is_connected(
+		_on_auto_restart_unlock_earned
+	):
+		AutomationManager.auto_restart_unlock_earned.connect(
+			_on_auto_restart_unlock_earned
+		)
+
+	if not AutomationManager.auto_restart_triggered.is_connected(
+		_on_auto_restart_triggered
+	):
+		AutomationManager.auto_restart_triggered.connect(
+			_on_auto_restart_triggered
+		)
 
 
 # -------------------------------------------------------------------
@@ -447,4 +461,38 @@ func _on_crawl_job_completed() -> void:
 		"%s completed successfully."
 		% CrawlerManager.get_selected_job_display_name(),
 		TYPE_SUCCESS
+	)
+	
+	
+# -------------------------------------------------------------------
+# Auto-Restart notifications
+# -------------------------------------------------------------------
+
+func _on_auto_restart_unlock_earned() -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	show_notification(
+		"AUTO-RESTART UNLOCKED",
+		(
+			"Crawler recovery automation is now available.\n"
+			+ "Auto-Restart is enabled by default."
+		),
+		TYPE_UNLOCK,
+		5.5
+	)
+
+
+func _on_auto_restart_triggered() -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	show_notification(
+		"CRAWLER AUTO-RESTARTED",
+		(
+			"Server recovered.\n"
+			+ "Crawl operation resumed."
+		),
+		TYPE_INFORMATION,
+		4.0
 	)
