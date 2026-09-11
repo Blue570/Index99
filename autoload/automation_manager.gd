@@ -40,6 +40,29 @@ signal scheduler_triggered(
 
 
 # -------------------------------------------------------------------
+# Auto-Throttle Signals
+# -------------------------------------------------------------------
+
+signal auto_throttle_unlock_changed(
+	is_unlocked: bool
+)
+
+signal auto_throttle_level_changed(
+	new_level: int
+)
+
+signal auto_throttle_enabled_changed(
+	is_enabled: bool
+)
+
+signal auto_throttle_unlock_earned
+
+signal scheduled_crawl_completed_count_changed(
+	new_count: int
+)
+
+
+# -------------------------------------------------------------------
 # Auto Crawl Assist levels
 # -------------------------------------------------------------------
 
@@ -94,6 +117,94 @@ const SCHEDULER_DELAY_SECONDS: float = 1.0
 
 
 # -------------------------------------------------------------------
+# Auto-Throttle Progression
+# -------------------------------------------------------------------
+
+const AUTO_THROTTLE_MIN_LEVEL: int = 0
+const AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL: int = 4
+
+const AUTO_THROTTLE_PROTOTYPE_LEVEL: int = 1
+
+const AUTO_THROTTLE_SCHEDULED_CRAWLS_REQUIRED: int = 3
+
+
+# -------------------------------------------------------------------
+# Auto-Throttle Balance
+#
+# Array position = Auto-Throttle level.
+#
+# Maximum cycles:
+# -1 = unlimited
+# -------------------------------------------------------------------
+
+const AUTO_THROTTLE_MAX_CYCLES_BY_LEVEL: Array[int] = [
+	0,
+	1,
+	2,
+	3,
+	-1
+]
+
+const AUTO_THROTTLE_TRIGGER_PERCENT_BY_LEVEL: Array[float] = [
+	0.0,
+	90.0,
+	90.0,
+	90.0,
+	88.0
+]
+
+const AUTO_THROTTLE_RESUME_PERCENT_BY_LEVEL: Array[float] = [
+	0.0,
+	45.0,
+	45.0,
+	50.0,
+	55.0
+]
+
+const AUTO_THROTTLE_REACTION_DELAY_BY_LEVEL: Array[float] = [
+	0.0,
+	2.0,
+	1.5,
+	1.0,
+	0.5
+]
+
+const AUTO_THROTTLE_COOLDOWN_BY_LEVEL: Array[float] = [
+	0.0,
+	25.0,
+	20.0,
+	15.0,
+	10.0
+]
+
+
+# -------------------------------------------------------------------
+# Auto-Throttle Upgrade Costs
+#
+# Array position = level being purchased.
+#
+# Level 1 is earned through gameplay.
+# Levels 2-4 require investment.
+# -------------------------------------------------------------------
+
+const AUTO_THROTTLE_MONEY_COST_BY_LEVEL: Array[float] = [
+	0.0,
+	0.0,
+	250.0,
+	750.0,
+	0.0
+]
+
+const AUTO_THROTTLE_RESEARCH_COST_BY_LEVEL: Array[float] = [
+	0.0,
+	0.0,
+	0.0,
+	10.0,
+	25.0
+]
+
+
+# -------------------------------------------------------------------
 # Runtime
 # -------------------------------------------------------------------
 
@@ -112,6 +223,16 @@ var scheduler_timer: Timer
 
 var scheduler_unlocked: bool = false
 var scheduler_enabled: bool = false
+
+var auto_throttle_level: int = (
+	AUTO_THROTTLE_MIN_LEVEL
+)
+
+var auto_throttle_enabled: bool = false
+
+var scheduled_crawls_completed: int = 0
+
+var current_crawl_started_by_scheduler: bool = false
 
 
 # -------------------------------------------------------------------
@@ -233,6 +354,13 @@ func connect_crawler_signals() -> void:
 		CrawlerManager.crawl_job_completed.connect(
 			_on_crawl_job_completed_for_scheduler
 		)
+		
+	if not CrawlerManager.crawl_job_completed.is_connected(
+		_on_crawl_job_completed_for_auto_throttle_progression
+	):
+		CrawlerManager.crawl_job_completed.connect(
+			_on_crawl_job_completed_for_auto_throttle_progression
+		)
 
 
 func _on_progression_tier_changed(
@@ -246,6 +374,7 @@ func _on_progression_tier_changed(
 		< ObjectiveManager.PROGRESSION_TIER_2
 	):
 		reset_auto_restart()
+		reset_auto_throttle_progression()
 
 
 # -------------------------------------------------------------------
@@ -315,6 +444,263 @@ func get_next_auto_assist_level() -> int:
 		auto_crawl_assist_level + 1,
 		AUTO_ASSIST_MAX_LEVEL
 	)
+	
+	
+# -------------------------------------------------------------------
+# Auto-Throttle Level Information
+# -------------------------------------------------------------------
+
+func get_auto_throttle_level() -> int:
+	return auto_throttle_level
+
+
+func get_auto_throttle_max_implemented_level() -> int:
+	return AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+
+
+func is_auto_throttle_unlocked() -> bool:
+	return (
+		auto_throttle_level
+		>= AUTO_THROTTLE_PROTOTYPE_LEVEL
+	)
+
+
+func is_auto_throttle_enabled() -> bool:
+	return (
+		is_auto_throttle_unlocked()
+		and auto_throttle_enabled
+	)
+
+
+func is_auto_throttle_maxed() -> bool:
+	return (
+		auto_throttle_level
+		>= AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	)
+
+
+func get_next_auto_throttle_level() -> int:
+	return mini(
+		auto_throttle_level + 1,
+		AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	)
+
+
+func get_scheduled_crawls_completed() -> int:
+	return scheduled_crawls_completed
+
+
+func get_auto_throttle_unlock_requirement() -> int:
+	return AUTO_THROTTLE_SCHEDULED_CRAWLS_REQUIRED
+	
+func get_auto_throttle_max_cycles_for_level(
+	level: int
+) -> int:
+	var safe_level: int = clampi(
+		level,
+		AUTO_THROTTLE_MIN_LEVEL,
+		AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	)
+
+	return AUTO_THROTTLE_MAX_CYCLES_BY_LEVEL[
+		safe_level
+	]
+
+
+func get_auto_throttle_trigger_percent_for_level(
+	level: int
+) -> float:
+	var safe_level: int = clampi(
+		level,
+		AUTO_THROTTLE_MIN_LEVEL,
+		AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	)
+
+	return AUTO_THROTTLE_TRIGGER_PERCENT_BY_LEVEL[
+		safe_level
+	]
+
+
+func get_auto_throttle_resume_percent_for_level(
+	level: int
+) -> float:
+	var safe_level: int = clampi(
+		level,
+		AUTO_THROTTLE_MIN_LEVEL,
+		AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	)
+
+	return AUTO_THROTTLE_RESUME_PERCENT_BY_LEVEL[
+		safe_level
+	]
+
+
+func get_auto_throttle_reaction_delay_for_level(
+	level: int
+) -> float:
+	var safe_level: int = clampi(
+		level,
+		AUTO_THROTTLE_MIN_LEVEL,
+		AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	)
+
+	return AUTO_THROTTLE_REACTION_DELAY_BY_LEVEL[
+		safe_level
+	]
+
+
+func get_auto_throttle_cooldown_for_level(
+	level: int
+) -> float:
+	var safe_level: int = clampi(
+		level,
+		AUTO_THROTTLE_MIN_LEVEL,
+		AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	)
+
+	return AUTO_THROTTLE_COOLDOWN_BY_LEVEL[
+		safe_level
+	]
+	
+func get_auto_throttle_max_cycles() -> int:
+	return get_auto_throttle_max_cycles_for_level(
+		auto_throttle_level
+	)
+
+
+func get_auto_throttle_trigger_percent() -> float:
+	return get_auto_throttle_trigger_percent_for_level(
+		auto_throttle_level
+	)
+
+
+func get_auto_throttle_resume_percent() -> float:
+	return get_auto_throttle_resume_percent_for_level(
+		auto_throttle_level
+	)
+
+
+func get_auto_throttle_reaction_delay() -> float:
+	return get_auto_throttle_reaction_delay_for_level(
+		auto_throttle_level
+	)
+
+
+func get_auto_throttle_cooldown() -> float:
+	return get_auto_throttle_cooldown_for_level(
+		auto_throttle_level
+	)
+	
+func get_auto_throttle_money_cost_for_level(
+	level: int
+) -> float:
+	if (
+		level < AUTO_THROTTLE_PROTOTYPE_LEVEL
+		or level
+		> AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	):
+		return 0.0
+
+	return AUTO_THROTTLE_MONEY_COST_BY_LEVEL[
+		level
+	]
+
+
+func get_auto_throttle_research_cost_for_level(
+	level: int
+) -> float:
+	if (
+		level < AUTO_THROTTLE_PROTOTYPE_LEVEL
+		or level
+		> AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	):
+		return 0.0
+
+	return AUTO_THROTTLE_RESEARCH_COST_BY_LEVEL[
+		level
+	]
+
+
+func get_next_auto_throttle_money_cost() -> float:
+	if is_auto_throttle_maxed():
+		return 0.0
+
+	return get_auto_throttle_money_cost_for_level(
+		get_next_auto_throttle_level()
+	)
+
+
+func get_next_auto_throttle_research_cost() -> float:
+	if is_auto_throttle_maxed():
+		return 0.0
+
+	return get_auto_throttle_research_cost_for_level(
+		get_next_auto_throttle_level()
+	)
+	
+func get_auto_throttle_level_name(
+	level: int
+) -> String:
+	match level:
+		0:
+			return "LOCKED"
+
+		1:
+			return "PROTOTYPE"
+
+		2:
+			return "IMPROVED GOVERNOR"
+
+		3:
+			return "LOAD CONTROLLER"
+
+		4:
+			return "OPTIMIZED GOVERNOR"
+
+		_:
+			return "UNKNOWN"
+			
+func get_current_auto_throttle_level_name() -> String:
+	return get_auto_throttle_level_name(
+		auto_throttle_level
+	)
+	
+
+# -------------------------------------------------------------------
+# Auto-Throttle Progression
+# -------------------------------------------------------------------
+
+func unlock_auto_throttle_prototype() -> bool:
+	if is_auto_throttle_unlocked():
+		return false
+
+	if (
+		scheduled_crawls_completed
+		< AUTO_THROTTLE_SCHEDULED_CRAWLS_REQUIRED
+	):
+		return false
+
+	auto_throttle_level = (
+		AUTO_THROTTLE_PROTOTYPE_LEVEL
+	)
+
+	auto_throttle_enabled = false
+
+	auto_throttle_unlock_changed.emit(
+		true
+	)
+
+	auto_throttle_level_changed.emit(
+		auto_throttle_level
+	)
+
+	auto_throttle_unlock_earned.emit()
+	
+	print(
+		"Auto-Throttle Prototype unlocked."
+	)
+
+	return true
 
 
 # -------------------------------------------------------------------
@@ -569,7 +955,42 @@ func _on_auto_restart_timer_timeout() -> void:
 
 	if GameState.crawler_running:
 		auto_restart_triggered.emit()
-		
+
+
+# -------------------------------------------------------------------
+# Auto-Throttle Accomplishment Progress
+# -------------------------------------------------------------------
+
+func _on_crawl_job_completed_for_auto_throttle_progression() -> void:
+	if not current_crawl_started_by_scheduler:
+		return
+
+	current_crawl_started_by_scheduler = false
+
+	scheduled_crawls_completed += 1
+	
+	print(
+		"Auto-Throttle progress: %d / %d"
+		% [
+			scheduled_crawls_completed,
+			AUTO_THROTTLE_SCHEDULED_CRAWLS_REQUIRED
+		]
+	)
+
+	scheduled_crawl_completed_count_changed.emit(
+		scheduled_crawls_completed
+	)
+
+	if is_auto_throttle_unlocked():
+		return
+
+	if (
+		scheduled_crawls_completed
+		< AUTO_THROTTLE_SCHEDULED_CRAWLS_REQUIRED
+	):
+		return
+
+	unlock_auto_throttle_prototype()
 		
 # -------------------------------------------------------------------
 # Crawl Scheduler Processing
@@ -655,6 +1076,8 @@ func _on_scheduler_timer_timeout() -> void:
 
 	if consumed_job_id != next_job_id:
 		return
+		
+	current_crawl_started_by_scheduler = true
 
 	scheduler_triggered.emit(
 		next_job_id
@@ -898,6 +1321,7 @@ func reset_automation() -> void:
 
 	reset_auto_restart()
 	reset_scheduler()
+	reset_auto_throttle_progression()
 	
 func reset_auto_restart() -> void:
 	if auto_restart_timer != null:
@@ -947,4 +1371,52 @@ func reset_scheduler() -> void:
 	if was_enabled:
 		scheduler_enabled_changed.emit(
 			false
+		)
+		
+func reset_auto_throttle_progression() -> void:
+	var previous_level: int = (
+		auto_throttle_level
+	)
+
+	var was_unlocked: bool = (
+		is_auto_throttle_unlocked()
+	)
+
+	var was_enabled: bool = (
+		auto_throttle_enabled
+	)
+
+	var previous_completed_count: int = (
+		scheduled_crawls_completed
+	)
+
+	auto_throttle_level = (
+		AUTO_THROTTLE_MIN_LEVEL
+	)
+
+	auto_throttle_enabled = false
+	scheduled_crawls_completed = 0
+	current_crawl_started_by_scheduler = false
+
+	if was_unlocked:
+		auto_throttle_unlock_changed.emit(
+			false
+		)
+
+	if (
+		previous_level
+		!= AUTO_THROTTLE_MIN_LEVEL
+	):
+		auto_throttle_level_changed.emit(
+			AUTO_THROTTLE_MIN_LEVEL
+		)
+
+	if was_enabled:
+		auto_throttle_enabled_changed.emit(
+			false
+		)
+
+	if previous_completed_count != 0:
+		scheduled_crawl_completed_count_changed.emit(
+			0
 		)
