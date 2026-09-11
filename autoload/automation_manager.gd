@@ -126,6 +126,7 @@ const AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL: int = 4
 const AUTO_THROTTLE_PROTOTYPE_LEVEL: int = 1
 
 const AUTO_THROTTLE_SCHEDULED_CRAWLS_REQUIRED: int = 3
+const AUTO_THROTTLE_MONITOR_INTERVAL_SECONDS: float = 0.10
 
 
 # -------------------------------------------------------------------
@@ -234,6 +235,15 @@ var scheduled_crawls_completed: int = 0
 
 var current_crawl_started_by_scheduler: bool = false
 
+var auto_throttle_monitor_timer: Timer
+var auto_throttle_reaction_timer: Timer
+var auto_throttle_cooldown_timer: Timer
+
+var auto_throttle_cycles_used: int = 0
+
+var auto_throttle_reaction_pending: bool = false
+var auto_throttle_cooldown_active: bool = false
+
 
 # -------------------------------------------------------------------
 # Setup
@@ -246,6 +256,10 @@ func _ready() -> void:
 
 	connect_progression_signals()
 	connect_crawler_signals()
+	
+	create_auto_throttle_monitor_timer()
+	create_auto_throttle_reaction_timer()
+	create_auto_throttle_cooldown_timer()
 
 	call_deferred(
 		"synchronize_auto_assist_with_progression"
@@ -323,7 +337,66 @@ func create_scheduler_timer() -> void:
 	scheduler_timer.timeout.connect(
 		_on_scheduler_timer_timeout
 	)
+	
+func create_auto_throttle_monitor_timer() -> void:
+	auto_throttle_monitor_timer = Timer.new()
 
+	auto_throttle_monitor_timer.name = (
+		"AutoThrottleMonitorTimer"
+	)
+
+	auto_throttle_monitor_timer.wait_time = (
+		AUTO_THROTTLE_MONITOR_INTERVAL_SECONDS
+	)
+
+	auto_throttle_monitor_timer.one_shot = false
+	auto_throttle_monitor_timer.autostart = false
+
+	add_child(
+		auto_throttle_monitor_timer
+	)
+
+	auto_throttle_monitor_timer.timeout.connect(
+		_on_auto_throttle_monitor_timer_timeout
+	)
+
+	auto_throttle_monitor_timer.start()
+	
+func create_auto_throttle_reaction_timer() -> void:
+	auto_throttle_reaction_timer = Timer.new()
+
+	auto_throttle_reaction_timer.name = (
+		"AutoThrottleReactionTimer"
+	)
+
+	auto_throttle_reaction_timer.one_shot = true
+	auto_throttle_reaction_timer.autostart = false
+
+	add_child(
+		auto_throttle_reaction_timer
+	)
+
+	auto_throttle_reaction_timer.timeout.connect(
+		_on_auto_throttle_reaction_timer_timeout
+	)
+
+func create_auto_throttle_cooldown_timer() -> void:
+	auto_throttle_cooldown_timer = Timer.new()
+
+	auto_throttle_cooldown_timer.name = (
+		"AutoThrottleCooldownTimer"
+	)
+
+	auto_throttle_cooldown_timer.one_shot = true
+	auto_throttle_cooldown_timer.autostart = false
+
+	add_child(
+		auto_throttle_cooldown_timer
+	)
+
+	auto_throttle_cooldown_timer.timeout.connect(
+		_on_auto_throttle_cooldown_timer_timeout
+	)
 
 func connect_progression_signals() -> void:
 	if not ObjectiveManager.progression_tier_changed.is_connected(
@@ -360,6 +433,20 @@ func connect_crawler_signals() -> void:
 	):
 		CrawlerManager.crawl_job_completed.connect(
 			_on_crawl_job_completed_for_auto_throttle_progression
+		)
+		
+	if not CrawlerManager.crawler_state_changed.is_connected(
+		_on_crawler_state_changed_for_auto_throttle
+	):
+		CrawlerManager.crawler_state_changed.connect(
+			_on_crawler_state_changed_for_auto_throttle
+		)
+
+	if not CrawlerManager.crawl_job_completed.is_connected(
+		_on_crawl_job_completed_for_auto_throttle_runtime
+	):
+		CrawlerManager.crawl_job_completed.connect(
+			_on_crawl_job_completed_for_auto_throttle_runtime
 		)
 
 
@@ -470,6 +557,232 @@ func is_auto_throttle_enabled() -> bool:
 		is_auto_throttle_unlocked()
 		and auto_throttle_enabled
 	)
+	
+func set_auto_throttle_enabled(
+	new_enabled: bool
+) -> bool:
+	if not is_auto_throttle_unlocked():
+		return false
+
+	if auto_throttle_enabled == new_enabled:
+		return false
+
+	auto_throttle_enabled = new_enabled
+
+	if not auto_throttle_enabled:
+		cancel_auto_throttle_reaction()
+		stop_auto_throttle_cooldown()
+
+		if CrawlerManager.paused_for_auto_throttle:
+			CrawlerManager.resume_crawler_from_auto_throttle()
+
+	auto_throttle_enabled_changed.emit(
+		auto_throttle_enabled
+	)
+
+	return true
+	
+func has_auto_throttle_cycle_available() -> bool:
+	var maximum_cycles: int = (
+		get_auto_throttle_max_cycles()
+	)
+
+	if maximum_cycles < 0:
+		return true
+
+	return (
+		auto_throttle_cycles_used
+		< maximum_cycles
+	)
+	
+func cancel_auto_throttle_reaction() -> void:
+	if auto_throttle_reaction_timer != null:
+		auto_throttle_reaction_timer.stop()
+
+	auto_throttle_reaction_pending = false
+	
+func start_auto_throttle_cooldown() -> void:
+	if auto_throttle_cooldown_timer == null:
+		return
+
+	var cooldown_seconds: float = (
+		get_auto_throttle_cooldown()
+	)
+
+	if cooldown_seconds <= 0.0:
+		auto_throttle_cooldown_active = false
+		return
+
+	auto_throttle_cooldown_active = true
+
+	auto_throttle_cooldown_timer.stop()
+	auto_throttle_cooldown_timer.start(
+		cooldown_seconds
+	)
+	
+func stop_auto_throttle_cooldown() -> void:
+	if auto_throttle_cooldown_timer != null:
+		auto_throttle_cooldown_timer.stop()
+
+	auto_throttle_cooldown_active = false
+	
+func _on_auto_throttle_monitor_timer_timeout() -> void:
+	if not is_auto_throttle_enabled():
+		cancel_auto_throttle_reaction()
+		return
+
+	if CrawlerManager.paused_for_overload:
+		cancel_auto_throttle_reaction()
+		return
+
+	if CrawlerManager.is_current_job_complete():
+		cancel_auto_throttle_reaction()
+		return
+
+	if CrawlerManager.paused_for_auto_throttle:
+		cancel_auto_throttle_reaction()
+
+		var current_load_percent: float = (
+			CrawlerManager.get_server_load_usage_percent(
+				GameState.server_load
+			)
+		)
+
+		if (
+			current_load_percent
+			<= get_auto_throttle_resume_percent()
+		):
+			var resumed: bool = (
+				CrawlerManager
+				.resume_crawler_from_auto_throttle()
+			)
+
+			if resumed:
+				start_auto_throttle_cooldown()
+
+				print(
+					"Auto-Throttle resumed crawler at %.1f%% load."
+					% current_load_percent
+				)
+
+		return
+
+	if not GameState.crawler_running:
+		cancel_auto_throttle_reaction()
+		return
+
+	if auto_throttle_cooldown_active:
+		return
+
+	if not has_auto_throttle_cycle_available():
+		cancel_auto_throttle_reaction()
+		return
+
+	var current_load_percent: float = (
+		CrawlerManager.get_server_load_usage_percent(
+			GameState.server_load
+		)
+	)
+
+	var trigger_percent: float = (
+		get_auto_throttle_trigger_percent()
+	)
+
+	if current_load_percent < trigger_percent:
+		cancel_auto_throttle_reaction()
+		return
+
+	if auto_throttle_reaction_pending:
+		return
+
+	if auto_throttle_reaction_timer == null:
+		return
+
+	auto_throttle_reaction_pending = true
+
+	auto_throttle_reaction_timer.stop()
+	auto_throttle_reaction_timer.start(
+		get_auto_throttle_reaction_delay()
+	)
+
+	print(
+		"Auto-Throttle reaction started at %.1f%% load."
+		% current_load_percent
+	)
+	
+func _on_auto_throttle_reaction_timer_timeout() -> void:
+	auto_throttle_reaction_pending = false
+
+	if not is_auto_throttle_enabled():
+		return
+
+	if not GameState.crawler_running:
+		return
+
+	if CrawlerManager.paused_for_overload:
+		return
+
+	if CrawlerManager.paused_for_auto_throttle:
+		return
+
+	if CrawlerManager.is_current_job_complete():
+		return
+
+	if auto_throttle_cooldown_active:
+		return
+
+	if not has_auto_throttle_cycle_available():
+		return
+
+	var current_load_percent: float = (
+		CrawlerManager.get_server_load_usage_percent(
+			GameState.server_load
+		)
+	)
+
+	if (
+		current_load_percent
+		< get_auto_throttle_trigger_percent()
+	):
+		return
+
+	var paused_successfully: bool = (
+		CrawlerManager.pause_crawler_for_auto_throttle()
+	)
+
+	if not paused_successfully:
+		return
+
+	auto_throttle_cycles_used += 1
+
+	print(
+		"Auto-Throttle paused crawler. Cycle %d used."
+		% auto_throttle_cycles_used
+	)
+	
+func _on_auto_throttle_cooldown_timer_timeout() -> void:
+	auto_throttle_cooldown_active = false
+
+	print(
+		"Auto-Throttle cooldown complete."
+	)
+	
+func _on_crawler_state_changed_for_auto_throttle(
+	is_running: bool
+) -> void:
+	if is_running:
+		return
+
+	if CrawlerManager.paused_for_auto_throttle:
+		return
+
+	cancel_auto_throttle_reaction()
+	
+func _on_crawl_job_completed_for_auto_throttle_runtime() -> void:
+	cancel_auto_throttle_reaction()
+	stop_auto_throttle_cooldown()
+
+	auto_throttle_cycles_used = 0
 
 
 func is_auto_throttle_maxed() -> bool:
@@ -684,7 +997,7 @@ func unlock_auto_throttle_prototype() -> bool:
 		AUTO_THROTTLE_PROTOTYPE_LEVEL
 	)
 
-	auto_throttle_enabled = false
+	auto_throttle_enabled = true
 
 	auto_throttle_unlock_changed.emit(
 		true
@@ -1397,6 +1710,11 @@ func reset_auto_throttle_progression() -> void:
 	auto_throttle_enabled = false
 	scheduled_crawls_completed = 0
 	current_crawl_started_by_scheduler = false
+	
+	auto_throttle_cycles_used = 0
+
+	cancel_auto_throttle_reaction()
+	stop_auto_throttle_cooldown()
 
 	if was_unlocked:
 		auto_throttle_unlock_changed.emit(

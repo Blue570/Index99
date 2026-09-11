@@ -172,6 +172,7 @@ var page_fraction_buffer: float = 0.0
 var active_user_fraction_buffer: float = 0.0
 
 var paused_for_overload: bool = false
+var paused_for_auto_throttle: bool = false
 
 var current_crawler_priority: StringName = (
 	PRIORITY_BALANCED
@@ -1059,6 +1060,9 @@ func start_crawler() -> void:
 	if paused_for_overload:
 		return
 
+	if paused_for_auto_throttle:
+		return
+
 	# A finished 100-page batch becomes a new crawl
 	# when the player presses Start Next Crawl.
 	if is_current_job_complete():
@@ -1124,6 +1128,52 @@ func pause_crawler_for_overload() -> void:
 
 	emit_current_progress()
 	
+func pause_crawler_for_auto_throttle() -> bool:
+	if not GameState.crawler_running:
+		return false
+
+	if paused_for_overload:
+		return false
+
+	if paused_for_auto_throttle:
+		return false
+
+	if is_current_job_complete():
+		return false
+
+	paused_for_auto_throttle = true
+
+	crawler_timer.stop()
+
+	GameState.set_crawler_running(
+		false
+	)
+
+	crawler_state_changed.emit(
+		false
+	)
+
+	emit_current_progress()
+
+	return true
+	
+func resume_crawler_from_auto_throttle() -> bool:
+	if not paused_for_auto_throttle:
+		return false
+
+	if paused_for_overload:
+		return false
+
+	if is_current_job_complete():
+		paused_for_auto_throttle = false
+		return false
+
+	paused_for_auto_throttle = false
+
+	start_crawler()
+
+	return GameState.crawler_running
+	
 func is_current_job_complete() -> bool:
 	return (
 		current_job_pages
@@ -1135,6 +1185,7 @@ func prepare_next_crawl_job() -> void:
 	current_job_pages = 0
 
 	paused_for_overload = false
+	paused_for_auto_throttle = false
 
 	emit_current_progress()
 	
@@ -1432,6 +1483,7 @@ func select_crawl_job(
 	if previous_job_complete:
 		current_job_pages = 0
 		paused_for_overload = false
+		paused_for_auto_throttle = false
 
 	var job_data: Dictionary = (
 		CRAWL_JOBS[job_id]
@@ -1460,6 +1512,8 @@ func complete_current_job() -> void:
 	current_job_pages = (
 		current_job_target_pages
 	)
+	
+	paused_for_auto_throttle = false
 
 	crawler_timer.stop()
 
@@ -1520,6 +1574,8 @@ func restore_saved_state(
 	paused_for_overload = (
 		saved_paused_for_overload
 	)
+	
+	paused_for_auto_throttle = false
 
 	crawler_timer.stop()
 	
@@ -1569,6 +1625,7 @@ func reset_crawler_state() -> void:
 	active_user_fraction_buffer = 0.0
 
 	paused_for_overload = false
+	paused_for_auto_throttle = false
 	
 	current_crawler_priority = (
 		PRIORITY_BALANCED
