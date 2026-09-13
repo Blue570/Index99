@@ -797,6 +797,17 @@ func get_next_auto_throttle_level() -> int:
 		auto_throttle_level + 1,
 		AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
 	)
+	
+func get_auto_throttle_cycles_used() -> int:
+	return auto_throttle_cycles_used
+
+
+func is_auto_throttle_reaction_pending() -> bool:
+	return auto_throttle_reaction_pending
+
+
+func is_auto_throttle_cooldown_active() -> bool:
+	return auto_throttle_cooldown_active
 
 
 func get_scheduled_crawls_completed() -> int:
@@ -997,7 +1008,7 @@ func unlock_auto_throttle_prototype() -> bool:
 		AUTO_THROTTLE_PROTOTYPE_LEVEL
 	)
 
-	auto_throttle_enabled = true
+	auto_throttle_enabled = false
 
 	auto_throttle_unlock_changed.emit(
 		true

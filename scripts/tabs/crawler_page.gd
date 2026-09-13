@@ -71,7 +71,16 @@ const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
 	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
 	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
 	+ "ContentPanel/ContentMargin/ContentContainer/"
-	+ "CrawlerControlLayout/ManualCrawlAssistButton"
+	+ "CrawlerControlLayout/CrawlerAssistControlsRow/"
+	+ "ManualCrawlAssistButton"
+) as Button
+
+@onready var auto_throttle_toggle_button: Button = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerLeftColumn/CrawlerControlPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerControlLayout/CrawlerAssistControlsRow/"
+	+ "AutoThrottleToggleButton"
 ) as Button
 
 @onready var auto_crawl_assist_status_label: Label = get_node(
@@ -645,6 +654,13 @@ func connect_buttons() -> void:
 		auto_restart_toggle_button.pressed.connect(
 			_on_auto_restart_toggle_button_pressed
 		)
+		
+	if not auto_throttle_toggle_button.pressed.is_connected(
+		_on_auto_throttle_toggle_button_pressed
+	):
+		auto_throttle_toggle_button.pressed.connect(
+			_on_auto_throttle_toggle_button_pressed
+		)
 
 
 func connect_crawler_signals() -> void:
@@ -709,6 +725,34 @@ func connect_crawler_signals() -> void:
 	):
 		CrawlerManager.crawl_job_queue_changed.connect(
 			_on_crawl_job_queue_changed
+		)
+		
+	if not AutomationManager.auto_throttle_unlock_changed.is_connected(
+		_on_auto_throttle_unlock_changed
+	):
+		AutomationManager.auto_throttle_unlock_changed.connect(
+			_on_auto_throttle_unlock_changed
+		)
+
+	if not AutomationManager.auto_throttle_level_changed.is_connected(
+		_on_auto_throttle_level_changed
+	):
+		AutomationManager.auto_throttle_level_changed.connect(
+			_on_auto_throttle_level_changed
+		)
+
+	if not AutomationManager.auto_throttle_enabled_changed.is_connected(
+		_on_auto_throttle_enabled_changed
+	):
+		AutomationManager.auto_throttle_enabled_changed.connect(
+			_on_auto_throttle_enabled_changed
+		)
+
+	if not AutomationManager.scheduled_crawl_completed_count_changed.is_connected(
+		_on_scheduled_crawl_completed_count_changed
+	):
+		AutomationManager.scheduled_crawl_completed_count_changed.connect(
+			_on_scheduled_crawl_completed_count_changed
 		)
 		
 func _on_quick_crawl_jobs_changed() -> void:
@@ -809,6 +853,7 @@ func refresh_crawler_page() -> void:
 	refresh_crawler_priority_ui()
 	refresh_auto_crawl_assist_status()
 	refresh_auto_restart_ui()
+	refresh_auto_throttle_ui()
 	refresh_effective_crawler_rate()
 
 	refresh_crawler_event_ui()
@@ -1771,6 +1816,219 @@ func refresh_auto_restart_ui() -> void:
 		+ "Click to automatically resume the crawler "
 		+ "after overload recovery."
 	)
+	
+# -------------------------------------------------------------------
+# Auto-Throttle Controls and Display
+# -------------------------------------------------------------------
+
+func _on_auto_throttle_toggle_button_pressed() -> void:
+	if not AutomationManager.is_auto_throttle_unlocked():
+		refresh_auto_throttle_ui()
+		return
+
+	var new_enabled_state: bool = (
+		not AutomationManager.is_auto_throttle_enabled()
+	)
+
+	AutomationManager.set_auto_throttle_enabled(
+		new_enabled_state
+	)
+
+	refresh_auto_throttle_ui()
+	
+func _on_auto_throttle_unlock_changed(
+	_is_unlocked: bool
+) -> void:
+	refresh_auto_throttle_ui()
+
+
+func _on_auto_throttle_level_changed(
+	_new_level: int
+) -> void:
+	refresh_auto_throttle_ui()
+
+
+func _on_auto_throttle_enabled_changed(
+	_is_enabled: bool
+) -> void:
+	refresh_auto_throttle_ui()
+
+
+func _on_scheduled_crawl_completed_count_changed(
+	_new_count: int
+) -> void:
+	refresh_auto_throttle_ui()
+	
+func refresh_auto_throttle_ui() -> void:
+	if not AutomationManager.is_auto_throttle_unlocked():
+		var completed_crawls: int = (
+			AutomationManager.get_scheduled_crawls_completed()
+		)
+
+		var required_crawls: int = (
+			AutomationManager.get_auto_throttle_unlock_requirement()
+		)
+
+		auto_throttle_toggle_button.text = (
+			"AUTO-THROTTLE: %d/%d"
+			% [
+				completed_crawls,
+				required_crawls
+			]
+		)
+
+		auto_throttle_toggle_button.disabled = true
+
+		auto_throttle_toggle_button.add_theme_color_override(
+			"font_disabled_color",
+			ThemeManager.TEXT_DISABLED
+		)
+
+		auto_throttle_toggle_button.tooltip_text = (
+			"AUTO-THROTTLE: LOCKED\n"
+			+ "Complete %d Scheduler-started crawls "
+			% required_crawls
+			+ "to unlock the Auto-Throttle Prototype.\n\n"
+			+ "Progress: %d / %d"
+			% [
+				completed_crawls,
+				required_crawls
+			]
+		)
+
+		return
+
+	auto_throttle_toggle_button.disabled = false
+
+	var level_name: String = (
+		AutomationManager
+		.get_current_auto_throttle_level_name()
+	)
+
+	var cycles_used: int = (
+		AutomationManager
+		.get_auto_throttle_cycles_used()
+	)
+
+	var maximum_cycles: int = (
+		AutomationManager
+		.get_auto_throttle_max_cycles()
+	)
+
+	var trigger_percent: float = (
+		AutomationManager
+		.get_auto_throttle_trigger_percent()
+	)
+
+	var resume_percent: float = (
+		AutomationManager
+		.get_auto_throttle_resume_percent()
+	)
+
+	var reaction_delay: float = (
+		AutomationManager
+		.get_auto_throttle_reaction_delay()
+	)
+
+	var cooldown_seconds: float = (
+		AutomationManager
+		.get_auto_throttle_cooldown()
+	)
+
+	var cycle_text: String = ""
+
+	if maximum_cycles < 0:
+		cycle_text = "Unlimited"
+	else:
+		cycle_text = (
+			"%d / %d"
+			% [
+				cycles_used,
+				maximum_cycles
+			]
+		)
+
+	if not AutomationManager.is_auto_throttle_enabled():
+		auto_throttle_toggle_button.text = (
+			"AUTO-THROTTLE: OFF"
+		)
+
+		auto_throttle_toggle_button.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_WARNING
+		)
+
+	elif CrawlerManager.paused_for_auto_throttle:
+		auto_throttle_toggle_button.text = (
+			"AUTO-THROTTLE: COOLING"
+		)
+
+		auto_throttle_toggle_button.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_INFORMATION
+		)
+
+	elif AutomationManager.is_auto_throttle_reaction_pending():
+		auto_throttle_toggle_button.text = (
+			"AUTO-THROTTLE: REACTING"
+		)
+
+		auto_throttle_toggle_button.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_WARNING
+		)
+
+	elif (
+		maximum_cycles >= 0
+		and cycles_used >= maximum_cycles
+	):
+		auto_throttle_toggle_button.text = (
+			"AUTO-THROTTLE: LIMIT"
+		)
+
+		auto_throttle_toggle_button.add_theme_color_override(
+			"font_color",
+			ThemeManager.TEXT_DISABLED
+		)
+
+	elif AutomationManager.is_auto_throttle_cooldown_active():
+		auto_throttle_toggle_button.text = (
+			"AUTO-THROTTLE: COOLDOWN"
+		)
+
+		auto_throttle_toggle_button.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_INFORMATION
+		)
+
+	else:
+		auto_throttle_toggle_button.text = (
+			"AUTO-THROTTLE: ON | READY"
+		)
+
+		auto_throttle_toggle_button.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+	auto_throttle_toggle_button.tooltip_text = (
+		"AUTO-THROTTLE\n"
+		+ "Level %d — %s\n"
+		% [
+			AutomationManager.get_auto_throttle_level(),
+			level_name
+		]
+		+ "Cycles Used: %s\n"
+		% cycle_text
+		+ "Throttle Trigger: %.0f%%\n"
+		% trigger_percent
+		+ "Resume Load: %.0f%%\n"
+		% resume_percent
+		+ "Reaction Delay: %.1f sec\n"
+		% reaction_delay
+		+ "Cooldown: %.0f sec"
+		% cooldown_seconds
+	)
 
 
 # -------------------------------------------------------------------
@@ -2182,6 +2440,7 @@ func _on_crawler_event_result_timer_timeout() -> void:
 
 func _on_crawler_state_changed(is_running: bool) -> void:
 	update_crawler_state(is_running)
+	refresh_auto_throttle_ui()
 
 
 func _on_crawler_progress_changed(
@@ -2513,6 +2772,8 @@ func _on_server_load_changed(
 	update_crawler_state(
 		GameState.crawler_running
 	)
+	
+	refresh_auto_throttle_ui()
 
 
 func _on_crawler_rate_changed(
