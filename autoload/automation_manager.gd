@@ -61,6 +61,16 @@ signal scheduled_crawl_completed_count_changed(
 	new_count: int
 )
 
+signal auto_throttle_intervention_count_changed(
+	new_count: int
+)
+
+signal auto_throttle_upgrade_purchased(
+	new_level: int,
+	money_spent: float,
+	research_points_spent: float
+)
+
 
 # -------------------------------------------------------------------
 # Auto Crawl Assist levels
@@ -126,6 +136,7 @@ const AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL: int = 4
 const AUTO_THROTTLE_PROTOTYPE_LEVEL: int = 1
 
 const AUTO_THROTTLE_SCHEDULED_CRAWLS_REQUIRED: int = 3
+const AUTO_THROTTLE_OPTIMIZED_INTERVENTIONS_REQUIRED: int = 10
 const AUTO_THROTTLE_MONITOR_INTERVAL_SECONDS: float = 0.10
 
 
@@ -232,6 +243,8 @@ var auto_throttle_level: int = (
 var auto_throttle_enabled: bool = false
 
 var scheduled_crawls_completed: int = 0
+
+var successful_auto_throttle_interventions: int = 0
 
 var current_crawl_started_by_scheduler: bool = false
 
@@ -660,10 +673,6 @@ func _on_auto_throttle_monitor_timer_timeout() -> void:
 			if resumed:
 				start_auto_throttle_cooldown()
 
-				print(
-					"Auto-Throttle resumed crawler at %.1f%% load."
-					% current_load_percent
-				)
 
 		return
 
@@ -704,11 +713,7 @@ func _on_auto_throttle_monitor_timer_timeout() -> void:
 	auto_throttle_reaction_timer.start(
 		get_auto_throttle_reaction_delay()
 	)
-
-	print(
-		"Auto-Throttle reaction started at %.1f%% load."
-		% current_load_percent
-	)
+	
 	
 func _on_auto_throttle_reaction_timer_timeout() -> void:
 	auto_throttle_reaction_pending = false
@@ -755,17 +760,16 @@ func _on_auto_throttle_reaction_timer_timeout() -> void:
 
 	auto_throttle_cycles_used += 1
 
-	print(
-		"Auto-Throttle paused crawler. Cycle %d used."
-		% auto_throttle_cycles_used
+	successful_auto_throttle_interventions += 1
+
+	auto_throttle_intervention_count_changed.emit(
+		successful_auto_throttle_interventions
 	)
+
 	
 func _on_auto_throttle_cooldown_timer_timeout() -> void:
 	auto_throttle_cooldown_active = false
 
-	print(
-		"Auto-Throttle cooldown complete."
-	)
 	
 func _on_crawler_state_changed_for_auto_throttle(
 	is_running: bool
@@ -812,6 +816,13 @@ func is_auto_throttle_cooldown_active() -> bool:
 
 func get_scheduled_crawls_completed() -> int:
 	return scheduled_crawls_completed
+	
+func get_successful_auto_throttle_interventions() -> int:
+	return successful_auto_throttle_interventions
+
+
+func get_auto_throttle_optimized_intervention_requirement() -> int:
+	return AUTO_THROTTLE_OPTIMIZED_INTERVENTIONS_REQUIRED
 
 
 func get_auto_throttle_unlock_requirement() -> int:
@@ -962,6 +973,160 @@ func get_next_auto_throttle_research_cost() -> float:
 		get_next_auto_throttle_level()
 	)
 	
+func is_auto_throttle_upgrade_accomplishment_met(
+	target_level: int
+) -> bool:
+	if (
+		target_level
+		<= AUTO_THROTTLE_PROTOTYPE_LEVEL
+	):
+		return true
+
+	if target_level == 2:
+		return true
+
+	if target_level == 3:
+		return true
+
+	if target_level == 4:
+		return (
+			successful_auto_throttle_interventions
+			>= AUTO_THROTTLE_OPTIMIZED_INTERVENTIONS_REQUIRED
+		)
+
+	return false
+	
+func can_afford_auto_throttle_upgrade(
+	target_level: int
+) -> bool:
+	if (
+		target_level
+		<= AUTO_THROTTLE_PROTOTYPE_LEVEL
+	):
+		return false
+
+	if (
+		target_level
+		> AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	):
+		return false
+
+	var money_cost: float = (
+		get_auto_throttle_money_cost_for_level(
+			target_level
+		)
+	)
+
+	var research_cost: float = (
+		get_auto_throttle_research_cost_for_level(
+			target_level
+		)
+	)
+
+	if GameState.revenue < money_cost:
+		return false
+
+	if ResearchManager.research_points < research_cost:
+		return false
+
+	return true
+	
+func can_purchase_auto_throttle_upgrade() -> bool:
+	if not is_auto_throttle_unlocked():
+		return false
+
+	if is_auto_throttle_maxed():
+		return false
+
+	var target_level: int = (
+		get_next_auto_throttle_level()
+	)
+
+	if not is_auto_throttle_upgrade_accomplishment_met(
+		target_level
+	):
+		return false
+
+	if not can_afford_auto_throttle_upgrade(
+		target_level
+	):
+		return false
+
+	return true
+	
+func purchase_auto_throttle_upgrade() -> bool:
+	if not can_purchase_auto_throttle_upgrade():
+		return false
+
+	var target_level: int = (
+		get_next_auto_throttle_level()
+	)
+
+	var money_cost: float = (
+		get_auto_throttle_money_cost_for_level(
+			target_level
+		)
+	)
+
+	var research_cost: float = (
+		get_auto_throttle_research_cost_for_level(
+			target_level
+		)
+	)
+
+	if money_cost > 0.0:
+		GameState.set_revenue(
+			GameState.revenue - money_cost
+		)
+
+	if research_cost > 0.0:
+		var research_spent: bool = (
+			ResearchManager.spend_research_points(
+				research_cost
+			)
+		)
+
+		if not research_spent:
+			if money_cost > 0.0:
+				GameState.set_revenue(
+					GameState.revenue + money_cost
+				)
+
+			return false
+
+	auto_throttle_level = target_level
+
+	auto_throttle_level_changed.emit(
+		auto_throttle_level
+	)
+
+	auto_throttle_upgrade_purchased.emit(
+		auto_throttle_level,
+		money_cost,
+		research_cost
+	)
+
+	return true
+	
+func get_auto_throttle_next_upgrade_accomplishment_progress() -> String:
+	if is_auto_throttle_maxed():
+		return "MAXIMUM LEVEL"
+
+	var target_level: int = (
+		get_next_auto_throttle_level()
+	)
+
+	if target_level == 4:
+		return (
+			"%d / %d successful throttles"
+			% [
+				successful_auto_throttle_interventions,
+				AUTO_THROTTLE_OPTIMIZED_INTERVENTIONS_REQUIRED
+			]
+		)
+
+	return "REQUIREMENT MET"
+	
 func get_auto_throttle_level_name(
 	level: int
 ) -> String:
@@ -1020,9 +1185,6 @@ func unlock_auto_throttle_prototype() -> bool:
 
 	auto_throttle_unlock_earned.emit()
 	
-	print(
-		"Auto-Throttle Prototype unlocked."
-	)
 
 	return true
 
@@ -1293,13 +1455,7 @@ func _on_crawl_job_completed_for_auto_throttle_progression() -> void:
 
 	scheduled_crawls_completed += 1
 	
-	print(
-		"Auto-Throttle progress: %d / %d"
-		% [
-			scheduled_crawls_completed,
-			AUTO_THROTTLE_SCHEDULED_CRAWLS_REQUIRED
-		]
-	)
+
 
 	scheduled_crawl_completed_count_changed.emit(
 		scheduled_crawls_completed
@@ -1713,6 +1869,10 @@ func reset_auto_throttle_progression() -> void:
 	var previous_completed_count: int = (
 		scheduled_crawls_completed
 	)
+	
+	var previous_intervention_count: int = (
+		successful_auto_throttle_interventions
+	)
 
 	auto_throttle_level = (
 		AUTO_THROTTLE_MIN_LEVEL
@@ -1720,6 +1880,7 @@ func reset_auto_throttle_progression() -> void:
 
 	auto_throttle_enabled = false
 	scheduled_crawls_completed = 0
+	successful_auto_throttle_interventions = 0
 	current_crawl_started_by_scheduler = false
 	
 	auto_throttle_cycles_used = 0
@@ -1747,5 +1908,10 @@ func reset_auto_throttle_progression() -> void:
 
 	if previous_completed_count != 0:
 		scheduled_crawl_completed_count_changed.emit(
+			0
+		)
+		
+	if previous_intervention_count != 0:
+		auto_throttle_intervention_count_changed.emit(
 			0
 		)
