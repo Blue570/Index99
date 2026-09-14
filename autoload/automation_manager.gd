@@ -817,6 +817,9 @@ func is_auto_throttle_cooldown_active() -> bool:
 func get_scheduled_crawls_completed() -> int:
 	return scheduled_crawls_completed
 	
+func was_current_crawl_started_by_scheduler() -> bool:
+	return current_crawl_started_by_scheduler
+	
 func get_successful_auto_throttle_interventions() -> int:
 	return successful_auto_throttle_interventions
 
@@ -1659,6 +1662,122 @@ func restore_scheduler_state(
 	if enabled_changed:
 		scheduler_enabled_changed.emit(
 			scheduler_enabled
+		)
+		
+# -------------------------------------------------------------------
+# Auto-Throttle Save Restore
+# -------------------------------------------------------------------
+
+# -------------------------------------------------------------------
+# Auto-Throttle Save Restore
+# -------------------------------------------------------------------
+
+func restore_auto_throttle_state(
+	saved_level: int,
+	saved_enabled: bool,
+	saved_scheduled_crawls_completed: int,
+	saved_successful_interventions: int,
+	saved_current_crawl_started_by_scheduler: bool
+) -> void:
+	var restored_level: int = clampi(
+		saved_level,
+		AUTO_THROTTLE_MIN_LEVEL,
+		AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	)
+
+	var restored_scheduled_crawls: int = maxi(
+		saved_scheduled_crawls_completed,
+		0
+	)
+
+	var restored_interventions: int = maxi(
+		saved_successful_interventions,
+		0
+	)
+
+	var restored_unlocked: bool = (
+		restored_level
+		>= AUTO_THROTTLE_PROTOTYPE_LEVEL
+	)
+
+	var restored_enabled: bool = (
+		saved_enabled
+		and restored_unlocked
+	)
+
+	var was_unlocked: bool = (
+		is_auto_throttle_unlocked()
+	)
+
+	var previous_level: int = (
+		auto_throttle_level
+	)
+
+	var previous_enabled: bool = (
+		auto_throttle_enabled
+	)
+
+	var previous_scheduled_crawls: int = (
+		scheduled_crawls_completed
+	)
+
+	var previous_interventions: int = (
+		successful_auto_throttle_interventions
+	)
+
+	auto_throttle_level = restored_level
+	auto_throttle_enabled = restored_enabled
+
+	scheduled_crawls_completed = (
+		restored_scheduled_crawls
+	)
+
+	successful_auto_throttle_interventions = (
+		restored_interventions
+	)
+
+	current_crawl_started_by_scheduler = (
+		saved_current_crawl_started_by_scheduler
+	)
+
+	auto_throttle_cycles_used = 0
+
+	cancel_auto_throttle_reaction()
+	stop_auto_throttle_cooldown()
+
+	var is_now_unlocked: bool = (
+		is_auto_throttle_unlocked()
+	)
+
+	if was_unlocked != is_now_unlocked:
+		auto_throttle_unlock_changed.emit(
+			is_now_unlocked
+		)
+
+	if previous_level != auto_throttle_level:
+		auto_throttle_level_changed.emit(
+			auto_throttle_level
+		)
+
+	if previous_enabled != auto_throttle_enabled:
+		auto_throttle_enabled_changed.emit(
+			auto_throttle_enabled
+		)
+
+	if (
+		previous_scheduled_crawls
+		!= scheduled_crawls_completed
+	):
+		scheduled_crawl_completed_count_changed.emit(
+			scheduled_crawls_completed
+		)
+
+	if (
+		previous_interventions
+		!= successful_auto_throttle_interventions
+	):
+		auto_throttle_intervention_count_changed.emit(
+			successful_auto_throttle_interventions
 		)
 
 

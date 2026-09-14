@@ -174,15 +174,32 @@ func build_save_data() -> Dictionary:
 				)
 		},
 		
-			"automation": {
-				"auto_restart_unlocked":
-					AutomationManager.is_auto_restart_unlocked(),
+		"automation": {
+			"auto_restart_unlocked":
+				AutomationManager.is_auto_restart_unlocked(),
 
-				"auto_restart_enabled":
-					AutomationManager.is_auto_restart_enabled(),
+			"auto_restart_enabled":
+				AutomationManager.is_auto_restart_enabled(),
 
-				"scheduler_enabled":
-					AutomationManager.is_scheduler_enabled()
+			"scheduler_enabled":
+				AutomationManager.is_scheduler_enabled(),
+
+			"auto_throttle_level":
+				AutomationManager.get_auto_throttle_level(),
+
+			"auto_throttle_enabled":
+				AutomationManager.is_auto_throttle_enabled(),
+
+			"scheduled_crawls_completed":
+				AutomationManager.get_scheduled_crawls_completed(),
+
+			"successful_auto_throttle_interventions":
+				AutomationManager
+					.get_successful_auto_throttle_interventions(),
+
+			"current_crawl_started_by_scheduler":
+				AutomationManager
+					.was_current_crawl_started_by_scheduler()
 		},
 
 		"server_upgrades": {
@@ -1108,6 +1125,36 @@ func restore_automation(
 			false
 		)
 
+	var saved_auto_throttle_level: int = read_int(
+		data,
+		"auto_throttle_level",
+		AutomationManager.AUTO_THROTTLE_MIN_LEVEL
+	)
+
+	var saved_auto_throttle_enabled: bool = read_bool(
+		data,
+		"auto_throttle_enabled",
+		false
+	)
+
+	var saved_scheduled_crawls_completed: int = read_int(
+		data,
+		"scheduled_crawls_completed",
+		0
+	)
+
+	var saved_successful_auto_throttle_interventions: int = read_int(
+		data,
+		"successful_auto_throttle_interventions",
+		0
+	)
+
+	var saved_current_crawl_started_by_scheduler: bool = read_bool(
+		data,
+		"current_crawl_started_by_scheduler",
+		false
+	)
+
 	AutomationManager.restore_auto_restart_state(
 		saved_auto_restart_unlocked,
 		saved_auto_restart_enabled
@@ -1115,6 +1162,14 @@ func restore_automation(
 
 	AutomationManager.restore_scheduler_state(
 		saved_scheduler_enabled
+	)
+
+	AutomationManager.restore_auto_throttle_state(
+		saved_auto_throttle_level,
+		saved_auto_throttle_enabled,
+		saved_scheduled_crawls_completed,
+		saved_successful_auto_throttle_interventions,
+		saved_current_crawl_started_by_scheduler
 	)
 	
 # -------------------------------------------------------------------
@@ -1149,14 +1204,14 @@ func connect_event_autosave_signals() -> void:
 		CrawlerManager.crawl_job_completed.connect(
 			_on_crawl_job_completed_for_save
 		)
-		
+
 	if not CrawlerManager.crawler_priority_changed.is_connected(
 		_on_crawler_priority_changed_for_save
 	):
 		CrawlerManager.crawler_priority_changed.connect(
 			_on_crawler_priority_changed_for_save
 		)
-		
+
 	if not TutorialManager.tutorial_step_changed.is_connected(
 		_on_tutorial_step_changed_for_save
 	):
@@ -1177,7 +1232,7 @@ func connect_event_autosave_signals() -> void:
 		TutorialManager.tutorial_skipped.connect(
 			_on_tutorial_skipped_for_save
 		)
-		
+
 	if not AutomationManager.auto_restart_unlock_changed.is_connected(
 		_on_auto_restart_unlock_changed_for_save
 	):
@@ -1191,7 +1246,7 @@ func connect_event_autosave_signals() -> void:
 		AutomationManager.auto_restart_enabled_changed.connect(
 			_on_auto_restart_enabled_changed_for_save
 		)
-		
+
 	if not CrawlerManager.quick_crawl_jobs_changed.is_connected(
 		_on_quick_crawl_jobs_changed_for_save
 	):
@@ -1211,6 +1266,48 @@ func connect_event_autosave_signals() -> void:
 	):
 		AutomationManager.scheduler_enabled_changed.connect(
 			_on_scheduler_enabled_changed_for_save
+		)
+
+	if not AutomationManager.scheduler_triggered.is_connected(
+		_on_scheduler_triggered_for_save
+	):
+		AutomationManager.scheduler_triggered.connect(
+			_on_scheduler_triggered_for_save
+		)
+
+	if not AutomationManager.auto_throttle_unlock_earned.is_connected(
+		_on_auto_throttle_unlock_earned_for_save
+	):
+		AutomationManager.auto_throttle_unlock_earned.connect(
+			_on_auto_throttle_unlock_earned_for_save
+		)
+
+	if not AutomationManager.auto_throttle_enabled_changed.is_connected(
+		_on_auto_throttle_enabled_changed_for_save
+	):
+		AutomationManager.auto_throttle_enabled_changed.connect(
+			_on_auto_throttle_enabled_changed_for_save
+		)
+
+	if not AutomationManager.scheduled_crawl_completed_count_changed.is_connected(
+		_on_scheduled_crawl_completed_count_changed_for_save
+	):
+		AutomationManager.scheduled_crawl_completed_count_changed.connect(
+			_on_scheduled_crawl_completed_count_changed_for_save
+		)
+
+	if not AutomationManager.auto_throttle_intervention_count_changed.is_connected(
+		_on_auto_throttle_intervention_count_changed_for_save
+	):
+		AutomationManager.auto_throttle_intervention_count_changed.connect(
+			_on_auto_throttle_intervention_count_changed_for_save
+		)
+
+	if not AutomationManager.auto_throttle_upgrade_purchased.is_connected(
+		_on_auto_throttle_upgrade_purchased_for_save
+	):
+		AutomationManager.auto_throttle_upgrade_purchased.connect(
+			_on_auto_throttle_upgrade_purchased_for_save
 		)
 		
 func _on_server_upgrade_purchased_for_save(
@@ -1269,6 +1366,41 @@ func _on_crawl_job_queue_changed_for_save() -> void:
 
 func _on_scheduler_enabled_changed_for_save(
 	_is_enabled: bool
+) -> void:
+	request_event_autosave()
+	
+func _on_scheduler_triggered_for_save(
+	_job_id: StringName
+) -> void:
+	request_event_autosave()
+
+
+func _on_auto_throttle_unlock_earned_for_save() -> void:
+	request_event_autosave()
+
+
+func _on_auto_throttle_enabled_changed_for_save(
+	_is_enabled: bool
+) -> void:
+	request_event_autosave()
+
+
+func _on_scheduled_crawl_completed_count_changed_for_save(
+	_new_count: int
+) -> void:
+	request_event_autosave()
+
+
+func _on_auto_throttle_intervention_count_changed_for_save(
+	_new_count: int
+) -> void:
+	request_event_autosave()
+
+
+func _on_auto_throttle_upgrade_purchased_for_save(
+	_new_level: int,
+	_money_spent: float,
+	_research_points_spent: float
 ) -> void:
 	request_event_autosave()
 	
