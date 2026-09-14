@@ -148,6 +148,13 @@ var current_page_id: StringName = &""
 	) as TabButton
 )
 
+@onready var upgrades_tab := (
+	get_node(
+		"MainApplicationWindow/MainLayout/TabBar/"
+		+ "TabRow/UpgradesTab"
+	) as TabButton
+)
+
 @onready var dashboard_page := (
 	get_node(
 		"MainApplicationWindow/MainLayout/PageArea/"
@@ -187,6 +194,13 @@ var current_page_id: StringName = &""
 	get_node(
 		"MainApplicationWindow/MainLayout/PageArea/"
 		+ "PageStack/ResearchPage"
+	) as PanelContainer
+)
+
+@onready var upgrades_page := (
+	get_node(
+		"MainApplicationWindow/MainLayout/PageArea/"
+		+ "PageStack/UpgradesPage"
 	) as PanelContainer
 )
 
@@ -842,7 +856,8 @@ func setup_tabs() -> void:
 		&"jobs": jobs_tab,
 		&"index": index_tab,
 		&"servers": servers_tab,
-		&"research": research_tab
+		&"research": research_tab,
+		&"upgrades": upgrades_tab
 	}
 
 	pages = {
@@ -851,7 +866,8 @@ func setup_tabs() -> void:
 		&"jobs": jobs_page,
 		&"index": index_page,
 		&"servers": servers_page,
-		&"research": research_page
+		&"research": research_page,
+		&"upgrades": upgrades_page
 	}
 
 	for tab_id: StringName in tab_buttons:

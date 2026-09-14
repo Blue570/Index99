@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://be702lt0vde0f" path="res://scripts/tabs/research_page.gd" id="9_b1x3f"]
 [ext_resource type="Script" uid="uid://kh771vjdus32" path="res://scripts/ui/notification_host.gd" id="10_a8run"]
 [ext_resource type="PackedScene" uid="uid://bjwyqkepsgq0i" path="res://scenes/ui/tutorial_overlay.tscn" id="11_ouso4"]
+[ext_resource type="Script" uid="uid://dmyvn7htye42r" path="res://scripts/tabs/upgrades_page.gd" id="11_th5th"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
@@ -215,6 +216,12 @@ tab_text = "Servers"
 layout_mode = 2
 tab_id = &"research"
 tab_text = "Research"
+
+[node name="UpgradesTab" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1688890729 instance=ExtResource("3_k2fmo")]
+layout_mode = 2
+text = "Upgrades"
+tab_id = &"upgrades"
+tab_text = "Upgrades"
 
 [node name="TabFill" type="Control" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1482285346]
 layout_mode = 2
@@ -829,6 +836,7 @@ text = "0 / 100"
 horizontal_alignment = 2
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2824,6 +2832,183 @@ autowrap_mode = 3
 [node name="CompletedResearchSeparator" type="HSeparator" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ResearchPage/ResearchMargin/ResearchPageLayout/ResearchListsRow/CompletedResearchPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CompletedResearchLayout" unique_id=675330949]
 layout_mode = 2
 
+[node name="UpgradesPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=2133878230]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("11_th5th")
+
+[node name="UpgradesMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage" unique_id=1919702189]
+layout_mode = 2
+
+[node name="UpgradesPageLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin" unique_id=879754525]
+layout_mode = 2
+
+[node name="UpgradesPageHeader" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout" unique_id=54187102]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="UpgradesPageTitleLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesPageHeader" unique_id=1438970680]
+layout_mode = 2
+
+[node name="UpgradesPageTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesPageHeader/UpgradesPageTitleLayout" unique_id=656711489]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "UPGRADES"
+
+[node name="UpgradesPageSubtitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesPageHeader/UpgradesPageTitleLayout" unique_id=1334881582]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Improve automation, crawler systems, servers, and infrastructure."
+
+[node name="UpgradesHeaderSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesPageHeader" unique_id=1502345778]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UpgradesScroll" type="ScrollContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout" unique_id=544875714]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="UpgradesCatalog" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll" unique_id=1451809564]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="AutomationUpgradesHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog" unique_id=1293508667]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.18516085, 0.16553006, 0.99999994, 1)
+theme_override_font_sizes/font_size = 15
+text = "AUTOMATION UPGRADES"
+
+[node name="AutoThrottleUpgradePanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog" unique_id=2007343071]
+layout_mode = 2
+
+[node name="AutoThrottleUpgradeMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel" unique_id=250269019]
+layout_mode = 2
+
+[node name="AutoThrottleUpgradeLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin" unique_id=1464329732]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AutoThrottleHeaderRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout" unique_id=1371311237]
+layout_mode = 2
+
+[node name="AutoThrottleTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleHeaderRow" unique_id=861655766]
+layout_mode = 2
+text = "AUTO-THROTTLE"
+
+[node name="AutoThrottleHeaderSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleHeaderRow" unique_id=1464656481]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AutoThrottleLevelLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleHeaderRow" unique_id=480046347]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "LOCKED"
+
+[node name="AutoThrottleDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout" unique_id=2076135170]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Automatically pauses crawling before dangerous server load and resumes after cooling."
+autowrap_mode = 3
+
+[node name="AutoThrottleComparisonRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout" unique_id=1941035710]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="AutoThrottleCurrentPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow" unique_id=74510561]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CurrentEffectsMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow/AutoThrottleCurrentPanel" unique_id=1578340805]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="CurrentEffectsLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow/AutoThrottleCurrentPanel/CurrentEffectsMargin" unique_id=1853669817]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="CurrentEffectsHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow/AutoThrottleCurrentPanel/CurrentEffectsMargin/CurrentEffectsLayout" unique_id=1699146983]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "CURRENT CONFIGURATION"
+
+[node name="AutoThrottleCurrentEffectsLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow/AutoThrottleCurrentPanel/CurrentEffectsMargin/CurrentEffectsLayout" unique_id=1413379822]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "CURRENT EFFECTS"
+autowrap_mode = 3
+
+[node name="AutoThrottleNextPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow" unique_id=938953467]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NextEffectsMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow/AutoThrottleNextPanel" unique_id=1080981616]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="NextEffectsLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow/AutoThrottleNextPanel/NextEffectsMargin" unique_id=929688655]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="AutoThrottleNextHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow/AutoThrottleNextPanel/NextEffectsMargin/NextEffectsLayout" unique_id=1216241161]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "NEXT UPGRADE"
+
+[node name="AutoThrottleNextEffectsLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow/AutoThrottleNextPanel/NextEffectsMargin/NextEffectsLayout" unique_id=655037243]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "NEXT UPGRADE"
+autowrap_mode = 3
+
+[node name="AutoThrottleRequirementSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout" unique_id=1548295057]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="AutoThrottleRequirementPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout" unique_id=1390496102]
+layout_mode = 2
+
+[node name="RequirementMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleRequirementPanel" unique_id=1238208329]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 7
+
+[node name="RequirementLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleRequirementPanel/RequirementMargin" unique_id=1744225566]
+layout_mode = 2
+
+[node name="RequirementHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleRequirementPanel/RequirementMargin/RequirementLayout" unique_id=1770338428]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "REQUIREMENT"
+
+[node name="AutoThrottleRequirementLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleRequirementPanel/RequirementMargin/RequirementLayout" unique_id=303707983]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "REQUIREMENTS"
+autowrap_mode = 3
+
+[node name="AutoThrottlePurchaseSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout" unique_id=707308782]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="AutoThrottleUpgradeButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout" unique_id=487122320]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+text = "LOCKED"
+
 [node name="BackgroundJobsBar" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=1989258494]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
@@ -2949,6 +3134,7 @@ grow_horizontal = 0
 grow_vertical = 0
 
 [node name="TutorialOverlay" parent="." unique_id=1697245027 instance=ExtResource("11_ouso4")]
+visible = false
 layout_mode = 1
 
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview"]
