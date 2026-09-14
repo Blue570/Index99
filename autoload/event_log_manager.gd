@@ -108,6 +108,13 @@ func connect_event_signals() -> void:
 			_on_auto_throttle_unlock_earned
 		)
 		
+	if not AutomationManager.auto_throttle_mastery_requirement_met.is_connected(
+		_on_auto_throttle_mastery_requirement_met
+	):
+		AutomationManager.auto_throttle_mastery_requirement_met.connect(
+			_on_auto_throttle_mastery_requirement_met
+		)
+		
 	if not AutomationManager.auto_throttle_upgrade_purchased.is_connected(
 		_on_auto_throttle_upgrade_purchased
 	):
@@ -458,4 +465,19 @@ func _on_auto_restart_triggered() -> void:
 	add_event(
 		"Crawler automatically restarted after server recovery.",
 		&"crawler"
+	)
+	
+func _on_auto_throttle_mastery_requirement_met() -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	var required_interventions: int = (
+		AutomationManager
+			.get_auto_throttle_optimized_intervention_requirement()
+	)
+
+	add_event(
+		"Auto-Throttle mastery requirement completed — %d successful throttles."
+		% required_interventions,
+		&"progression"
 	)

@@ -174,6 +174,13 @@ func connect_notification_signals() -> void:
 			_on_auto_throttle_unlock_earned
 		)
 		
+	if not AutomationManager.auto_throttle_mastery_requirement_met.is_connected(
+		_on_auto_throttle_mastery_requirement_met
+	):
+		AutomationManager.auto_throttle_mastery_requirement_met.connect(
+			_on_auto_throttle_mastery_requirement_met
+		)
+		
 	if not AutomationManager.auto_throttle_upgrade_purchased.is_connected(
 		_on_auto_throttle_upgrade_purchased
 	):
@@ -553,6 +560,26 @@ func _on_auto_throttle_upgrade_purchased(
 		],
 		TYPE_SUCCESS,
 		4.5
+	)
+	
+func _on_auto_throttle_mastery_requirement_met() -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	var required_interventions: int = (
+		AutomationManager
+			.get_auto_throttle_optimized_intervention_requirement()
+	)
+
+	show_notification(
+		"AUTO-THROTTLE MASTERY COMPLETE",
+		(
+			"%d successful throttles recorded.\n"
+			+ "Optimized Governor mastery requirement fulfilled."
+		)
+		% required_interventions,
+		TYPE_REWARD,
+		5.5
 	)
 
 

@@ -65,6 +65,8 @@ signal auto_throttle_intervention_count_changed(
 	new_count: int
 )
 
+signal auto_throttle_mastery_requirement_met
+
 signal auto_throttle_upgrade_purchased(
 	new_level: int,
 	money_spent: float,
@@ -134,6 +136,7 @@ const AUTO_THROTTLE_MIN_LEVEL: int = 0
 const AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL: int = 4
 
 const AUTO_THROTTLE_PROTOTYPE_LEVEL: int = 1
+const AUTO_THROTTLE_LOAD_CONTROLLER_LEVEL: int = 3
 
 const AUTO_THROTTLE_SCHEDULED_CRAWLS_REQUIRED: int = 3
 const AUTO_THROTTLE_OPTIMIZED_INTERVENTIONS_REQUIRED: int = 10
@@ -760,6 +763,18 @@ func _on_auto_throttle_reaction_timer_timeout() -> void:
 
 	auto_throttle_cycles_used += 1
 
+	if (
+		auto_throttle_level
+		< AUTO_THROTTLE_LOAD_CONTROLLER_LEVEL
+	):
+		return
+
+	if (
+		successful_auto_throttle_interventions
+		>= AUTO_THROTTLE_OPTIMIZED_INTERVENTIONS_REQUIRED
+	):
+		return
+
 	successful_auto_throttle_interventions += 1
 
 	auto_throttle_intervention_count_changed.emit(
@@ -1098,6 +1113,16 @@ func purchase_auto_throttle_upgrade() -> bool:
 			return false
 
 	auto_throttle_level = target_level
+
+	if (
+		auto_throttle_level
+		== AUTO_THROTTLE_LOAD_CONTROLLER_LEVEL
+	):
+		successful_auto_throttle_interventions = 0
+
+		auto_throttle_intervention_count_changed.emit(
+			successful_auto_throttle_interventions
+		)
 
 	auto_throttle_level_changed.emit(
 		auto_throttle_level
@@ -1690,10 +1715,17 @@ func restore_auto_throttle_state(
 		0
 	)
 
-	var restored_interventions: int = maxi(
+	var restored_interventions: int = clampi(
 		saved_successful_interventions,
-		0
+		0,
+		AUTO_THROTTLE_OPTIMIZED_INTERVENTIONS_REQUIRED
 	)
+	
+	if (
+		restored_level
+		< AUTO_THROTTLE_LOAD_CONTROLLER_LEVEL
+	):
+		restored_interventions = 0
 
 	var restored_unlocked: bool = (
 		restored_level
