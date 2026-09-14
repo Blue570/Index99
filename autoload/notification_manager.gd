@@ -166,6 +166,20 @@ func connect_notification_signals() -> void:
 		AutomationManager.auto_restart_unlock_earned.connect(
 			_on_auto_restart_unlock_earned
 		)
+		
+	if not AutomationManager.auto_throttle_unlock_earned.is_connected(
+		_on_auto_throttle_unlock_earned
+	):
+		AutomationManager.auto_throttle_unlock_earned.connect(
+			_on_auto_throttle_unlock_earned
+		)
+		
+	if not AutomationManager.auto_throttle_upgrade_purchased.is_connected(
+		_on_auto_throttle_upgrade_purchased
+	):
+		AutomationManager.auto_throttle_upgrade_purchased.connect(
+			_on_auto_throttle_upgrade_purchased
+		)
 
 	if not AutomationManager.auto_restart_triggered.is_connected(
 		_on_auto_restart_triggered
@@ -480,6 +494,65 @@ func _on_auto_restart_unlock_earned() -> void:
 		),
 		TYPE_UNLOCK,
 		5.5
+	)
+	
+func _on_auto_throttle_unlock_earned() -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	show_notification(
+		"AUTO-THROTTLE UNLOCKED",
+		(
+			"Prototype governor is now available.\n"
+			+ "Auto-Throttle can now be enabled from the Crawler page."
+		),
+		TYPE_UNLOCK,
+		5.5
+	)
+	
+func _on_auto_throttle_upgrade_purchased(
+	new_level: int,
+	_money_spent: float,
+	_research_points_spent: float
+) -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	var upgrade_name: String = (
+		AutomationManager
+			.get_auto_throttle_level_name(
+				new_level
+			)
+			.capitalize()
+	)
+
+	if (
+		new_level
+		>= AutomationManager
+			.AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	):
+		show_notification(
+			"AUTO-THROTTLE MASTERED",
+			(
+				"%s installed.\n"
+				+ "Maximum Auto-Throttle level reached."
+			)
+			% upgrade_name,
+			TYPE_REWARD,
+			5.5
+		)
+
+		return
+
+	show_notification(
+		"AUTO-THROTTLE UPGRADED",
+		"%s installed.\nLevel %d"
+		% [
+			upgrade_name,
+			new_level
+		],
+		TYPE_SUCCESS,
+		4.5
 	)
 
 

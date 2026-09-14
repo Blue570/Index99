@@ -100,6 +100,20 @@ func connect_event_signals() -> void:
 		AutomationManager.auto_restart_unlock_earned.connect(
 			_on_auto_restart_unlock_earned
 		)
+		
+	if not AutomationManager.auto_throttle_unlock_earned.is_connected(
+		_on_auto_throttle_unlock_earned
+	):
+		AutomationManager.auto_throttle_unlock_earned.connect(
+			_on_auto_throttle_unlock_earned
+		)
+		
+	if not AutomationManager.auto_throttle_upgrade_purchased.is_connected(
+		_on_auto_throttle_upgrade_purchased
+	):
+		AutomationManager.auto_throttle_upgrade_purchased.connect(
+			_on_auto_throttle_upgrade_purchased
+		)
 
 	if not AutomationManager.auto_restart_triggered.is_connected(
 		_on_auto_restart_triggered
@@ -374,6 +388,52 @@ func _on_auto_restart_unlock_earned() -> void:
 		&"progression"
 	)
 
+func _on_auto_throttle_unlock_earned() -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	add_event(
+		"Auto-Throttle Prototype unlocked.",
+		&"progression"
+	)
+	
+func _on_auto_throttle_upgrade_purchased(
+	new_level: int,
+	_money_spent: float,
+	_research_points_spent: float
+) -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	var upgrade_name: String = (
+		AutomationManager
+			.get_auto_throttle_level_name(
+				new_level
+			)
+			.capitalize()
+	)
+
+	if (
+		new_level
+		>= AutomationManager
+			.AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	):
+		add_event(
+			"Auto-Throttle mastered — %s installed."
+			% upgrade_name,
+			&"progression"
+		)
+
+		return
+
+	add_event(
+		"Auto-Throttle upgraded to Level %d — %s installed."
+		% [
+			new_level,
+			upgrade_name
+		],
+		&"progression"
+	)
 
 func _on_auto_restart_triggered() -> void:
 	if ObjectiveManager.suppress_objective_evaluation:
