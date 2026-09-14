@@ -392,6 +392,8 @@ const CRAWLER_EVENT_RESULT_DURATION_SECONDS: float = 1.50
 
 func _ready() -> void:
 	setup_progress_bar()
+	setup_crawler_statistics_tooltips()
+	setup_crawler_control_tooltips()
 	setup_crawler_priority_buttons()
 	
 	connect_buttons()
@@ -570,6 +572,105 @@ func setup_crawler_event_result_timer() -> void:
 
 	crawler_event_result_timer.timeout.connect(
 		_on_crawler_event_result_timer_timeout
+	)
+	
+func setup_crawler_statistics_tooltips() -> void:
+	var indexed_pages_tooltip: String = (
+		"Indexed Pages\n\n"
+		+ "Total number of pages currently stored in the search index."
+	)
+
+	var crawler_rate_tooltip: String = (
+		"Crawler Rate\n\n"
+		+ "Current effective processing speed of the crawler.\n"
+		+ "Includes active bonuses and automation effects."
+	)
+
+	var active_users_tooltip: String = (
+		"Active Users\n\n"
+		+ "Current estimated number of users using the search service."
+	)
+
+	var server_load_tooltip: String = (
+		"Server Load\n\n"
+		+ "Current server workload.\n"
+		+ "Excessive load can cause warnings, automatic throttling, "
+		+ "or an overload pause."
+	)
+
+	var indexed_pages_row: Control = (
+		statistics_indexed_pages_value_label.get_parent()
+		as Control
+	)
+
+	var crawler_rate_row: Control = (
+		statistics_crawler_rate_value_label.get_parent()
+		as Control
+	)
+
+	var active_users_row: Control = (
+		statistics_active_users_value_label.get_parent()
+		as Control
+	)
+
+	var server_load_row: Control = (
+		statistics_server_load_value_label.get_parent()
+		as Control
+	)
+
+	indexed_pages_row.tooltip_text = (
+		indexed_pages_tooltip
+	)
+
+	crawler_rate_row.tooltip_text = (
+		crawler_rate_tooltip
+	)
+
+	active_users_row.tooltip_text = (
+		active_users_tooltip
+	)
+
+	server_load_row.tooltip_text = (
+		server_load_tooltip
+	)
+
+	statistics_indexed_pages_value_label.tooltip_text = (
+		indexed_pages_tooltip
+	)
+
+	statistics_crawler_rate_value_label.tooltip_text = (
+		crawler_rate_tooltip
+	)
+
+	statistics_active_users_value_label.tooltip_text = (
+		active_users_tooltip
+	)
+
+	statistics_server_load_value_label.tooltip_text = (
+		server_load_tooltip
+	)
+	
+func setup_crawler_control_tooltips() -> void:
+	start_crawler_button.tooltip_text = (
+		"Start / Resume Crawler\n\n"
+		+ "Starts the selected crawl job or resumes "
+		+ "the current paused crawl.\n"
+		+ "After a completed job, this begins a new "
+		+ "crawl using the currently selected job type."
+	)
+
+	pause_crawler_button.tooltip_text = (
+		"Pause Crawler\n\n"
+		+ "Pauses the current crawl without losing "
+		+ "its progress.\n"
+		+ "The crawl can be resumed later."
+	)
+
+	crawler_control_rate_value_label.tooltip_text = (
+		"Effective Crawler Rate\n\n"
+		+ "Current total processing speed of the crawler.\n"
+		+ "Includes applicable research and "
+		+ "automation bonuses."
 	)
 	
 
@@ -992,11 +1093,6 @@ func refresh_crawl_job_button(
 	job_id: StringName,
 	selected_job_id: StringName
 ) -> void:
-	if job_id == &"":
-		button.text = "EMPTY SLOT"
-		button.disabled = true
-		return
-	
 	var unlocked: bool = (
 		CrawlerManager.is_crawl_job_unlocked(
 			job_id
@@ -1027,6 +1123,15 @@ func refresh_crawl_job_button(
 		)
 	)
 
+	var base_tooltip: String = (
+		"%s\n\n"
+		+ "Target: %d pages.\n"
+		+ "Determines the size of the next crawl job."
+	) % [
+		job_name,
+		job_target
+	]
+
 	if not unlocked:
 		button.text = (
 			"%s (%d) - LOCKED"
@@ -1037,6 +1142,14 @@ func refresh_crawl_job_button(
 		)
 
 		button.disabled = true
+
+		button.tooltip_text = (
+			base_tooltip
+			+ "\n\nLOCKED\n"
+			+ "Advance your progression to unlock "
+			+ "this crawl type."
+		)
+
 		return
 
 	if selected:
@@ -1049,6 +1162,12 @@ func refresh_crawl_job_button(
 		)
 
 		button.disabled = true
+
+		button.tooltip_text = (
+			base_tooltip
+			+ "\n\nCURRENTLY SELECTED"
+		)
+
 		return
 
 	button.text = (
@@ -1060,6 +1179,22 @@ func refresh_crawl_job_button(
 	)
 
 	button.disabled = selection_locked
+
+	if selection_locked:
+		button.tooltip_text = (
+			base_tooltip
+			+ "\n\nUNAVAILABLE\n"
+			+ "Crawl type cannot be changed while "
+			+ "a crawl is running or an unfinished "
+			+ "job is in progress."
+		)
+
+		return
+
+	button.tooltip_text = (
+		base_tooltip
+		+ "\n\nClick to select this crawl type."
+	)
 	
 	
 # -------------------------------------------------------------------

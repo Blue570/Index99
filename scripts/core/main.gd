@@ -317,6 +317,7 @@ var current_page_id: StringName = &""
 
 func _ready() -> void:
 	apply_theme_foundation()
+	setup_tooltip_theme()
 	connect_title_bar_buttons()
 	setup_tabs()
 	setup_placeholder_jobs()
@@ -326,6 +327,7 @@ func _ready() -> void:
 	
 	setup_game_state_connections()
 	refresh_resource_displays()
+	setup_resource_tooltips()
 	
 	open_page(
 		DEFAULT_PAGE_ID
@@ -502,6 +504,40 @@ func format_percentage(value: float) -> String:
 	)
 
 	return "%d%%" % roundi(safe_value)
+	
+func setup_resource_tooltips() -> void:
+	revenue_display.tooltip_text = (
+		"Revenue\n\n"
+		+ "Money earned primarily by indexing pages.\n"
+		+ "Used to purchase server and automation upgrades."
+	)
+
+	users_display.tooltip_text = (
+		"Active Users\n\n"
+		+ "Estimated users currently using the search service.\n"
+		+ "Indexing pages attracts new users, and research can "
+		+ "increase the number gained per page."
+	)
+
+	indexed_pages_display.tooltip_text = (
+		"Indexed Pages\n\n"
+		+ "Total number of web pages added to the search index.\n"
+		+ "Increasing this value contributes to progression, "
+		+ "objectives, and indexing milestones."
+	)
+
+	reputation_display.tooltip_text = (
+		"Reputation\n\n"
+		+ "Represents the overall standing and credibility "
+		+ "of the search service."
+	)
+
+	server_load_display.tooltip_text = (
+		"Server Load\n\n"
+		+ "Current workload placed on the server infrastructure.\n"
+		+ "High load can trigger warnings and eventually force "
+		+ "the crawler to pause while the servers cool."
+	)
 
 
 func apply_theme_foundation() -> void:
@@ -600,6 +636,53 @@ func apply_theme_foundation() -> void:
 		
 	apply_background_jobs_theme()
 	apply_window_button_styles()
+	
+func setup_tooltip_theme() -> void:
+	var active_theme: Theme = theme
+
+	if active_theme == null:
+		active_theme = Theme.new()
+		theme = active_theme
+
+	var tooltip_style: StyleBoxFlat = StyleBoxFlat.new()
+
+	tooltip_style.bg_color = Color(
+		0.16,
+		0.16,
+		0.18,
+		1.0
+	)
+
+	tooltip_style.border_color = Color(
+		0.38,
+		0.38,
+		0.42,
+		1.0
+	)
+
+	tooltip_style.set_border_width_all(1)
+
+	tooltip_style.content_margin_left = 8.0
+	tooltip_style.content_margin_right = 8.0
+	tooltip_style.content_margin_top = 6.0
+	tooltip_style.content_margin_bottom = 6.0
+
+	active_theme.set_stylebox(
+		"panel",
+		"TooltipPanel",
+		tooltip_style
+	)
+
+	active_theme.set_color(
+		"font_color",
+		"TooltipLabel",
+		Color(
+			0.92,
+			0.92,
+			0.92,
+			1.0
+		)
+	)
 
 func apply_background_jobs_theme() -> void:
 	background_jobs_bar.add_theme_stylebox_override(
