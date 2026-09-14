@@ -47,10 +47,19 @@ extends PanelContainer
 	/AutoThrottleRequirementLabel
 )
 
+@onready var auto_throttle_cost_label: Label = (
+	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
+	/UpgradesCatalog/AutoThrottleUpgradePanel
+	/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout
+	/AutoThrottlePurchaseRow
+	/AutoThrottleCostLabel
+)
+
 @onready var auto_throttle_upgrade_button: Button = (
 	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
 	/UpgradesCatalog/AutoThrottleUpgradePanel
 	/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout
+	/AutoThrottlePurchaseRow
 	/AutoThrottleUpgradeButton
 )
 
@@ -229,6 +238,10 @@ func refresh_locked_auto_throttle() -> void:
 	]
 )
 
+	auto_throttle_cost_label.text = (
+		"ACCOMPLISHMENT UNLOCK"
+)
+
 	auto_throttle_upgrade_button.text = (
 		"LOCKED"
 	)
@@ -250,10 +263,15 @@ func refresh_maxed_auto_throttle() -> void:
 		"STATUS\n"
 		+ "Optimized Governor complete."
 	)
+	
+	auto_throttle_cost_label.text = (
+		"FULLY UPGRADED"
+	)
 
 	auto_throttle_upgrade_button.text = (
 		"MAXIMUM LEVEL"
 	)
+	
 
 	auto_throttle_upgrade_button.disabled = true
 
@@ -346,14 +364,18 @@ func refresh_auto_throttle_upgrade_button(
 		)
 
 	if cost_parts.is_empty():
-		auto_throttle_upgrade_button.text = (
-			"UPGRADE"
-		)
+		auto_throttle_cost_label.text = (
+			"COST: NONE"
+	)
 	else:
-		auto_throttle_upgrade_button.text = (
-			"UPGRADE — "
+		auto_throttle_cost_label.text = (
+			"COST: "
 			+ " + ".join(cost_parts)
-		)
+	)
+
+	auto_throttle_upgrade_button.text = (
+		"UPGRADE"
+)
 
 	auto_throttle_upgrade_button.disabled = (
 		not AutomationManager

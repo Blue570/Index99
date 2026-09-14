@@ -2843,6 +2843,8 @@ script = ExtResource("11_th5th")
 
 [node name="UpgradesMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage" unique_id=1919702189]
 layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
 
 [node name="UpgradesPageLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin" unique_id=879754525]
 layout_mode = 2
@@ -2889,6 +2891,10 @@ layout_mode = 2
 
 [node name="AutoThrottleUpgradeMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel" unique_id=250269019]
 layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
 
 [node name="AutoThrottleUpgradeLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin" unique_id=1464329732]
 layout_mode = 2
@@ -2926,9 +2932,9 @@ size_flags_horizontal = 3
 
 [node name="CurrentEffectsMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow/AutoThrottleCurrentPanel" unique_id=1578340805]
 layout_mode = 2
-theme_override_constants/margin_left = 10
+theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 10
+theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
 [node name="CurrentEffectsLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottleComparisonRow/AutoThrottleCurrentPanel/CurrentEffectsMargin" unique_id=1853669817]
@@ -3004,9 +3010,22 @@ autowrap_mode = 3
 custom_minimum_size = Vector2(0, 6)
 layout_mode = 2
 
-[node name="AutoThrottleUpgradeButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout" unique_id=487122320]
-custom_minimum_size = Vector2(0, 34)
+[node name="AutoThrottlePurchaseRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout" unique_id=1196259439]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="AutoThrottleCostLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottlePurchaseRow" unique_id=1053508885]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 13
+text = "COST:"
+vertical_alignment = 1
+
+[node name="AutoThrottleUpgradeButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog/AutoThrottleUpgradePanel/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout/AutoThrottlePurchaseRow" unique_id=487122320]
+custom_minimum_size = Vector2(200, 34)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
 text = "LOCKED"
 
 [node name="BackgroundJobsBar" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=1989258494]
