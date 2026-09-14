@@ -157,6 +157,14 @@ const MANUAL_ASSIST_CLICK_SOUND: AudioStream = preload(
 	+ "CurrentJobStateValueLabel"
 ) as Label
 
+@onready var current_job_eta_label: Label = get_node(
+	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
+	+ "CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CurrentCrawlJobLayout/CurrentJobProgressHeadingRow/"
+	+ "CurrentJobEtaLabel"
+) as Label
+
 @onready var current_job_progress_bar: ProgressBar = get_node(
 	"CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/"
 	+ "CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/"
@@ -2040,6 +2048,7 @@ func _on_auto_crawl_assist_level_changed(
 ) -> void:
 	refresh_auto_crawl_assist_status()
 	refresh_effective_crawler_rate()
+	refresh_current_job_eta()
 
 
 func refresh_auto_crawl_assist_status() -> void:
@@ -2167,6 +2176,102 @@ func refresh_effective_crawler_rate() -> void:
 
 	statistics_crawler_rate_value_label.text = (
 		rate_text
+	)
+	
+func refresh_current_job_eta() -> void:
+	var pages_processed: int = maxi(
+		CrawlerManager.current_job_pages,
+		0
+	)
+
+	var target_pages: int = maxi(
+		CrawlerManager.get_current_job_target_pages(),
+		1
+	)
+
+	var pages_remaining: int = maxi(
+		target_pages - pages_processed,
+		0
+	)
+
+	if pages_remaining <= 0:
+		current_job_eta_label.text = "ETA: COMPLETE"
+
+		current_job_eta_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+		return
+
+	if CrawlerManager.paused_for_overload:
+		current_job_eta_label.text = "ETA: COOLING"
+
+		current_job_eta_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_ERROR
+		)
+
+		return
+
+	if CrawlerManager.paused_for_auto_throttle:
+		current_job_eta_label.text = "ETA: THROTTLED"
+
+		current_job_eta_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_WARNING
+		)
+
+		return
+
+	if not GameState.crawler_running:
+		if pages_processed > 0:
+			current_job_eta_label.text = "ETA: PAUSED"
+
+			current_job_eta_label.add_theme_color_override(
+				"font_color",
+				ThemeManager.STATUS_WARNING
+			)
+		else:
+			current_job_eta_label.text = "ETA: --:--"
+
+			current_job_eta_label.add_theme_color_override(
+				"font_color",
+				ThemeManager.TEXT_DISABLED
+			)
+
+		return
+
+	var effective_rate: float = (
+		AutomationManager
+			.get_effective_total_crawl_rate()
+	)
+
+	if effective_rate <= 0.0:
+		current_job_eta_label.text = "ETA: --:--"
+
+		current_job_eta_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.TEXT_DISABLED
+		)
+
+		return
+
+	var estimated_seconds: int = ceili(
+		float(pages_remaining)
+		/ effective_rate
+	)
+
+	current_job_eta_label.text = (
+		"ETA: %s"
+		% format_eta_time(
+			estimated_seconds
+		)
+	)
+
+	current_job_eta_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.ACCENT_BLUE
 	)
 
 
@@ -2517,6 +2622,7 @@ func update_crawler_state(
 	refresh_manual_crawl_assist_button()
 	refresh_auto_crawl_assist_status()
 	refresh_effective_crawler_rate()
+	refresh_current_job_eta()
 
 
 func show_ready_state() -> void:
@@ -2780,6 +2886,7 @@ func _on_crawler_rate_changed(
 	_new_value: float
 ) -> void:
 	refresh_effective_crawler_rate()
+	refresh_current_job_eta()
 
 
 # -------------------------------------------------------------------
@@ -2838,3 +2945,33 @@ func format_crawler_rate(value: float) -> String:
 		return "%d pages/sec" % rounded_value
 
 	return "%.2f pages/sec" % safe_value
+	
+func format_eta_time(
+	total_seconds: int
+) -> String:
+	var safe_seconds: int = maxi(
+		total_seconds,
+		0
+	)
+
+	var hours: int = safe_seconds / 3600
+
+	var minutes: int = (
+		safe_seconds % 3600
+	) / 60
+
+	var seconds: int = (
+		safe_seconds % 60
+	)
+
+	if hours > 0:
+		return "%d:%02d:%02d" % [
+			hours,
+			minutes,
+			seconds
+		]
+
+	return "%02d:%02d" % [
+		minutes,
+		seconds
+	]

@@ -836,7 +836,6 @@ text = "0 / 100"
 horizontal_alignment = 2
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1101,10 +1100,24 @@ layout_mode = 2
 text = "Idle"
 horizontal_alignment = 2
 
-[node name="CurrentJobProgressHeadingLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout" unique_id=740154301]
+[node name="CurrentJobProgressHeadingRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout" unique_id=1161941263]
+layout_mode = 2
+
+[node name="CurrentJobProgressHeadingLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout/CurrentJobProgressHeadingRow" unique_id=740154301]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "JOB PROGRESS"
+
+[node name="CurrentJobProgressHeadingSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout/CurrentJobProgressHeadingRow" unique_id=2084399661]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CurrentJobEtaLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout/CurrentJobProgressHeadingRow" unique_id=1315530761]
+layout_mode = 2
+tooltip_text = "Estimated time remaining at the current effective crawler rate. Pauses and manual assistance may change the estimate."
+theme_override_font_sizes/font_size = 11
+text = "ETA: --:--"
+horizontal_alignment = 2
 
 [node name="CurrentJobProgressBar" type="ProgressBar" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerPage/CrawlerMargin/CrawlerPageLayout/CrawlerPageBody/CrawlerLeftColumn/CurrentCrawlJobPanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentCrawlJobLayout" unique_id=835831724]
 custom_minimum_size = Vector2(0, 12)
@@ -2833,6 +2846,7 @@ autowrap_mode = 3
 layout_mode = 2
 
 [node name="UpgradesPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=2133878230]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

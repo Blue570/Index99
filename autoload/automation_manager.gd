@@ -781,6 +781,12 @@ func _on_auto_throttle_reaction_timer_timeout() -> void:
 		successful_auto_throttle_interventions
 	)
 
+	if (
+		successful_auto_throttle_interventions
+		== AUTO_THROTTLE_OPTIMIZED_INTERVENTIONS_REQUIRED
+	):
+		auto_throttle_mastery_requirement_met.emit()
+
 	
 func _on_auto_throttle_cooldown_timer_timeout() -> void:
 	auto_throttle_cooldown_active = false
