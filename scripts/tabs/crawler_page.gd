@@ -3022,6 +3022,75 @@ func _on_crawler_rate_changed(
 ) -> void:
 	refresh_effective_crawler_rate()
 	refresh_current_job_eta()
+	
+	
+# -------------------------------------------------------------------
+# Keyboard Shortcuts
+# -------------------------------------------------------------------
+
+func _input(event: InputEvent) -> void:
+	if not is_visible_in_tree():
+		return
+
+	if not event is InputEventKey:
+		return
+
+	var key_event: InputEventKey = (
+		event as InputEventKey
+	)
+
+	if not key_event.pressed:
+		return
+
+	if key_event.echo:
+		return
+
+	if is_text_input_focused():
+		return
+
+	if key_event.keycode == KEY_C:
+		handle_crawler_toggle_shortcut()
+		get_viewport().set_input_as_handled()
+		return
+
+	if key_event.keycode == KEY_A:
+		handle_manual_assist_shortcut()
+		get_viewport().set_input_as_handled()
+		
+func is_text_input_focused() -> bool:
+	var focused_control: Control = (
+		get_viewport().gui_get_focus_owner()
+	)
+
+	if focused_control == null:
+		return false
+
+	if focused_control is LineEdit:
+		return true
+
+	if focused_control is TextEdit:
+		return true
+
+	return false
+	
+func handle_crawler_toggle_shortcut() -> void:
+	if GameState.crawler_running:
+		if pause_crawler_button.disabled:
+			return
+
+		_on_pause_crawler_button_pressed()
+		return
+
+	if start_crawler_button.disabled:
+		return
+
+	_on_start_crawler_button_pressed()
+	
+func handle_manual_assist_shortcut() -> void:
+	if manual_crawl_assist_button.disabled:
+		return
+
+	_on_manual_crawl_assist_button_pressed()
 
 
 # -------------------------------------------------------------------

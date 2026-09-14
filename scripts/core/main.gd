@@ -2,6 +2,16 @@ extends Control
 
 const DEFAULT_PAGE_ID: StringName = &"dashboard"
 
+const PAGE_SHORTCUTS: Dictionary = {
+	KEY_1: &"dashboard",
+	KEY_2: &"crawler",
+	KEY_3: &"jobs",
+	KEY_4: &"index",
+	KEY_5: &"servers",
+	KEY_6: &"research",
+	KEY_7: &"upgrades"
+}
+
 var tab_buttons: Dictionary = {}
 var pages: Dictionary = {}
 var current_page_id: StringName = &""
@@ -930,6 +940,69 @@ func connect_title_bar_buttons() -> void:
 	close_button.pressed.connect(
 		_on_close_button_pressed
 	)
+	
+	
+# -------------------------------------------------------------------
+# Keyboard Shortcuts
+# -------------------------------------------------------------------
+
+func _input(event: InputEvent) -> void:
+	if not event is InputEventKey:
+		return
+
+	var key_event: InputEventKey = (
+		event as InputEventKey
+	)
+
+	if not key_event.pressed:
+		return
+
+	if key_event.echo:
+		return
+
+	if (
+		key_event.ctrl_pressed
+		or key_event.alt_pressed
+		or key_event.meta_pressed
+	):
+		return
+
+	if is_text_input_focused():
+		return
+
+	if not PAGE_SHORTCUTS.has(
+		key_event.keycode
+	):
+		return
+
+	var page_id: StringName = StringName(
+		PAGE_SHORTCUTS[
+			key_event.keycode
+		]
+	)
+
+	_on_tab_selected(
+		page_id
+	)
+
+	get_viewport().set_input_as_handled()
+
+
+func is_text_input_focused() -> bool:
+	var focused_control: Control = (
+		get_viewport().gui_get_focus_owner()
+	)
+
+	if focused_control == null:
+		return false
+
+	if focused_control is LineEdit:
+		return true
+
+	if focused_control is TextEdit:
+		return true
+
+	return false
 
 
 func setup_tabs() -> void:
