@@ -105,10 +105,33 @@ vertical_alignment = 1
 
 [node name="TitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/TitleBar/TitleBarLayout" unique_id=1722743498]
 layout_mode = 2
-size_flags_horizontal = 3
 size_flags_vertical = 1
 text = "Index 99 - Internal Search Console"
 vertical_alignment = 1
+
+[node name="ApplicationMenuRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/TitleBar/TitleBarLayout" unique_id=2022987780]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="FileMenuButton" type="MenuButton" parent="MainApplicationWindow/MainLayout/TitleBar/TitleBarLayout/ApplicationMenuRow" unique_id=747699317]
+layout_mode = 2
+text = "File"
+
+[node name="ViewMenuButton" type="MenuButton" parent="MainApplicationWindow/MainLayout/TitleBar/TitleBarLayout/ApplicationMenuRow" unique_id=1137696096]
+layout_mode = 2
+text = "View"
+
+[node name="ToolsMenuButton" type="MenuButton" parent="MainApplicationWindow/MainLayout/TitleBar/TitleBarLayout/ApplicationMenuRow" unique_id=1341208813]
+layout_mode = 2
+text = "Tools"
+
+[node name="HelpMenuButton" type="MenuButton" parent="MainApplicationWindow/MainLayout/TitleBar/TitleBarLayout/ApplicationMenuRow" unique_id=1272303757]
+layout_mode = 2
+text = "Help"
+
+[node name="TitleSpacer" type="Control" parent="MainApplicationWindow/MainLayout/TitleBar/TitleBarLayout" unique_id=373158253]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="BuildLabel" type="Label" parent="MainApplicationWindow/MainLayout/TitleBar/TitleBarLayout" unique_id=1845984621]
 layout_mode = 2
@@ -3167,7 +3190,6 @@ grow_horizontal = 0
 grow_vertical = 0
 
 [node name="TutorialOverlay" parent="." unique_id=1697245027 instance=ExtResource("11_ouso4")]
-visible = false
 layout_mode = 1
 
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview"]

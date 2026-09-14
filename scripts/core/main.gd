@@ -12,6 +12,22 @@ const PAGE_SHORTCUTS: Dictionary = {
 	KEY_7: &"upgrades"
 }
 
+# -------------------------------------------------------------------
+# Application Menu IDs
+# -------------------------------------------------------------------
+
+const FILE_MENU_SAVE_GAME: int = 100
+const FILE_MENU_EXIT: int = 101
+
+const VIEW_MENU_SESSION_STATISTICS: int = 200
+
+const TOOLS_MENU_OPTIONS: int = 300
+const TOOLS_MENU_KEYBOARD_SHORTCUTS: int = 301
+
+const HELP_MENU_RESTART_TUTORIAL: int = 400
+const HELP_MENU_HOW_TO_PLAY: int = 401
+const HELP_MENU_ABOUT: int = 402
+
 var tab_buttons: Dictionary = {}
 var pages: Dictionary = {}
 var current_page_id: StringName = &""
@@ -55,6 +71,45 @@ var current_page_id: StringName = &""
 		"MainApplicationWindow/MainLayout/TitleBar/"
 		+ "TitleBarLayout/TitleLabel"
 	) as Label
+)
+
+@onready var application_menu_row := (
+	get_node(
+		"MainApplicationWindow/MainLayout/TitleBar/"
+		+ "TitleBarLayout/ApplicationMenuRow"
+	) as HBoxContainer
+)
+
+@onready var file_menu_button := (
+	get_node(
+		"MainApplicationWindow/MainLayout/TitleBar/"
+		+ "TitleBarLayout/ApplicationMenuRow/"
+		+ "FileMenuButton"
+	) as MenuButton
+)
+
+@onready var view_menu_button := (
+	get_node(
+		"MainApplicationWindow/MainLayout/TitleBar/"
+		+ "TitleBarLayout/ApplicationMenuRow/"
+		+ "ViewMenuButton"
+	) as MenuButton
+)
+
+@onready var tools_menu_button := (
+	get_node(
+		"MainApplicationWindow/MainLayout/TitleBar/"
+		+ "TitleBarLayout/ApplicationMenuRow/"
+		+ "ToolsMenuButton"
+	) as MenuButton
+)
+
+@onready var help_menu_button := (
+	get_node(
+		"MainApplicationWindow/MainLayout/TitleBar/"
+		+ "TitleBarLayout/ApplicationMenuRow/"
+		+ "HelpMenuButton"
+	) as MenuButton
 )
 
 @onready var build_label := (
@@ -329,6 +384,7 @@ func _ready() -> void:
 	apply_theme_foundation()
 	setup_tooltip_theme()
 	connect_title_bar_buttons()
+	setup_application_menus()
 	setup_tabs()
 	setup_placeholder_jobs()
 	
@@ -941,6 +997,175 @@ func connect_title_bar_buttons() -> void:
 		_on_close_button_pressed
 	)
 	
+	
+# -------------------------------------------------------------------
+# Application Menus
+# -------------------------------------------------------------------
+
+func setup_application_menus() -> void:
+	setup_file_menu()
+	setup_view_menu()
+	setup_tools_menu()
+	setup_help_menu()
+	
+func setup_file_menu() -> void:
+	var popup: PopupMenu = (
+		file_menu_button.get_popup()
+	)
+
+	popup.clear()
+
+	popup.add_item(
+		"Save Game",
+		FILE_MENU_SAVE_GAME
+	)
+
+	popup.add_separator()
+
+	popup.add_item(
+		"Exit",
+		FILE_MENU_EXIT
+	)
+
+	if not popup.id_pressed.is_connected(
+		_on_file_menu_id_pressed
+	):
+		popup.id_pressed.connect(
+			_on_file_menu_id_pressed
+		)
+	
+func _on_file_menu_id_pressed(
+	item_id: int
+) -> void:
+	match item_id:
+		FILE_MENU_SAVE_GAME:
+			SaveManager.save_game()
+
+		FILE_MENU_EXIT:
+			_on_close_button_pressed()
+			
+func setup_view_menu() -> void:
+	var popup: PopupMenu = (
+		view_menu_button.get_popup()
+	)
+
+	popup.clear()
+
+	popup.add_item(
+		"Session Statistics",
+		VIEW_MENU_SESSION_STATISTICS
+	)
+
+	var statistics_index: int = (
+		popup.get_item_index(
+			VIEW_MENU_SESSION_STATISTICS
+		)
+	)
+
+	popup.set_item_disabled(
+		statistics_index,
+		true
+	)
+	
+func setup_tools_menu() -> void:
+	var popup: PopupMenu = (
+		tools_menu_button.get_popup()
+	)
+
+	popup.clear()
+
+	popup.add_item(
+		"Options",
+		TOOLS_MENU_OPTIONS
+	)
+
+	popup.add_item(
+		"Keyboard Shortcuts",
+		TOOLS_MENU_KEYBOARD_SHORTCUTS
+	)
+
+	var options_index: int = (
+		popup.get_item_index(
+			TOOLS_MENU_OPTIONS
+		)
+	)
+
+	var shortcuts_index: int = (
+		popup.get_item_index(
+			TOOLS_MENU_KEYBOARD_SHORTCUTS
+		)
+	)
+
+	popup.set_item_disabled(
+		options_index,
+		true
+	)
+
+	popup.set_item_disabled(
+		shortcuts_index,
+		true
+	)
+	
+func setup_help_menu() -> void:
+	var popup: PopupMenu = (
+		help_menu_button.get_popup()
+	)
+
+	popup.clear()
+
+	popup.add_item(
+		"Restart Tutorial",
+		HELP_MENU_RESTART_TUTORIAL
+	)
+
+	popup.add_item(
+		"How to Play",
+		HELP_MENU_HOW_TO_PLAY
+	)
+
+	popup.add_separator()
+
+	popup.add_item(
+		"About Index 99",
+		HELP_MENU_ABOUT
+	)
+
+	var how_to_play_index: int = (
+		popup.get_item_index(
+			HELP_MENU_HOW_TO_PLAY
+		)
+	)
+
+	var about_index: int = (
+		popup.get_item_index(
+			HELP_MENU_ABOUT
+		)
+	)
+
+	popup.set_item_disabled(
+		how_to_play_index,
+		true
+	)
+
+	popup.set_item_disabled(
+		about_index,
+		true
+	)
+
+	if not popup.id_pressed.is_connected(
+		_on_help_menu_id_pressed
+	):
+		popup.id_pressed.connect(
+			_on_help_menu_id_pressed
+		)
+		
+func _on_help_menu_id_pressed(
+	item_id: int
+) -> void:
+	match item_id:
+		HELP_MENU_RESTART_TUTORIAL:
+			TutorialManager.reset_tutorial()
+			TutorialManager.start_tutorial()
 	
 # -------------------------------------------------------------------
 # Keyboard Shortcuts
