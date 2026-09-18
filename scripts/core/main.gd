@@ -377,6 +377,268 @@ var current_page_id: StringName = &""
 	+ "JobsLayout/CrawlerJobIndicator/CrawlerJobLabel"
 ) as Label
 
+# -------------------------------------------------------------------
+# Session Statistics Window
+# -------------------------------------------------------------------
+
+@onready var session_statistics_window := (
+	get_node(
+		"SessionStatisticsWindow"
+	) as PanelContainer
+)
+
+@onready var session_statistics_close_button := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsHeader/"
+		+ "SessionStatisticsCloseButton"
+	) as Button
+)
+
+@onready var session_statistics_footer_close_button := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsFooter/"
+		+ "SessionStatisticsFooterCloseButton"
+	) as Button
+)
+
+
+func setup_application_menu_popup_theme() -> void:
+	var active_theme: Theme = theme
+
+	if active_theme == null:
+		active_theme = Theme.new()
+		theme = active_theme
+
+	# ---------------------------------------------------------------
+	# Popup background
+	# ---------------------------------------------------------------
+
+	var popup_panel_style: StyleBoxFlat = StyleBoxFlat.new()
+
+	popup_panel_style.bg_color = Color(
+		0.78,
+		0.78,
+		0.78,
+		1.0
+	)
+
+	popup_panel_style.border_color = Color(
+		0.18,
+		0.18,
+		0.20,
+		1.0
+	)
+
+	popup_panel_style.set_border_width_all(
+		1
+	)
+
+	popup_panel_style.content_margin_left = 3.0
+	popup_panel_style.content_margin_right = 3.0
+	popup_panel_style.content_margin_top = 3.0
+	popup_panel_style.content_margin_bottom = 3.0
+
+
+# ---------------------------------------------------------------
+# Hover / selected item
+# ---------------------------------------------------------------
+
+	var popup_hover_style: StyleBoxFlat = (
+		StyleBoxFlat.new()
+)
+
+	popup_hover_style.bg_color = (
+		ThemeManager.ACCENT_BLUE
+)
+
+	popup_hover_style.border_color = (
+		ThemeManager.ACCENT_BLUE_LIGHT
+)
+
+	popup_hover_style.set_border_width_all(
+		1
+)
+
+
+# ---------------------------------------------------------------
+# Separator
+# ---------------------------------------------------------------
+
+	var popup_separator_style: StyleBoxLine = (
+		StyleBoxLine.new()
+)
+
+	popup_separator_style.color = Color(
+		0.35,
+		0.35,
+		0.38,
+		1.0
+)
+
+	popup_separator_style.thickness = 1
+
+
+# ---------------------------------------------------------------
+# Apply PopupMenu theme
+# ---------------------------------------------------------------
+
+	active_theme.set_stylebox(
+	"panel",
+	"PopupMenu",
+	popup_panel_style
+)
+
+	active_theme.set_stylebox(
+	"hover",
+	"PopupMenu",
+	popup_hover_style
+)
+
+	active_theme.set_stylebox(
+	"separator",
+	"PopupMenu",
+	popup_separator_style
+)
+
+
+# ---------------------------------------------------------------
+# Text colors
+# ---------------------------------------------------------------
+
+	active_theme.set_color(
+	"font_color",
+	"PopupMenu",
+	Color(
+		0.08,
+		0.08,
+		0.08,
+		1.0
+	)
+)
+
+	active_theme.set_color(
+	"font_hover_color",
+	"PopupMenu",
+	ThemeManager.TEXT_LIGHT
+)
+
+	active_theme.set_color(
+	"font_disabled_color",
+	"PopupMenu",
+	Color(
+		0.42,
+		0.42,
+		0.42,
+		1.0
+	)
+)
+
+	active_theme.set_color(
+	"font_separator_color",
+	"PopupMenu",
+	Color(
+		0.35,
+		0.35,
+		0.38,
+		1.0
+	)
+)
+
+
+# ---------------------------------------------------------------
+# Future keyboard accelerator colors
+# ---------------------------------------------------------------
+
+	active_theme.set_color(
+	"font_accelerator_color",
+	"PopupMenu",
+	Color(
+		0.25,
+		0.25,
+		0.27,
+		1.0
+	)
+)
+
+	active_theme.set_color(
+	"font_accelerator_hover_color",
+	"PopupMenu",
+	ThemeManager.TEXT_LIGHT
+)
+
+	active_theme.set_color(
+	"font_accelerator_disabled_color",
+	"PopupMenu",
+	Color(
+		0.45,
+		0.45,
+		0.45,
+		1.0
+	)
+)
+
+
+# ---------------------------------------------------------------
+# Font and spacing
+# ---------------------------------------------------------------
+
+	active_theme.set_font_size(
+	"font_size",
+	"PopupMenu",
+	ThemeManager.FONT_SIZE_SMALL
+)
+
+	active_theme.set_constant(
+	"item_start_padding",
+	"PopupMenu",
+	8
+)
+
+	active_theme.set_constant(
+	"item_end_padding",
+	"PopupMenu",
+	10
+)
+
+	active_theme.set_constant(
+	"h_separation",
+	"PopupMenu",
+	8
+)
+
+	active_theme.set_constant(
+	"v_separation",
+	"PopupMenu",
+	4
+)
+
+	active_theme.set_constant(
+	"separator_height",
+	"PopupMenu",
+	7
+)
+
+
+	# ---------------------------------------------------------------
+	# Apply theme to application popups
+	# ---------------------------------------------------------------
+
+	var application_popups: Array[PopupMenu] = [
+		file_menu_button.get_popup(),
+		view_menu_button.get_popup(),
+		tools_menu_button.get_popup(),
+		help_menu_button.get_popup()
+	]
+
+	for popup: PopupMenu in application_popups:
+		popup.theme = active_theme
+
 
 
 
@@ -387,6 +649,8 @@ func _ready() -> void:
 	setup_application_menus()
 	setup_tabs()
 	setup_placeholder_jobs()
+	setup_application_menu_popup_theme()
+	setup_session_statistics_window()
 	
 	setup_background_jobs_connections()
 	refresh_background_jobs_bar()
@@ -418,6 +682,33 @@ func _ready() -> void:
 	"ROOT VIEWPORT SIZE: ",
 	get_tree().root.get_visible_rect().size
 )
+
+	# ---------------------------------------------------------------
+	# Popup background
+	# ---------------------------------------------------------------
+
+	var popup_panel_style: StyleBoxFlat = StyleBoxFlat.new()
+
+	popup_panel_style.bg_color = Color(
+		0.78,
+		0.78,
+		0.78,
+		1.0
+	)
+
+	popup_panel_style.border_color = Color(
+		0.18,
+		0.18,
+		0.20,
+		1.0
+	)
+
+	popup_panel_style.set_border_width_all(1)
+
+	popup_panel_style.content_margin_left = 3.0
+	popup_panel_style.content_margin_right = 3.0
+	popup_panel_style.content_margin_top = 3.0
+	popup_panel_style.content_margin_bottom = 3.0
 	
 	
 func setup_game_state_connections() -> void:
@@ -536,6 +827,39 @@ func format_money(value: float) -> String:
 		format_whole_number(whole_dollars),
 		cents
 	]
+	
+# -------------------------------------------------------------------
+# Session Statistics Window
+# -------------------------------------------------------------------
+
+func setup_session_statistics_window() -> void:
+	session_statistics_window.visible = false
+
+	apply_session_statistics_theme()
+
+	if not session_statistics_close_button.pressed.is_connected(
+		_on_session_statistics_close_pressed
+	):
+		session_statistics_close_button.pressed.connect(
+			_on_session_statistics_close_pressed
+		)
+
+	if not session_statistics_footer_close_button.pressed.is_connected(
+		_on_session_statistics_close_pressed
+	):
+		session_statistics_footer_close_button.pressed.connect(
+			_on_session_statistics_close_pressed
+		)
+		
+func open_session_statistics_window() -> void:
+	session_statistics_window.visible = true
+	session_statistics_window.move_to_front()
+	
+func close_session_statistics_window() -> void:
+	session_statistics_window.visible = false
+	
+func _on_session_statistics_close_pressed() -> void:
+	close_session_statistics_window()
 	
 func format_whole_number(value: int) -> String:
 	var number_text: String = str(
@@ -1056,16 +1380,26 @@ func setup_view_menu() -> void:
 		VIEW_MENU_SESSION_STATISTICS
 	)
 
-	var statistics_index: int = (
-		popup.get_item_index(
-			VIEW_MENU_SESSION_STATISTICS
+	if not popup.id_pressed.is_connected(
+		_on_view_menu_id_pressed
+	):
+		popup.id_pressed.connect(
+			_on_view_menu_id_pressed
 		)
+		
+func _on_view_menu_id_pressed(
+	item_id: int
+) -> void:
+	match item_id:
+		VIEW_MENU_SESSION_STATISTICS:
+			open_session_statistics_window()
+			
+func apply_session_statistics_theme() -> void:
+	session_statistics_window.add_theme_stylebox_override(
+		"panel",
+		ThemeManager.create_base_panel_style()
 	)
 
-	popup.set_item_disabled(
-		statistics_index,
-		true
-	)
 	
 func setup_tools_menu() -> void:
 	var popup: PopupMenu = (

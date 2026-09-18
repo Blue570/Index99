@@ -3189,7 +3189,141 @@ offset_bottom = -90.0
 grow_horizontal = 0
 grow_vertical = 0
 
+[node name="SessionStatisticsWindow" type="PanelContainer" parent="." unique_id=1066779553]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -225.0
+offset_top = -190.0
+offset_right = 225.0
+offset_bottom = 190.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+
+[node name="SessionStatisticsMargin" type="MarginContainer" parent="SessionStatisticsWindow" unique_id=1022378094]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SessionStatisticsLayout" type="VBoxContainer" parent="SessionStatisticsWindow/SessionStatisticsMargin" unique_id=996221029]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SessionStatisticsHeader" type="HBoxContainer" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout" unique_id=70450005]
+layout_mode = 2
+
+[node name="SessionStatisticsTitleLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsHeader" unique_id=2080375748]
+layout_mode = 2
+text = "SESSION STATISTICS"
+
+[node name="SessionStatisticsHeaderSpacer" type="Control" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsHeader" unique_id=953209741]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SessionStatisticsCloseButton" type="Button" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsHeader" unique_id=124489398]
+custom_minimum_size = Vector2(26, 24)
+layout_mode = 2
+text = "X"
+
+[node name="SessionStatisticsHeaderSeparator" type="HSeparator" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout" unique_id=1877175974]
+layout_mode = 2
+
+[node name="SessionStatisticsGrid" type="GridContainer" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout" unique_id=1208539756]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 2
+
+[node name="SessionTimeLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=659329535]
+layout_mode = 2
+text = "Session Time"
+
+[node name="SessionTimeValueLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=194019208]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "00:00:00"
+horizontal_alignment = 2
+
+[node name="PagesIndexedLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=2067694531]
+layout_mode = 2
+text = "Pages Indexed"
+
+[node name="PagesIndexedValueLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=553481803]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 2
+
+[node name="RevenueEarnedLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=1914534456]
+layout_mode = 2
+text = "Revenue Earned"
+
+[node name="RevenueEarnedValueLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=177965477]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "$0.00"
+horizontal_alignment = 2
+
+[node name="ActiveUsersGainedLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=1863471909]
+layout_mode = 2
+text = "Active Users Gained"
+
+[node name="ActiveUsersGainedValueLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=908206738]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 2
+
+[node name="CrawlsCompletedLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=2101324516]
+layout_mode = 2
+text = "Crawls Completed"
+
+[node name="CrawlsCompletedValueLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=1004475651]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 2
+
+[node name="ManualAssistsLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=959245720]
+layout_mode = 2
+text = "Manual Crawl Assists"
+
+[node name="ManualAssistsValueLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=453801839]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 2
+
+[node name="AutoThrottleActionsLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=54826667]
+layout_mode = 2
+text = "Auto-Throttle Actions"
+
+[node name="AutoThrottleActionsValueLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsGrid" unique_id=567951758]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 2
+
+[node name="SessionStatisticsFooter" type="HBoxContainer" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout" unique_id=2047073005]
+layout_mode = 2
+
+[node name="SessionStatisticsFooterSpacer" type="Control" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsFooter" unique_id=1875316556]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SessionStatisticsFooterCloseButton" type="Button" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsFooter" unique_id=1896718658]
+custom_minimum_size = Vector2(80, 26)
+layout_mode = 2
+text = "Close"
+
 [node name="TutorialOverlay" parent="." unique_id=1697245027 instance=ExtResource("11_ouso4")]
+visible = false
 layout_mode = 1
 
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview"]
