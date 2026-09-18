@@ -407,6 +407,76 @@ var current_page_id: StringName = &""
 	) as Button
 )
 
+@onready var session_time_value_label := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsGrid/"
+		+ "SessionTimeValueLabel"
+	) as Label
+)
+
+@onready var pages_indexed_value_label := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsGrid/"
+		+ "PagesIndexedValueLabel"
+	) as Label
+)
+
+@onready var revenue_earned_value_label := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsGrid/"
+		+ "RevenueEarnedValueLabel"
+	) as Label
+)
+
+@onready var active_users_gained_value_label := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsGrid/"
+		+ "ActiveUsersGainedValueLabel"
+	) as Label
+)
+
+@onready var crawls_completed_value_label := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsGrid/"
+		+ "CrawlsCompletedValueLabel"
+	) as Label
+)
+
+@onready var manual_assists_value_label := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsGrid/"
+		+ "ManualAssistsValueLabel"
+	) as Label
+)
+
+@onready var auto_throttle_actions_value_label := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsGrid/"
+		+ "AutoThrottleActionsValueLabel"
+	) as Label
+)
+
 
 func setup_application_menu_popup_theme() -> void:
 	var active_theme: Theme = theme
@@ -850,8 +920,26 @@ func setup_session_statistics_window() -> void:
 		session_statistics_footer_close_button.pressed.connect(
 			_on_session_statistics_close_pressed
 		)
+
+	if not SessionStatsManager.session_statistics_changed.is_connected(
+		_on_session_statistics_changed
+	):
+		SessionStatsManager.session_statistics_changed.connect(
+			_on_session_statistics_changed
+		)
+
+	if not SessionStatsManager.session_time_changed.is_connected(
+		_on_session_time_changed
+	):
+		SessionStatsManager.session_time_changed.connect(
+			_on_session_time_changed
+		)
+
+	refresh_session_statistics_display()
 		
 func open_session_statistics_window() -> void:
+	refresh_session_statistics_display()
+
 	session_statistics_window.visible = true
 	session_statistics_window.move_to_front()
 	
@@ -860,6 +948,58 @@ func close_session_statistics_window() -> void:
 	
 func _on_session_statistics_close_pressed() -> void:
 	close_session_statistics_window()
+	
+func refresh_session_statistics_display() -> void:
+	session_time_value_label.text = (
+		format_session_time(
+			SessionStatsManager.get_session_time_seconds()
+		)
+	)
+
+	pages_indexed_value_label.text = (
+		format_whole_number(
+			SessionStatsManager.get_pages_indexed()
+		)
+	)
+
+	revenue_earned_value_label.text = (
+		format_money(
+			SessionStatsManager.get_revenue_earned()
+		)
+	)
+
+	active_users_gained_value_label.text = (
+		format_whole_number(
+			SessionStatsManager.get_active_users_gained()
+		)
+	)
+
+	crawls_completed_value_label.text = (
+		format_whole_number(
+			SessionStatsManager.get_crawls_completed()
+		)
+	)
+
+	manual_assists_value_label.text = (
+		format_whole_number(
+			SessionStatsManager.get_manual_assists_used()
+		)
+	)
+
+	auto_throttle_actions_value_label.text = (
+		format_whole_number(
+			SessionStatsManager.get_auto_throttle_actions()
+		)
+	)
+	
+func _on_session_statistics_changed() -> void:
+	refresh_session_statistics_display()
+
+
+func _on_session_time_changed(
+	_total_seconds: int
+) -> void:
+	refresh_session_statistics_display()
 	
 func format_whole_number(value: int) -> String:
 	var number_text: String = str(
@@ -894,6 +1034,32 @@ func format_percentage(value: float) -> String:
 	)
 
 	return "%d%%" % roundi(safe_value)
+	
+func format_session_time(
+	total_seconds: int
+) -> String:
+	var safe_seconds: int = maxi(
+		total_seconds,
+		0
+	)
+
+	var hours: int = (
+		safe_seconds / 3600
+	)
+
+	var minutes: int = (
+		(safe_seconds % 3600) / 60
+	)
+
+	var seconds: int = (
+		safe_seconds % 60
+	)
+
+	return "%02d:%02d:%02d" % [
+		hours,
+		minutes,
+		seconds
+	]
 	
 func setup_resource_tooltips() -> void:
 	revenue_display.tooltip_text = (
