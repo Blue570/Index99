@@ -65,6 +65,8 @@ signal auto_throttle_intervention_count_changed(
 	new_count: int
 )
 
+signal auto_throttle_intervention_performed
+
 signal auto_throttle_mastery_requirement_met
 
 signal auto_throttle_upgrade_purchased(
@@ -762,6 +764,8 @@ func _on_auto_throttle_reaction_timer_timeout() -> void:
 		return
 
 	auto_throttle_cycles_used += 1
+	
+	auto_throttle_intervention_performed.emit()
 
 	if (
 		auto_throttle_level

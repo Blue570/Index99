@@ -21,6 +21,8 @@ signal crawler_tick_completed(
 
 signal crawl_job_completed
 
+signal manual_crawl_assist_used
+
 signal crawl_job_selection_changed(
 	job_id: StringName,
 	display_name: String,
@@ -931,6 +933,8 @@ func use_manual_crawl_assist() -> bool:
 	)
 
 	process_page_fraction_buffer()
+
+	manual_crawl_assist_used.emit()
 
 	if is_current_job_complete():
 		return true
