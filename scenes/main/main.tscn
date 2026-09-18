@@ -3216,18 +3216,21 @@ theme_override_constants/margin_bottom = 10
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="SessionStatisticsHeader" type="HBoxContainer" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout" unique_id=70450005]
+[node name="SessionStatisticsHeaderPanel" type="PanelContainer" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout" unique_id=2126686688]
 layout_mode = 2
 
-[node name="SessionStatisticsTitleLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsHeader" unique_id=2080375748]
+[node name="SessionStatisticsHeader" type="HBoxContainer" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsHeaderPanel" unique_id=70450005]
+layout_mode = 2
+
+[node name="SessionStatisticsTitleLabel" type="Label" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsHeaderPanel/SessionStatisticsHeader" unique_id=2080375748]
 layout_mode = 2
 text = "SESSION STATISTICS"
 
-[node name="SessionStatisticsHeaderSpacer" type="Control" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsHeader" unique_id=953209741]
+[node name="SessionStatisticsHeaderSpacer" type="Control" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsHeaderPanel/SessionStatisticsHeader" unique_id=953209741]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SessionStatisticsCloseButton" type="Button" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsHeader" unique_id=124489398]
+[node name="SessionStatisticsCloseButton" type="Button" parent="SessionStatisticsWindow/SessionStatisticsMargin/SessionStatisticsLayout/SessionStatisticsHeaderPanel/SessionStatisticsHeader" unique_id=124489398]
 custom_minimum_size = Vector2(26, 24)
 layout_mode = 2
 text = "X"

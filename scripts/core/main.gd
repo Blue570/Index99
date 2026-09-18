@@ -392,6 +392,7 @@ var current_page_id: StringName = &""
 		"SessionStatisticsWindow/"
 		+ "SessionStatisticsMargin/"
 		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsHeaderPanel/"
 		+ "SessionStatisticsHeader/"
 		+ "SessionStatisticsCloseButton"
 	) as Button
@@ -475,6 +476,44 @@ var current_page_id: StringName = &""
 		+ "SessionStatisticsGrid/"
 		+ "AutoThrottleActionsValueLabel"
 	) as Label
+)
+
+@onready var session_statistics_header_panel := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsHeaderPanel"
+	) as PanelContainer
+)
+
+@onready var session_statistics_title_label := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsHeaderPanel/"
+		+ "SessionStatisticsHeader/"
+		+ "SessionStatisticsTitleLabel"
+	) as Label
+)
+
+@onready var session_statistics_header_separator := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsHeaderSeparator"
+	) as HSeparator
+)
+
+@onready var session_statistics_grid := (
+	get_node(
+		"SessionStatisticsWindow/"
+		+ "SessionStatisticsMargin/"
+		+ "SessionStatisticsLayout/"
+		+ "SessionStatisticsGrid"
+	) as GridContainer
 )
 
 
@@ -1564,6 +1603,146 @@ func apply_session_statistics_theme() -> void:
 	session_statistics_window.add_theme_stylebox_override(
 		"panel",
 		ThemeManager.create_base_panel_style()
+	)
+
+	session_statistics_header_panel.add_theme_stylebox_override(
+		"panel",
+		ThemeManager.create_title_bar_style()
+	)
+
+	session_statistics_title_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_LIGHT
+	)
+
+	session_statistics_title_label.add_theme_font_size_override(
+		"font_size",
+		ThemeManager.FONT_SIZE_TITLE
+	)
+
+	session_statistics_grid.add_theme_constant_override(
+		"h_separation",
+		32
+	)
+
+	session_statistics_grid.add_theme_constant_override(
+		"v_separation",
+		10
+	)
+
+	var statistics_labels: Array[Node] = (
+		session_statistics_grid.get_children()
+	)
+
+	for label_index: int in range(
+		statistics_labels.size()
+	):
+		var statistic_label := (
+			statistics_labels[label_index] as Label
+		)
+
+		if statistic_label == null:
+			continue
+
+		statistic_label.add_theme_font_size_override(
+			"font_size",
+			ThemeManager.FONT_SIZE_SMALL
+		)
+
+		if label_index % 2 == 0:
+			statistic_label.add_theme_color_override(
+				"font_color",
+				ThemeManager.TEXT_SECONDARY
+			)
+
+		else:
+			statistic_label.add_theme_color_override(
+				"font_color",
+				ThemeManager.TEXT_PRIMARY
+			)
+
+	var separator_style: StyleBoxLine = (
+		StyleBoxLine.new()
+	)
+
+	separator_style.color = (
+		ThemeManager.TITLE_BAR_BORDER
+	)
+
+	separator_style.thickness = 1
+
+	session_statistics_header_separator.add_theme_stylebox_override(
+		"separator",
+		separator_style
+	)
+
+	session_statistics_close_button.add_theme_stylebox_override(
+		"normal",
+		ThemeManager.create_window_button_normal_style()
+	)
+
+	session_statistics_close_button.add_theme_stylebox_override(
+		"hover",
+		ThemeManager.create_window_button_hover_style(
+			true
+		)
+	)
+
+	session_statistics_close_button.add_theme_stylebox_override(
+		"pressed",
+		ThemeManager.create_window_button_pressed_style(
+			true
+		)
+	)
+
+	session_statistics_close_button.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_PRIMARY
+	)
+
+	session_statistics_close_button.add_theme_color_override(
+		"font_hover_color",
+		ThemeManager.TEXT_LIGHT
+	)
+
+	session_statistics_close_button.add_theme_color_override(
+		"font_pressed_color",
+		ThemeManager.TEXT_LIGHT
+	)
+
+	session_statistics_footer_close_button.add_theme_stylebox_override(
+		"normal",
+		ThemeManager.create_window_button_normal_style()
+	)
+
+	session_statistics_footer_close_button.add_theme_stylebox_override(
+		"hover",
+		ThemeManager.create_window_button_hover_style()
+	)
+
+	session_statistics_footer_close_button.add_theme_stylebox_override(
+		"pressed",
+		ThemeManager.create_window_button_pressed_style()
+	)
+
+	session_statistics_footer_close_button.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_PRIMARY
+	)
+
+	session_statistics_footer_close_button.add_theme_color_override(
+		"font_hover_color",
+		ThemeManager.TEXT_PRIMARY
+	)
+
+	session_statistics_footer_close_button.add_theme_color_override(
+		"font_pressed_color",
+		ThemeManager.TEXT_LIGHT
+	)
+
+	session_statistics_footer_close_button.add_theme_font_size_override(
+		"font_size",
+		ThemeManager.FONT_SIZE_SMALL
 	)
 
 	
