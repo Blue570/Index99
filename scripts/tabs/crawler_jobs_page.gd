@@ -180,7 +180,7 @@ func connect_crawler_job_signals() -> void:
 		ObjectiveManager.progression_tier_changed.connect(
 			_on_progression_tier_changed
 		)
-		
+
 	if not AutomationManager.scheduler_unlock_changed.is_connected(
 		_on_scheduler_unlock_changed
 	):
@@ -193,6 +193,13 @@ func connect_crawler_job_signals() -> void:
 	):
 		AutomationManager.scheduler_enabled_changed.connect(
 			_on_scheduler_enabled_changed
+		)
+
+	if not AutomationManager.scheduler_optimization_level_changed.is_connected(
+		_on_scheduler_optimization_level_changed
+	):
+		AutomationManager.scheduler_optimization_level_changed.connect(
+			_on_scheduler_optimization_level_changed
 		)
 
 
@@ -711,11 +718,16 @@ func refresh_scheduler_queue() -> void:
 		CrawlerManager.get_crawl_job_queue()
 	)
 
+	var queue_capacity: int = (
+		CrawlerManager
+			.get_effective_crawl_job_queue_capacity()
+	)
+
 	scheduler_summary_label.text = (
 		"Queue: %d / %d"
 		% [
 			queue.size(),
-			CrawlerManager.MAX_CRAWL_JOB_QUEUE_SIZE
+			queue_capacity
 		]
 	)
 
@@ -1000,6 +1012,11 @@ func _on_scheduler_enabled_changed(
 	_is_enabled: bool
 ) -> void:
 	refresh_scheduler_controls()
+	
+func _on_scheduler_optimization_level_changed(
+	_new_level: int
+) -> void:
+	refresh_jobs_page()
 
 
 # -------------------------------------------------------------------

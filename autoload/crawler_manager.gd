@@ -487,12 +487,18 @@ func get_crawl_job_queue() -> Array[StringName]:
 
 func get_crawl_job_queue_size() -> int:
 	return crawl_job_queue.size()
+	
+func get_effective_crawl_job_queue_capacity() -> int:
+	return maxi(
+		AutomationManager.get_scheduler_queue_capacity(),
+		MAX_CRAWL_JOB_QUEUE_SIZE
+	)
 
 
 func is_crawl_job_queue_full() -> bool:
 	return (
 		crawl_job_queue.size()
-		>= MAX_CRAWL_JOB_QUEUE_SIZE
+		>= get_effective_crawl_job_queue_capacity()
 	)
 
 
