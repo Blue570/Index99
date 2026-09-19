@@ -38,6 +38,28 @@ signal scheduler_triggered(
 	job_id: StringName
 )
 
+# -------------------------------------------------------------------
+# Scheduler Optimization Signals
+# -------------------------------------------------------------------
+
+signal scheduler_optimization_level_changed(
+	new_level: int
+)
+
+signal scheduler_optimization_unlock_earned
+
+signal scheduler_optimization_mastery_count_changed(
+	new_count: int
+)
+
+signal scheduler_optimization_mastery_requirement_met
+
+signal scheduler_optimization_upgrade_purchased(
+	new_level: int,
+	money_spent: float,
+	research_points_spent: float
+)
+
 
 # -------------------------------------------------------------------
 # Auto-Throttle Signals
@@ -128,6 +150,61 @@ const AUTO_RESTART_DELAY_SECONDS: float = 1.0
 # -------------------------------------------------------------------
 
 const SCHEDULER_DELAY_SECONDS: float = 1.0
+
+
+# -------------------------------------------------------------------
+# Scheduler Optimization Progression
+# -------------------------------------------------------------------
+
+const SCHEDULER_OPTIMIZATION_MIN_LEVEL: int = 0
+const SCHEDULER_OPTIMIZATION_MAX_LEVEL: int = 4
+
+const SCHEDULER_QUEUE_EXPANSION_LEVEL: int = 1
+const SCHEDULER_DISPATCH_CONTROLLER_LEVEL: int = 2
+const SCHEDULER_PRIORITY_LEVEL: int = 3
+const SCHEDULER_AUTONOMOUS_LEVEL: int = 4
+
+const SCHEDULER_QUEUE_EXPANSION_CRAWLS_REQUIRED: int = 5
+
+const SCHEDULER_AUTONOMOUS_CRAWLS_REQUIRED: int = 10
+
+# -------------------------------------------------------------------
+# Scheduler Optimization Balance
+# -------------------------------------------------------------------
+
+const SCHEDULER_QUEUE_CAPACITY_BY_LEVEL: Array[int] = [
+	10,
+	15,
+	20,
+	20,
+	20
+]
+
+
+# -------------------------------------------------------------------
+# Scheduler Optimization Upgrade Costs
+#
+# Array position = level being purchased.
+#
+# Level 1 is earned through gameplay.
+# Levels 2-4 require investment.
+# -------------------------------------------------------------------
+
+const SCHEDULER_OPTIMIZATION_MONEY_COST_BY_LEVEL: Array[float] = [
+	0.0,
+	0.0,
+	500.0,
+	1250.0,
+	0.0
+]
+
+const SCHEDULER_OPTIMIZATION_RESEARCH_COST_BY_LEVEL: Array[float] = [
+	0.0,
+	0.0,
+	0.0,
+	15.0,
+	30.0
+]
 
 
 # -------------------------------------------------------------------
@@ -240,6 +317,12 @@ var scheduler_timer: Timer
 
 var scheduler_unlocked: bool = false
 var scheduler_enabled: bool = false
+
+var scheduler_optimization_level: int = (
+	SCHEDULER_OPTIMIZATION_MIN_LEVEL
+)
+
+var scheduler_mastery_crawls_completed: int = 0
 
 var auto_throttle_level: int = (
 	AUTO_THROTTLE_MIN_LEVEL
@@ -479,6 +562,7 @@ func _on_progression_tier_changed(
 		< ObjectiveManager.PROGRESSION_TIER_2
 	):
 		reset_auto_restart()
+		reset_scheduler_optimization_progression()
 		reset_auto_throttle_progression()
 
 
@@ -549,6 +633,394 @@ func get_next_auto_assist_level() -> int:
 		auto_crawl_assist_level + 1,
 		AUTO_ASSIST_MAX_LEVEL
 	)
+	
+	
+# -------------------------------------------------------------------
+# Scheduler Optimization Information
+# -------------------------------------------------------------------
+
+func get_scheduler_optimization_level() -> int:
+	return scheduler_optimization_level
+
+
+func is_scheduler_optimization_maxed() -> bool:
+	return (
+		scheduler_optimization_level
+		>= SCHEDULER_OPTIMIZATION_MAX_LEVEL
+	)
+
+
+func get_next_scheduler_optimization_level() -> int:
+	if is_scheduler_optimization_maxed():
+		return SCHEDULER_OPTIMIZATION_MAX_LEVEL
+
+	return scheduler_optimization_level + 1
+
+
+func get_scheduler_mastery_crawls_completed() -> int:
+	return scheduler_mastery_crawls_completed
+
+
+func get_scheduler_queue_expansion_requirement() -> int:
+	return SCHEDULER_QUEUE_EXPANSION_CRAWLS_REQUIRED
+
+
+func get_scheduler_autonomous_requirement() -> int:
+	return SCHEDULER_AUTONOMOUS_CRAWLS_REQUIRED
+
+
+func get_scheduler_queue_capacity_for_level(
+	level: int
+) -> int:
+	var safe_level: int = clampi(
+		level,
+		SCHEDULER_OPTIMIZATION_MIN_LEVEL,
+		SCHEDULER_OPTIMIZATION_MAX_LEVEL
+	)
+
+	return SCHEDULER_QUEUE_CAPACITY_BY_LEVEL[
+		safe_level
+	]
+
+
+func get_scheduler_queue_capacity() -> int:
+	return get_scheduler_queue_capacity_for_level(
+		scheduler_optimization_level
+	)
+	
+func get_scheduler_optimization_level_name(
+	level: int
+) -> String:
+	match level:
+		0:
+			return "BASIC SCHEDULER"
+
+		1:
+			return "QUEUE EXPANSION"
+
+		2:
+			return "DISPATCH CONTROLLER"
+
+		3:
+			return "PRIORITY SCHEDULER"
+
+		4:
+			return "AUTONOMOUS SCHEDULER"
+
+		_:
+			return "UNKNOWN"
+
+
+func get_current_scheduler_optimization_level_name() -> String:
+	return get_scheduler_optimization_level_name(
+		scheduler_optimization_level
+	)
+	
+func get_scheduler_optimization_money_cost_for_level(
+	level: int
+) -> float:
+	if (
+		level <= SCHEDULER_OPTIMIZATION_MIN_LEVEL
+		or level > SCHEDULER_OPTIMIZATION_MAX_LEVEL
+	):
+		return 0.0
+
+	return SCHEDULER_OPTIMIZATION_MONEY_COST_BY_LEVEL[
+		level
+	]
+
+
+func get_scheduler_optimization_research_cost_for_level(
+	level: int
+) -> float:
+	if (
+		level <= SCHEDULER_OPTIMIZATION_MIN_LEVEL
+		or level > SCHEDULER_OPTIMIZATION_MAX_LEVEL
+	):
+		return 0.0
+
+	return SCHEDULER_OPTIMIZATION_RESEARCH_COST_BY_LEVEL[
+		level
+	]
+
+
+func get_next_scheduler_optimization_money_cost() -> float:
+	if is_scheduler_optimization_maxed():
+		return 0.0
+
+	return get_scheduler_optimization_money_cost_for_level(
+		get_next_scheduler_optimization_level()
+	)
+
+
+func get_next_scheduler_optimization_research_cost() -> float:
+	if is_scheduler_optimization_maxed():
+		return 0.0
+
+	return get_scheduler_optimization_research_cost_for_level(
+		get_next_scheduler_optimization_level()
+	)
+	
+func is_scheduler_optimization_accomplishment_met(
+	target_level: int
+) -> bool:
+	if target_level == SCHEDULER_QUEUE_EXPANSION_LEVEL:
+		return (
+			scheduled_crawls_completed
+			>= SCHEDULER_QUEUE_EXPANSION_CRAWLS_REQUIRED
+		)
+
+	if target_level == SCHEDULER_DISPATCH_CONTROLLER_LEVEL:
+		return true
+
+	if target_level == SCHEDULER_PRIORITY_LEVEL:
+		return true
+
+	if target_level == SCHEDULER_AUTONOMOUS_LEVEL:
+		return (
+			scheduler_mastery_crawls_completed
+			>= SCHEDULER_AUTONOMOUS_CRAWLS_REQUIRED
+		)
+
+	return false
+	
+func get_scheduler_optimization_next_accomplishment_progress() -> String:
+	if is_scheduler_optimization_maxed():
+		return "MAXIMUM LEVEL"
+
+	var target_level: int = (
+		get_next_scheduler_optimization_level()
+	)
+
+	if target_level == SCHEDULER_QUEUE_EXPANSION_LEVEL:
+		return (
+			"%d / %d scheduled crawls"
+			% [
+				scheduled_crawls_completed,
+				SCHEDULER_QUEUE_EXPANSION_CRAWLS_REQUIRED
+			]
+		)
+
+	if target_level == SCHEDULER_AUTONOMOUS_LEVEL:
+		return (
+			"%d / %d mastery crawls"
+			% [
+				scheduler_mastery_crawls_completed,
+				SCHEDULER_AUTONOMOUS_CRAWLS_REQUIRED
+			]
+		)
+
+	return "REQUIREMENT MET"
+	
+func can_afford_scheduler_optimization_upgrade(
+	target_level: int
+) -> bool:
+	if (
+		target_level
+		<= SCHEDULER_QUEUE_EXPANSION_LEVEL
+	):
+		return false
+
+	if (
+		target_level
+		> SCHEDULER_OPTIMIZATION_MAX_LEVEL
+	):
+		return false
+
+	var money_cost: float = (
+		get_scheduler_optimization_money_cost_for_level(
+			target_level
+		)
+	)
+
+	var research_cost: float = (
+		get_scheduler_optimization_research_cost_for_level(
+			target_level
+		)
+	)
+
+	if GameState.revenue < money_cost:
+		return false
+
+	if ResearchManager.research_points < research_cost:
+		return false
+
+	return true
+	
+func can_purchase_scheduler_optimization_upgrade() -> bool:
+	if not is_scheduler_unlocked():
+		return false
+
+	if scheduler_optimization_level < SCHEDULER_QUEUE_EXPANSION_LEVEL:
+		return false
+
+	if is_scheduler_optimization_maxed():
+		return false
+
+	var target_level: int = (
+		get_next_scheduler_optimization_level()
+	)
+
+	if not is_scheduler_optimization_accomplishment_met(
+		target_level
+	):
+		return false
+
+	if not can_afford_scheduler_optimization_upgrade(
+		target_level
+	):
+		return false
+
+	return true
+	
+func purchase_scheduler_optimization_upgrade() -> bool:
+	if not can_purchase_scheduler_optimization_upgrade():
+		return false
+
+	var target_level: int = (
+		get_next_scheduler_optimization_level()
+	)
+
+	var money_cost: float = (
+		get_scheduler_optimization_money_cost_for_level(
+			target_level
+		)
+	)
+
+	var research_cost: float = (
+		get_scheduler_optimization_research_cost_for_level(
+			target_level
+		)
+	)
+
+	if money_cost > 0.0:
+		GameState.set_revenue(
+			GameState.revenue - money_cost
+		)
+
+	if research_cost > 0.0:
+		var research_spent: bool = (
+			ResearchManager.spend_research_points(
+				research_cost
+			)
+		)
+
+		if not research_spent:
+			if money_cost > 0.0:
+				GameState.set_revenue(
+					GameState.revenue + money_cost
+				)
+
+			return false
+
+	scheduler_optimization_level = target_level
+
+	if (
+		scheduler_optimization_level
+		== SCHEDULER_PRIORITY_LEVEL
+	):
+		scheduler_mastery_crawls_completed = 0
+
+		scheduler_optimization_mastery_count_changed.emit(
+			scheduler_mastery_crawls_completed
+		)
+
+	scheduler_optimization_level_changed.emit(
+		scheduler_optimization_level
+	)
+
+	scheduler_optimization_upgrade_purchased.emit(
+		scheduler_optimization_level,
+		money_cost,
+		research_cost
+	)
+
+	return true
+	
+	
+# -------------------------------------------------------------------
+# Scheduler Optimization Progression
+# -------------------------------------------------------------------
+
+func unlock_scheduler_queue_expansion() -> bool:
+	if not is_scheduler_unlocked():
+		return false
+
+	if (
+		scheduler_optimization_level
+		!= SCHEDULER_OPTIMIZATION_MIN_LEVEL
+	):
+		return false
+
+	if (
+		scheduled_crawls_completed
+		< SCHEDULER_QUEUE_EXPANSION_CRAWLS_REQUIRED
+	):
+		return false
+
+	scheduler_optimization_level = (
+		SCHEDULER_QUEUE_EXPANSION_LEVEL
+	)
+
+	scheduler_optimization_level_changed.emit(
+		scheduler_optimization_level
+	)
+
+	scheduler_optimization_unlock_earned.emit()
+
+	return true
+	
+func update_scheduler_optimization_progression_after_scheduled_crawl() -> void:
+	if (
+		scheduler_optimization_level
+		== SCHEDULER_OPTIMIZATION_MIN_LEVEL
+	):
+		if (
+			scheduled_crawls_completed
+			>= SCHEDULER_QUEUE_EXPANSION_CRAWLS_REQUIRED
+		):
+			unlock_scheduler_queue_expansion()
+
+		return
+
+	if (
+		scheduler_optimization_level
+		< SCHEDULER_PRIORITY_LEVEL
+	):
+		return
+
+	if (
+		scheduler_optimization_level
+		>= SCHEDULER_AUTONOMOUS_LEVEL
+	):
+		return
+
+	var previous_count: int = (
+		scheduler_mastery_crawls_completed
+	)
+
+	scheduler_mastery_crawls_completed = mini(
+		scheduler_mastery_crawls_completed + 1,
+		SCHEDULER_AUTONOMOUS_CRAWLS_REQUIRED
+	)
+
+	if (
+		previous_count
+		== scheduler_mastery_crawls_completed
+	):
+		return
+
+	scheduler_optimization_mastery_count_changed.emit(
+		scheduler_mastery_crawls_completed
+	)
+
+	if (
+		previous_count
+		< SCHEDULER_AUTONOMOUS_CRAWLS_REQUIRED
+		and scheduler_mastery_crawls_completed
+		>= SCHEDULER_AUTONOMOUS_CRAWLS_REQUIRED
+	):
+		scheduler_optimization_mastery_requirement_met.emit()
 	
 	
 # -------------------------------------------------------------------
@@ -1492,12 +1964,12 @@ func _on_crawl_job_completed_for_auto_throttle_progression() -> void:
 	current_crawl_started_by_scheduler = false
 
 	scheduled_crawls_completed += 1
-	
-
 
 	scheduled_crawl_completed_count_changed.emit(
 		scheduled_crawls_completed
 	)
+
+	update_scheduler_optimization_progression_after_scheduled_crawl()
 
 	if is_auto_throttle_unlocked():
 		return
@@ -1962,6 +2434,7 @@ func reset_automation() -> void:
 
 	reset_auto_restart()
 	reset_scheduler()
+	reset_scheduler_optimization_progression()
 	reset_auto_throttle_progression()
 	
 func reset_auto_restart() -> void:
@@ -2074,5 +2547,33 @@ func reset_auto_throttle_progression() -> void:
 		
 	if previous_intervention_count != 0:
 		auto_throttle_intervention_count_changed.emit(
+			0
+		)
+		
+func reset_scheduler_optimization_progression() -> void:
+	var previous_level: int = (
+		scheduler_optimization_level
+	)
+
+	var previous_mastery_count: int = (
+		scheduler_mastery_crawls_completed
+	)
+
+	scheduler_optimization_level = (
+		SCHEDULER_OPTIMIZATION_MIN_LEVEL
+	)
+
+	scheduler_mastery_crawls_completed = 0
+
+	if (
+		previous_level
+		!= SCHEDULER_OPTIMIZATION_MIN_LEVEL
+	):
+		scheduler_optimization_level_changed.emit(
+			SCHEDULER_OPTIMIZATION_MIN_LEVEL
+		)
+
+	if previous_mastery_count != 0:
+		scheduler_optimization_mastery_count_changed.emit(
 			0
 		)
