@@ -60,6 +60,10 @@ signal scheduler_optimization_upgrade_purchased(
 	research_points_spent: float
 )
 
+signal scheduler_priority_mode_changed(
+	new_mode: StringName
+)
+
 
 # -------------------------------------------------------------------
 # Auto-Throttle Signals
@@ -208,6 +212,21 @@ const SCHEDULER_OPTIMIZATION_RESEARCH_COST_BY_LEVEL: Array[float] = [
 
 
 # -------------------------------------------------------------------
+# Scheduler Priority Modes
+# -------------------------------------------------------------------
+
+const SCHEDULER_PRIORITY_FIFO: StringName = &"fifo"
+const SCHEDULER_PRIORITY_SHORTEST_FIRST: StringName = &"shortest_first"
+const SCHEDULER_PRIORITY_LARGEST_FIRST: StringName = &"largest_first"
+
+const SCHEDULER_PRIORITY_MODES: Array[StringName] = [
+	SCHEDULER_PRIORITY_FIFO,
+	SCHEDULER_PRIORITY_SHORTEST_FIRST,
+	SCHEDULER_PRIORITY_LARGEST_FIRST
+]
+
+
+# -------------------------------------------------------------------
 # Auto-Throttle Progression
 # -------------------------------------------------------------------
 
@@ -320,6 +339,10 @@ var scheduler_enabled: bool = false
 
 var scheduler_optimization_level: int = (
 	SCHEDULER_OPTIMIZATION_MIN_LEVEL
+)
+
+var scheduler_priority_mode: StringName = (
+	SCHEDULER_PRIORITY_FIFO
 )
 
 var scheduler_mastery_crawls_completed: int = 0
@@ -937,6 +960,12 @@ func purchase_scheduler_optimization_upgrade() -> bool:
 
 	return true
 	
+func is_scheduler_dispatch_controller_active() -> bool:
+	return (
+		scheduler_optimization_level
+		>= SCHEDULER_DISPATCH_CONTROLLER_LEVEL
+	)
+	
 	
 # -------------------------------------------------------------------
 # Scheduler Optimization Progression
@@ -1021,6 +1050,118 @@ func update_scheduler_optimization_progression_after_scheduled_crawl() -> void:
 		>= SCHEDULER_AUTONOMOUS_CRAWLS_REQUIRED
 	):
 		scheduler_optimization_mastery_requirement_met.emit()
+		
+func is_scheduler_priority_available() -> bool:
+	return (
+		scheduler_optimization_level
+		>= SCHEDULER_PRIORITY_LEVEL
+	)
+
+
+func get_scheduler_priority_mode() -> StringName:
+	return scheduler_priority_mode
+
+
+func get_scheduler_priority_mode_display_name(
+	mode: StringName
+) -> String:
+	match mode:
+		SCHEDULER_PRIORITY_FIFO:
+			return "FIFO"
+
+		SCHEDULER_PRIORITY_SHORTEST_FIRST:
+			return "SHORTEST FIRST"
+
+		SCHEDULER_PRIORITY_LARGEST_FIRST:
+			return "LARGEST FIRST"
+
+		_:
+			return "UNKNOWN"
+
+
+func get_current_scheduler_priority_mode_display_name() -> String:
+	return get_scheduler_priority_mode_display_name(
+		scheduler_priority_mode
+	)
+	
+func set_scheduler_priority_mode(
+	new_mode: StringName
+) -> bool:
+	if not is_scheduler_priority_available():
+		return false
+
+	if not SCHEDULER_PRIORITY_MODES.has(
+		new_mode
+	):
+		return false
+
+	if scheduler_priority_mode == new_mode:
+		return false
+
+	scheduler_priority_mode = new_mode
+
+	scheduler_priority_mode_changed.emit(
+		scheduler_priority_mode
+	)
+
+	return true
+	
+func get_scheduler_selected_queue_index() -> int:
+	var queue: Array[StringName] = (
+		CrawlerManager.get_crawl_job_queue()
+	)
+
+	if queue.is_empty():
+		return -1
+
+	if not is_scheduler_priority_available():
+		return 0
+
+	if (
+		scheduler_priority_mode
+		== SCHEDULER_PRIORITY_FIFO
+	):
+		return 0
+
+	var selected_index: int = 0
+
+	var selected_page_count: int = (
+		CrawlerManager.get_job_target_pages(
+			queue[0]
+		)
+	)
+
+	for queue_index: int in range(
+		1,
+		queue.size()
+	):
+		var job_id: StringName = (
+			queue[queue_index]
+		)
+
+		var page_count: int = (
+			CrawlerManager.get_job_target_pages(
+				job_id
+			)
+		)
+
+		if (
+			scheduler_priority_mode
+			== SCHEDULER_PRIORITY_SHORTEST_FIRST
+		):
+			if page_count < selected_page_count:
+				selected_index = queue_index
+				selected_page_count = page_count
+
+		elif (
+			scheduler_priority_mode
+			== SCHEDULER_PRIORITY_LARGEST_FIRST
+		):
+			if page_count > selected_page_count:
+				selected_index = queue_index
+				selected_page_count = page_count
+
+	return selected_index
 	
 	
 # -------------------------------------------------------------------
@@ -2027,15 +2168,33 @@ func _on_scheduler_timer_timeout() -> void:
 	):
 		return
 
+	var dispatch_load_limit: float = (
+		CrawlerManager.get_effective_maximum_safe_load()
+	)
+
+	if is_scheduler_dispatch_controller_active():
+		dispatch_load_limit = (
+			CrawlerManager.get_effective_warning_threshold()
+		)
+
 	if (
 		GameState.server_load
-		>= CrawlerManager.get_effective_maximum_safe_load()
+		>= dispatch_load_limit
 	):
 		scheduler_timer.start()
 		return
 
+	var selected_queue_index: int = (
+		get_scheduler_selected_queue_index()
+	)
+
+	if selected_queue_index < 0:
+		return
+
 	var next_job_id: StringName = (
-		CrawlerManager.peek_next_queued_crawl_job()
+		CrawlerManager.peek_queued_crawl_job_at(
+			selected_queue_index
+		)
 	)
 
 	if next_job_id == &"":
@@ -2061,12 +2220,14 @@ func _on_scheduler_timer_timeout() -> void:
 		return
 
 	var consumed_job_id: StringName = (
-		CrawlerManager.take_next_queued_crawl_job()
+		CrawlerManager.take_queued_crawl_job_at(
+			selected_queue_index
+		)
 	)
 
 	if consumed_job_id != next_job_id:
 		return
-		
+
 	current_crawl_started_by_scheduler = true
 
 	scheduler_triggered.emit(
@@ -2559,11 +2720,19 @@ func reset_scheduler_optimization_progression() -> void:
 		scheduler_mastery_crawls_completed
 	)
 
+	var previous_priority_mode: StringName = (
+		scheduler_priority_mode
+	)
+
 	scheduler_optimization_level = (
 		SCHEDULER_OPTIMIZATION_MIN_LEVEL
 	)
 
 	scheduler_mastery_crawls_completed = 0
+
+	scheduler_priority_mode = (
+		SCHEDULER_PRIORITY_FIFO
+	)
 
 	if (
 		previous_level
@@ -2576,4 +2745,12 @@ func reset_scheduler_optimization_progression() -> void:
 	if previous_mastery_count != 0:
 		scheduler_optimization_mastery_count_changed.emit(
 			0
+		)
+
+	if (
+		previous_priority_mode
+		!= SCHEDULER_PRIORITY_FIFO
+	):
+		scheduler_priority_mode_changed.emit(
+			SCHEDULER_PRIORITY_FIFO
 		)

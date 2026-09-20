@@ -605,6 +605,43 @@ func clear_crawl_job_queue() -> void:
 	crawl_job_queue.clear()
 
 	crawl_job_queue_changed.emit()
+	
+func peek_queued_crawl_job_at(
+	queue_index: int
+) -> StringName:
+	if (
+		queue_index < 0
+		or queue_index >= crawl_job_queue.size()
+	):
+		return &""
+
+	return crawl_job_queue[
+		queue_index
+	]
+
+
+func take_queued_crawl_job_at(
+	queue_index: int
+) -> StringName:
+	if (
+		queue_index < 0
+		or queue_index >= crawl_job_queue.size()
+	):
+		return &""
+
+	var job_id: StringName = (
+		crawl_job_queue[
+			queue_index
+		]
+	)
+
+	crawl_job_queue.remove_at(
+		queue_index
+	)
+
+	crawl_job_queue_changed.emit()
+
+	return job_id
 
 
 func peek_next_queued_crawl_job() -> StringName:
