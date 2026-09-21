@@ -859,6 +859,7 @@ text = "0 / 100"
 horizontal_alignment = 2
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1340,7 +1341,6 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="CrawlerJobsPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=909825187]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1457,6 +1457,17 @@ text = "Queue: 0 / 10"
 [node name="SchedulerToggleButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=936602328]
 layout_mode = 2
 text = "SCHEDULER: OFF"
+
+[node name="SchedulerPriorityRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=1737147321]
+layout_mode = 2
+
+[node name="SchedulerPriorityLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout/SchedulerPriorityRow" unique_id=1302091184]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Priority Mode"
+
+[node name="SchedulerPriorityOptionButton" type="OptionButton" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout/SchedulerPriorityRow" unique_id=149922154]
+layout_mode = 2
 
 [node name="SchedulerQueueScroll" type="ScrollContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=2122650865]
 layout_mode = 2

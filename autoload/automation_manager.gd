@@ -338,7 +338,7 @@ var scheduler_unlocked: bool = false
 var scheduler_enabled: bool = false
 
 var scheduler_optimization_level: int = (
-	SCHEDULER_OPTIMIZATION_MIN_LEVEL
+	SCHEDULER_PRIORITY_LEVEL
 )
 
 var scheduler_priority_mode: StringName = (

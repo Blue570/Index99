@@ -132,6 +132,20 @@ extends PanelContainer
 	+ "SchedulerToggleButton"
 ) as Button
 
+@onready var scheduler_priority_label: Label = get_node(
+	"CrawlerJobsMargin/CrawlerJobsPageLayout/"
+	+ "CrawlerJobsPageBody/CrawlerJobsRightColumn/"
+	+ "SchedulerManagementPanel/SchedulerManagementLayout/"
+	+ "SchedulerPriorityRow/SchedulerPriorityLabel"
+) as Label
+
+@onready var scheduler_priority_option_button: OptionButton = get_node(
+	"CrawlerJobsMargin/CrawlerJobsPageLayout/"
+	+ "CrawlerJobsPageBody/CrawlerJobsRightColumn/"
+	+ "SchedulerManagementPanel/SchedulerManagementLayout/"
+	+ "SchedulerPriorityRow/SchedulerPriorityOptionButton"
+) as OptionButton
+
 @onready var scheduler_queue_list: VBoxContainer = get_node(
 	"CrawlerJobsMargin/CrawlerJobsPageLayout/"
 	+ "CrawlerJobsPageBody/CrawlerJobsRightColumn/"
@@ -153,10 +167,26 @@ extends PanelContainer
 
 func _ready() -> void:
 	apply_page_theme()
+	setup_scheduler_priority_options()
 	connect_crawler_job_signals()
 	connect_buttons()
 
 	refresh_jobs_page()
+	
+func setup_scheduler_priority_options() -> void:
+	scheduler_priority_option_button.clear()
+
+	scheduler_priority_option_button.add_item(
+		"FIFO"
+	)
+
+	scheduler_priority_option_button.add_item(
+		"Shortest First"
+	)
+
+	scheduler_priority_option_button.add_item(
+		"Largest First"
+	)
 
 
 func connect_crawler_job_signals() -> void:
@@ -201,6 +231,13 @@ func connect_crawler_job_signals() -> void:
 		AutomationManager.scheduler_optimization_level_changed.connect(
 			_on_scheduler_optimization_level_changed
 		)
+		
+	if not AutomationManager.scheduler_priority_mode_changed.is_connected(
+		_on_scheduler_priority_mode_changed
+	):
+		AutomationManager.scheduler_priority_mode_changed.connect(
+			_on_scheduler_priority_mode_changed
+		)
 
 
 func connect_buttons() -> void:
@@ -210,7 +247,7 @@ func connect_buttons() -> void:
 		clear_scheduler_queue_button.pressed.connect(
 			_on_clear_scheduler_queue_button_pressed
 		)
-		
+
 	if not scheduler_toggle_button.pressed.is_connected(
 		_on_scheduler_toggle_button_pressed
 	):
@@ -218,6 +255,12 @@ func connect_buttons() -> void:
 			_on_scheduler_toggle_button_pressed
 		)
 
+	if not scheduler_priority_option_button.item_selected.is_connected(
+		_on_scheduler_priority_option_selected
+	):
+		scheduler_priority_option_button.item_selected.connect(
+			_on_scheduler_priority_option_selected
+		)
 
 # -------------------------------------------------------------------
 # Theme
@@ -310,6 +353,7 @@ func refresh_jobs_page() -> void:
 	refresh_available_crawls()
 	refresh_quick_crawls()
 	refresh_scheduler_controls()
+	refresh_scheduler_priority_controls()
 	refresh_scheduler_queue()
 	refresh_page_status()
 
@@ -703,6 +747,75 @@ func refresh_scheduler_controls() -> void:
 			"Queued crawls will remain stored "
 			+ "until the Scheduler is enabled."
 		)
+		
+func refresh_scheduler_priority_controls() -> void:
+	var priority_available: bool = (
+		AutomationManager.is_scheduler_priority_available()
+	)
+
+	scheduler_priority_option_button.disabled = (
+		not priority_available
+	)
+
+	if not priority_available:
+		scheduler_priority_label.text = (
+			"Priority Mode — LEVEL 3"
+		)
+
+		scheduler_priority_label.tooltip_text = (
+			"Unlock Priority Scheduler to choose "
+			+ "how queued crawl jobs are selected."
+		)
+
+		scheduler_priority_option_button.select(
+			0
+		)
+
+		scheduler_priority_option_button.tooltip_text = (
+			"Priority Scheduler is not yet unlocked."
+		)
+
+		return
+
+	scheduler_priority_label.text = (
+		"Priority Mode"
+	)
+
+	scheduler_priority_label.tooltip_text = (
+		"Controls which queued crawl job "
+		+ "the Scheduler selects next."
+	)
+
+	scheduler_priority_option_button.tooltip_text = (
+		"FIFO follows queue order. "
+		+ "Shortest First prefers smaller crawls. "
+		+ "Largest First prefers larger crawls."
+	)
+
+	var current_mode: StringName = (
+		AutomationManager.get_scheduler_priority_mode()
+	)
+
+	match current_mode:
+		AutomationManager.SCHEDULER_PRIORITY_FIFO:
+			scheduler_priority_option_button.select(
+				0
+			)
+
+		AutomationManager.SCHEDULER_PRIORITY_SHORTEST_FIRST:
+			scheduler_priority_option_button.select(
+				1
+			)
+
+		AutomationManager.SCHEDULER_PRIORITY_LARGEST_FIRST:
+			scheduler_priority_option_button.select(
+				2
+			)
+
+		_:
+			scheduler_priority_option_button.select(
+				0
+			)
 
 
 # -------------------------------------------------------------------
@@ -980,6 +1093,45 @@ func _on_scheduler_toggle_button_pressed() -> void:
 	AutomationManager.set_scheduler_enabled(
 		new_enabled
 	)
+	
+func _on_scheduler_priority_option_selected(
+	option_index: int
+) -> void:
+	if not AutomationManager.is_scheduler_priority_available():
+		refresh_scheduler_priority_controls()
+		return
+
+	var selected_mode: StringName = (
+		AutomationManager.SCHEDULER_PRIORITY_FIFO
+	)
+
+	match option_index:
+		0:
+			selected_mode = (
+				AutomationManager.SCHEDULER_PRIORITY_FIFO
+			)
+
+		1:
+			selected_mode = (
+				AutomationManager
+					.SCHEDULER_PRIORITY_SHORTEST_FIRST
+			)
+
+		2:
+			selected_mode = (
+				AutomationManager
+					.SCHEDULER_PRIORITY_LARGEST_FIRST
+			)
+
+		_:
+			refresh_scheduler_priority_controls()
+			return
+
+	AutomationManager.set_scheduler_priority_mode(
+		selected_mode
+	)
+
+	refresh_scheduler_priority_controls()
 
 
 # -------------------------------------------------------------------
@@ -1017,6 +1169,11 @@ func _on_scheduler_optimization_level_changed(
 	_new_level: int
 ) -> void:
 	refresh_jobs_page()
+	
+func _on_scheduler_priority_mode_changed(
+	_new_mode: StringName
+) -> void:
+	refresh_scheduler_priority_controls()
 
 
 # -------------------------------------------------------------------
