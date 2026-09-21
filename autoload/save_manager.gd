@@ -174,7 +174,7 @@ func build_save_data() -> Dictionary:
 				)
 		},
 		
-		"automation": {
+				"automation": {
 			"auto_restart_unlocked":
 				AutomationManager.is_auto_restart_unlocked(),
 
@@ -199,7 +199,31 @@ func build_save_data() -> Dictionary:
 
 			"current_crawl_started_by_scheduler":
 				AutomationManager
-					.was_current_crawl_started_by_scheduler()
+					.was_current_crawl_started_by_scheduler(),
+
+			"scheduler_optimization_level":
+				AutomationManager
+					.get_scheduler_optimization_level(),
+
+			"scheduler_mastery_crawls_completed":
+				AutomationManager
+					.get_scheduler_mastery_crawls_completed(),
+
+			"scheduler_priority_mode":
+				str(
+					AutomationManager
+						.get_scheduler_priority_mode()
+				),
+
+			"scheduler_autonomous_enabled":
+				AutomationManager
+					.is_scheduler_autonomous_enabled(),
+
+			"scheduler_autonomous_job_id":
+				str(
+					AutomationManager
+						.get_scheduler_autonomous_job_id()
+				)
 		},
 
 		"server_upgrades": {
@@ -1155,6 +1179,46 @@ func restore_automation(
 		false
 	)
 
+	var saved_scheduler_optimization_level: int = read_int(
+		data,
+		"scheduler_optimization_level",
+		AutomationManager.SCHEDULER_OPTIMIZATION_MIN_LEVEL
+	)
+
+	var saved_scheduler_mastery_count: int = read_int(
+		data,
+		"scheduler_mastery_crawls_completed",
+		0
+	)
+
+	var saved_scheduler_priority_mode: StringName = StringName(
+		str(
+			data.get(
+				"scheduler_priority_mode",
+				str(
+					AutomationManager.SCHEDULER_PRIORITY_FIFO
+				)
+			)
+		)
+	)
+
+	var saved_scheduler_autonomous_enabled: bool = read_bool(
+		data,
+		"scheduler_autonomous_enabled",
+		false
+	)
+
+	var saved_scheduler_autonomous_job_id: StringName = StringName(
+		str(
+			data.get(
+				"scheduler_autonomous_job_id",
+				str(
+					CrawlerManager.CRAWL_JOB_BASIC
+				)
+			)
+		)
+	)
+
 	AutomationManager.restore_auto_restart_state(
 		saved_auto_restart_unlocked,
 		saved_auto_restart_enabled
@@ -1170,6 +1234,14 @@ func restore_automation(
 		saved_scheduled_crawls_completed,
 		saved_successful_auto_throttle_interventions,
 		saved_current_crawl_started_by_scheduler
+	)
+
+	AutomationManager.restore_scheduler_optimization_state(
+		saved_scheduler_optimization_level,
+		saved_scheduler_mastery_count,
+		saved_scheduler_priority_mode,
+		saved_scheduler_autonomous_enabled,
+		saved_scheduler_autonomous_job_id
 	)
 	
 # -------------------------------------------------------------------
@@ -1310,6 +1382,41 @@ func connect_event_autosave_signals() -> void:
 			_on_auto_throttle_upgrade_purchased_for_save
 		)
 		
+	if not AutomationManager.scheduler_optimization_level_changed.is_connected(
+		_on_scheduler_optimization_level_changed_for_save
+	):
+		AutomationManager.scheduler_optimization_level_changed.connect(
+			_on_scheduler_optimization_level_changed_for_save
+		)
+
+	if not AutomationManager.scheduler_optimization_mastery_count_changed.is_connected(
+		_on_scheduler_optimization_mastery_count_changed_for_save
+	):
+		AutomationManager.scheduler_optimization_mastery_count_changed.connect(
+			_on_scheduler_optimization_mastery_count_changed_for_save
+		)
+
+	if not AutomationManager.scheduler_priority_mode_changed.is_connected(
+		_on_scheduler_priority_mode_changed_for_save
+	):
+		AutomationManager.scheduler_priority_mode_changed.connect(
+			_on_scheduler_priority_mode_changed_for_save
+		)
+
+	if not AutomationManager.scheduler_autonomous_enabled_changed.is_connected(
+		_on_scheduler_autonomous_enabled_changed_for_save
+	):
+		AutomationManager.scheduler_autonomous_enabled_changed.connect(
+			_on_scheduler_autonomous_enabled_changed_for_save
+		)
+
+	if not AutomationManager.scheduler_autonomous_job_changed.is_connected(
+		_on_scheduler_autonomous_job_changed_for_save
+	):
+		AutomationManager.scheduler_autonomous_job_changed.connect(
+			_on_scheduler_autonomous_job_changed_for_save
+		)
+		
 func _on_server_upgrade_purchased_for_save(
 	_upgrade_id: StringName,
 	_new_level: int,
@@ -1434,6 +1541,35 @@ func _on_auto_restart_unlock_changed_for_save(
 
 func _on_auto_restart_enabled_changed_for_save(
 	_is_enabled: bool
+) -> void:
+	request_event_autosave()
+	
+func _on_scheduler_optimization_level_changed_for_save(
+	_new_level: int
+) -> void:
+	request_event_autosave()
+
+
+func _on_scheduler_optimization_mastery_count_changed_for_save(
+	_new_count: int
+) -> void:
+	request_event_autosave()
+
+
+func _on_scheduler_priority_mode_changed_for_save(
+	_new_mode: StringName
+) -> void:
+	request_event_autosave()
+
+
+func _on_scheduler_autonomous_enabled_changed_for_save(
+	_is_enabled: bool
+) -> void:
+	request_event_autosave()
+
+
+func _on_scheduler_autonomous_job_changed_for_save(
+	_job_id: StringName
 ) -> void:
 	request_event_autosave()
 	

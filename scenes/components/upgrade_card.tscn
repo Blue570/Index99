@@ -2,6 +2,21 @@
 
 [ext_resource type="Script" uid="uid://c67dupka8keii" path="res://scripts/components/upgrade_card.gd" id="1_slray"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_raeie"]
+bg_color = Color(0.16078432, 0.24313726, 0.32156864, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5686275, 0.6627451, 0.7372549, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7smn1"]
+bg_color = Color(0.24313726, 0.34509805, 0.4392157, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+
 [node name="UpgradeCard" type="PanelContainer" unique_id=906342067]
 script = ExtResource("1_slray")
 
@@ -148,5 +163,6 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(200, 34)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-disabled = true
+theme_override_styles/pressed = SubResource("StyleBoxFlat_raeie")
+theme_override_styles/hover = SubResource("StyleBoxFlat_7smn1")
 text = "LOCKED"

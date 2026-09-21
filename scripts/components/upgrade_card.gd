@@ -72,18 +72,49 @@ signal upgrade_requested(
 	$CardMargin/CardLayout/PurchaseRow/UpgradeButton
 )
 
-
 # -------------------------------------------------------------------
 # Setup
 # -------------------------------------------------------------------
 
 func _ready() -> void:
+	configure_mouse_filters()
+
 	if not upgrade_button.pressed.is_connected(
 		_on_upgrade_button_pressed
 	):
 		upgrade_button.pressed.connect(
 			_on_upgrade_button_pressed
 		)
+		
+func configure_mouse_filters() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	set_noninteractive_controls_to_ignore(
+		self
+	)
+
+	upgrade_button.mouse_filter = (
+		Control.MOUSE_FILTER_STOP
+	)
+	
+func set_noninteractive_controls_to_ignore(
+	parent_node: Node
+) -> void:
+	for child: Node in parent_node.get_children():
+		if child is Control:
+			var child_control: Control = (
+				child as Control
+			)
+
+			if child_control != upgrade_button:
+				child_control.mouse_filter = (
+					Control.MOUSE_FILTER_IGNORE
+				)
+
+		set_noninteractive_controls_to_ignore(
+			child
+		)
+		
 
 
 # -------------------------------------------------------------------

@@ -2463,8 +2463,150 @@ func restore_scheduler_state(
 		)
 		
 # -------------------------------------------------------------------
-# Auto-Throttle Save Restore
+# Scheduler Optimization Save Restore
 # -------------------------------------------------------------------
+
+func restore_scheduler_optimization_state(
+	saved_level: int,
+	saved_mastery_crawls_completed: int,
+	saved_priority_mode: StringName,
+	saved_autonomous_enabled: bool,
+	saved_autonomous_job_id: StringName
+) -> void:
+	var restored_level: int = clampi(
+		saved_level,
+		SCHEDULER_OPTIMIZATION_MIN_LEVEL,
+		SCHEDULER_OPTIMIZATION_MAX_LEVEL
+	)
+
+	if not is_scheduler_unlocked():
+		restored_level = (
+			SCHEDULER_OPTIMIZATION_MIN_LEVEL
+		)
+
+	var restored_mastery_count: int = clampi(
+		saved_mastery_crawls_completed,
+		0,
+		SCHEDULER_AUTONOMOUS_CRAWLS_REQUIRED
+	)
+
+	if (
+		restored_level
+		< SCHEDULER_PRIORITY_LEVEL
+	):
+		restored_mastery_count = 0
+
+	var restored_priority_mode: StringName = (
+		saved_priority_mode
+	)
+
+	if (
+		restored_level
+		< SCHEDULER_PRIORITY_LEVEL
+		or not SCHEDULER_PRIORITY_MODES.has(
+			restored_priority_mode
+		)
+	):
+		restored_priority_mode = (
+			SCHEDULER_PRIORITY_FIFO
+		)
+
+	var restored_autonomous_job_id: StringName = (
+		saved_autonomous_job_id
+	)
+
+	if not CrawlerManager.is_crawl_job_unlocked(
+		restored_autonomous_job_id
+	):
+		restored_autonomous_job_id = (
+			CrawlerManager.CRAWL_JOB_BASIC
+		)
+
+	var restored_autonomous_enabled: bool = (
+		saved_autonomous_enabled
+		and restored_level
+		>= SCHEDULER_AUTONOMOUS_LEVEL
+	)
+
+	var previous_level: int = (
+		scheduler_optimization_level
+	)
+
+	var previous_mastery_count: int = (
+		scheduler_mastery_crawls_completed
+	)
+
+	var previous_priority_mode: StringName = (
+		scheduler_priority_mode
+	)
+
+	var previous_autonomous_enabled: bool = (
+		scheduler_autonomous_enabled
+	)
+
+	var previous_autonomous_job_id: StringName = (
+		scheduler_autonomous_job_id
+	)
+
+	scheduler_optimization_level = (
+		restored_level
+	)
+
+	scheduler_mastery_crawls_completed = (
+		restored_mastery_count
+	)
+
+	scheduler_priority_mode = (
+		restored_priority_mode
+	)
+
+	scheduler_autonomous_enabled = (
+		restored_autonomous_enabled
+	)
+
+	scheduler_autonomous_job_id = (
+		restored_autonomous_job_id
+	)
+
+	if (
+		previous_level
+		!= scheduler_optimization_level
+	):
+		scheduler_optimization_level_changed.emit(
+			scheduler_optimization_level
+		)
+
+	if (
+		previous_mastery_count
+		!= scheduler_mastery_crawls_completed
+	):
+		scheduler_optimization_mastery_count_changed.emit(
+			scheduler_mastery_crawls_completed
+		)
+
+	if (
+		previous_priority_mode
+		!= scheduler_priority_mode
+	):
+		scheduler_priority_mode_changed.emit(
+			scheduler_priority_mode
+		)
+
+	if (
+		previous_autonomous_enabled
+		!= scheduler_autonomous_enabled
+	):
+		scheduler_autonomous_enabled_changed.emit(
+			scheduler_autonomous_enabled
+		)
+
+	if (
+		previous_autonomous_job_id
+		!= scheduler_autonomous_job_id
+	):
+		scheduler_autonomous_job_changed.emit(
+			scheduler_autonomous_job_id
+		)
 
 # -------------------------------------------------------------------
 # Auto-Throttle Save Restore

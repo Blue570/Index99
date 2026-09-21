@@ -50,6 +50,21 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hxu8e"]
+bg_color = Color(0.16078432, 0.24313726, 0.32156864, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5686275, 0.6627451, 0.7372549, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slray"]
+bg_color = Color(0.24313726, 0.34509805, 0.4392157, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+
 [node name="Main" type="Control" unique_id=514529652]
 layout_mode = 3
 anchors_preset = 15
@@ -3092,6 +3107,8 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(200, 34)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hxu8e")
+theme_override_styles/hover = SubResource("StyleBoxFlat_slray")
 text = "LOCKED"
 
 [node name="SchedulerOptimizationUpgradeCard" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog" unique_id=906342067 instance=ExtResource("12_7smn1")]
@@ -3221,6 +3238,7 @@ offset_right = -20.0
 offset_bottom = -90.0
 grow_horizontal = 0
 grow_vertical = 0
+mouse_filter = 2
 
 [node name="SessionStatisticsWindow" type="PanelContainer" parent="." unique_id=1066779553]
 visible = false
