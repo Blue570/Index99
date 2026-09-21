@@ -63,6 +63,11 @@ extends PanelContainer
 	/AutoThrottleUpgradeButton
 )
 
+@onready var scheduler_optimization_card: UpgradeCard = (
+	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
+	/UpgradesCatalog/SchedulerOptimizationUpgradeCard
+)
+
 @onready var requirement_header_label: Label = (
 	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
 	/UpgradesCatalog/AutoThrottleUpgradePanel
@@ -78,9 +83,29 @@ extends PanelContainer
 # -------------------------------------------------------------------
 
 func _ready() -> void:
+	configure_upgrade_cards()
 	connect_buttons()
+	connect_upgrade_card_signals()
 	connect_upgrade_signals()
+
 	refresh_upgrades_page()
+	
+func configure_upgrade_cards() -> void:
+	scheduler_optimization_card.configure(
+		&"scheduler_optimization",
+		"SCHEDULER OPTIMIZATION",
+		"Improves Scheduler queue capacity, dispatch safety, "
+		+ "job prioritization, and autonomous crawling."
+	)
+
+
+func connect_upgrade_card_signals() -> void:
+	if not scheduler_optimization_card.upgrade_requested.is_connected(
+		_on_upgrade_card_requested
+	):
+		scheduler_optimization_card.upgrade_requested.connect(
+			_on_upgrade_card_requested
+		)
 
 
 func connect_buttons() -> void:
@@ -120,6 +145,20 @@ func connect_upgrade_signals() -> void:
 		AutomationManager.scheduled_crawl_completed_count_changed.connect(
 			_on_scheduled_crawl_completed_count_changed
 		)
+		
+	if not AutomationManager.scheduler_optimization_level_changed.is_connected(
+		_on_scheduler_optimization_level_changed
+	):
+		AutomationManager.scheduler_optimization_level_changed.connect(
+			_on_scheduler_optimization_level_changed
+		)
+
+	if not AutomationManager.scheduler_optimization_mastery_count_changed.is_connected(
+		_on_scheduler_optimization_mastery_count_changed
+	):
+		AutomationManager.scheduler_optimization_mastery_count_changed.connect(
+			_on_scheduler_optimization_mastery_count_changed
+		)
 
 	if not GameState.revenue_changed.is_connected(
 		_on_revenue_changed
@@ -142,6 +181,7 @@ func connect_upgrade_signals() -> void:
 
 func refresh_upgrades_page() -> void:
 	refresh_auto_throttle_upgrade()
+	refresh_scheduler_optimization_upgrade()
 
 
 func refresh_auto_throttle_upgrade() -> void:
@@ -470,6 +510,287 @@ func build_auto_throttle_effect_text(
 				level
 			)
 	)
+	
+# -------------------------------------------------------------------
+# Scheduler Optimization
+# -------------------------------------------------------------------
+
+func refresh_scheduler_optimization_upgrade() -> void:
+	var current_level: int = (
+		AutomationManager.get_scheduler_optimization_level()
+	)
+
+	scheduler_optimization_card.set_level_text(
+		"LEVEL %d — %s"
+		% [
+			current_level,
+			AutomationManager
+				.get_current_scheduler_optimization_level_name()
+		]
+	)
+
+	scheduler_optimization_card.set_current_effects(
+		build_scheduler_optimization_effect_text(
+			current_level
+		)
+	)
+
+	if AutomationManager.is_scheduler_optimization_maxed():
+		refresh_maxed_scheduler_optimization()
+		return
+
+	var next_level: int = (
+		AutomationManager.get_next_scheduler_optimization_level()
+	)
+
+	scheduler_optimization_card.set_next_upgrade(
+		"NEXT: %s"
+		% AutomationManager
+			.get_scheduler_optimization_level_name(
+				next_level
+			),
+		build_scheduler_optimization_effect_text(
+			next_level
+		)
+	)
+
+	refresh_scheduler_optimization_requirement(
+		next_level
+	)
+
+	refresh_scheduler_optimization_upgrade_button(
+		next_level
+	)
+	
+func build_scheduler_optimization_effect_text(
+	level: int
+) -> String:
+	var queue_capacity: int = (
+		AutomationManager.get_scheduler_queue_capacity_for_level(
+			level
+		)
+	)
+
+	var dispatch_text: String = "Basic"
+	var priority_text: String = "FIFO"
+	var autonomous_text: String = "Locked"
+
+	if (
+		level
+		>= AutomationManager.SCHEDULER_DISPATCH_CONTROLLER_LEVEL
+	):
+		dispatch_text = "Load-Aware"
+
+	if (
+		level
+		>= AutomationManager.SCHEDULER_PRIORITY_LEVEL
+	):
+		priority_text = (
+			"FIFO / Shortest First / Largest First"
+		)
+
+	if (
+		level
+		>= AutomationManager.SCHEDULER_AUTONOMOUS_LEVEL
+	):
+		autonomous_text = "Unlocked"
+
+	return (
+		"Queue Capacity: %d\n"
+		% queue_capacity
+		+ "Dispatch Control: %s\n"
+		% dispatch_text
+		+ "Priority Modes: %s\n"
+		% priority_text
+		+ "Autonomous Scheduling: %s"
+		% autonomous_text
+	)
+	
+func refresh_scheduler_optimization_requirement(
+	next_level: int
+) -> void:
+	if (
+		next_level
+		== AutomationManager.SCHEDULER_QUEUE_EXPANSION_LEVEL
+	):
+		var completed_crawls: int = (
+			AutomationManager.get_scheduled_crawls_completed()
+		)
+
+		var required_crawls: int = (
+			AutomationManager
+				.get_scheduler_queue_expansion_requirement()
+		)
+
+		scheduler_optimization_card.set_requirement(
+			"ACCOMPLISHMENT",
+			"Complete Scheduler-started crawls: %d / %d"
+			% [
+				completed_crawls,
+				required_crawls
+			]
+		)
+
+		return
+
+	if (
+		next_level
+		== AutomationManager.SCHEDULER_AUTONOMOUS_LEVEL
+	):
+		var completed_mastery_crawls: int = (
+			AutomationManager
+				.get_scheduler_mastery_crawls_completed()
+		)
+
+		var required_mastery_crawls: int = (
+			AutomationManager
+				.get_scheduler_autonomous_requirement()
+		)
+
+		var requirement_text: String = (
+			"%d / %d scheduled crawls completed"
+			% [
+				completed_mastery_crawls,
+				required_mastery_crawls
+			]
+		)
+
+		if (
+			completed_mastery_crawls
+			>= required_mastery_crawls
+		):
+			requirement_text = (
+				"COMPLETE — %d / %d scheduled crawls"
+				% [
+					completed_mastery_crawls,
+					required_mastery_crawls
+				]
+			)
+
+		scheduler_optimization_card.set_requirement(
+			"MASTERY REQUIREMENT",
+			requirement_text
+		)
+
+		return
+
+	scheduler_optimization_card.set_requirement(
+		"REQUIREMENT",
+		"READY — No additional accomplishment required."
+	)
+	
+func refresh_scheduler_optimization_upgrade_button(
+	next_level: int
+) -> void:
+	if (
+		next_level
+		== AutomationManager.SCHEDULER_QUEUE_EXPANSION_LEVEL
+	):
+		scheduler_optimization_card.set_cost_text(
+			"ACCOMPLISHMENT UNLOCK"
+		)
+
+		scheduler_optimization_card.set_upgrade_button(
+			"LOCKED",
+			true,
+			"Complete the required Scheduler-started crawls "
+			+ "to earn Queue Expansion."
+		)
+
+		return
+
+	var money_cost: float = (
+		AutomationManager
+			.get_scheduler_optimization_money_cost_for_level(
+				next_level
+			)
+	)
+
+	var research_cost: float = (
+		AutomationManager
+			.get_scheduler_optimization_research_cost_for_level(
+				next_level
+			)
+	)
+
+	var cost_parts: PackedStringArray = []
+
+	if money_cost > 0.0:
+		cost_parts.append(
+			"$%.0f" % money_cost
+		)
+
+	if research_cost > 0.0:
+		cost_parts.append(
+			"%.0f RP" % research_cost
+		)
+
+	if cost_parts.is_empty():
+		scheduler_optimization_card.set_cost_text(
+			"COST: NONE"
+		)
+
+	else:
+		scheduler_optimization_card.set_cost_text(
+			"COST: "
+			+ " + ".join(
+				cost_parts
+			)
+		)
+
+	var can_purchase: bool = (
+		AutomationManager
+			.can_purchase_scheduler_optimization_upgrade()
+	)
+
+	scheduler_optimization_card.set_upgrade_button(
+		"UPGRADE",
+		not can_purchase,
+		get_scheduler_optimization_upgrade_tooltip(
+			next_level,
+			money_cost,
+			research_cost
+		)
+	)
+	
+func get_scheduler_optimization_upgrade_tooltip(
+	next_level: int,
+	money_cost: float,
+	research_cost: float
+) -> String:
+	if not AutomationManager.is_scheduler_optimization_accomplishment_met(
+		next_level
+	):
+		return (
+			"Complete the required accomplishment "
+			+ "before purchasing this upgrade."
+		)
+
+	if GameState.revenue < money_cost:
+		return "Not enough revenue."
+
+	if ResearchManager.research_points < research_cost:
+		return "Not enough Research Points."
+
+	return "Purchase this Scheduler Optimization upgrade."
+	
+func refresh_maxed_scheduler_optimization() -> void:
+	var current_level: int = (
+		AutomationManager.get_scheduler_optimization_level()
+	)
+
+	scheduler_optimization_card.set_maxed_state(
+		"LEVEL %d — %s"
+		% [
+			current_level,
+			AutomationManager
+				.get_current_scheduler_optimization_level_name()
+		],
+		build_scheduler_optimization_effect_text(
+			current_level
+		),
+		"Autonomous Scheduler complete."
+	)
 
 
 # -------------------------------------------------------------------
@@ -478,6 +799,18 @@ func build_auto_throttle_effect_text(
 
 func _on_auto_throttle_upgrade_button_pressed() -> void:
 	AutomationManager.purchase_auto_throttle_upgrade()
+
+	refresh_upgrades_page()
+	
+func _on_upgrade_card_requested(
+	upgrade_id: StringName
+) -> void:
+	match upgrade_id:
+		&"scheduler_optimization":
+			AutomationManager.purchase_scheduler_optimization_upgrade()
+
+		_:
+			return
 
 	refresh_upgrades_page()
 
@@ -518,5 +851,16 @@ func _on_revenue_changed(
 
 func _on_research_points_changed(
 	_new_points: float
+) -> void:
+	refresh_upgrades_page()
+	
+func _on_scheduler_optimization_level_changed(
+	_new_level: int
+) -> void:
+	refresh_upgrades_page()
+
+
+func _on_scheduler_optimization_mastery_count_changed(
+	_new_count: int
 ) -> void:
 	refresh_upgrades_page()

@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://kh771vjdus32" path="res://scripts/ui/notification_host.gd" id="10_a8run"]
 [ext_resource type="PackedScene" uid="uid://bjwyqkepsgq0i" path="res://scenes/ui/tutorial_overlay.tscn" id="11_ouso4"]
 [ext_resource type="Script" uid="uid://dmyvn7htye42r" path="res://scripts/tabs/upgrades_page.gd" id="11_th5th"]
+[ext_resource type="PackedScene" uid="uid://cm10rhl32a5ti" path="res://scenes/components/upgrade_card.tscn" id="12_7smn1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
@@ -1341,6 +1342,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="CrawlerJobsPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=909825187]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2897,7 +2899,6 @@ autowrap_mode = 3
 layout_mode = 2
 
 [node name="UpgradesPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=2133878230]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -3092,6 +3093,10 @@ custom_minimum_size = Vector2(200, 34)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "LOCKED"
+
+[node name="SchedulerOptimizationUpgradeCard" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog" unique_id=906342067 instance=ExtResource("12_7smn1")]
+layout_mode = 2
+upgrade_id = &"scheduler_optimization"
 
 [node name="BackgroundJobsBar" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=1989258494]
 custom_minimum_size = Vector2(0, 48)

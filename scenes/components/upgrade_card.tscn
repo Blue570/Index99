@@ -1,0 +1,152 @@
+[gd_scene format=3 uid="uid://cm10rhl32a5ti"]
+
+[ext_resource type="Script" uid="uid://c67dupka8keii" path="res://scripts/components/upgrade_card.gd" id="1_slray"]
+
+[node name="UpgradeCard" type="PanelContainer" unique_id=906342067]
+script = ExtResource("1_slray")
+
+[node name="CardMargin" type="MarginContainer" parent="." unique_id=1572461181]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="CardLayout" type="VBoxContainer" parent="CardMargin" unique_id=1278109568]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HeaderRow" type="HBoxContainer" parent="CardMargin/CardLayout" unique_id=1240637849]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="CardMargin/CardLayout/HeaderRow" unique_id=1031684478]
+layout_mode = 2
+text = "SCHEDULER OPTIMIZATION"
+
+[node name="HeaderSpace" type="Control" parent="CardMargin/CardLayout/HeaderRow" unique_id=765528080]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LevelLabel" type="Label" parent="CardMargin/CardLayout/HeaderRow" unique_id=893263057]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "LEVEL 0 — BASIC SCHEDULER"
+
+[node name="DescriptionLabel" type="Label" parent="CardMargin/CardLayout" unique_id=422798418]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Improves Scheduler queue capacity, dispatch safety, job prioritization, and autonomous crawling."
+autowrap_mode = 3
+
+[node name="ComparisonRow" type="HBoxContainer" parent="CardMargin/CardLayout" unique_id=1158852043]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CurrentPanel" type="PanelContainer" parent="CardMargin/CardLayout/ComparisonRow" unique_id=1280792987]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CurrentEffectsMargin" type="MarginContainer" parent="CardMargin/CardLayout/ComparisonRow/CurrentPanel" unique_id=7299906]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="CurrentEffectsLayout" type="VBoxContainer" parent="CardMargin/CardLayout/ComparisonRow/CurrentPanel/CurrentEffectsMargin" unique_id=1986484986]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="CurrentEffectsHeaderLabel" type="Label" parent="CardMargin/CardLayout/ComparisonRow/CurrentPanel/CurrentEffectsMargin/CurrentEffectsLayout" unique_id=1066760263]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "CURRENT CONFIGURATION"
+
+[node name="CurrentEffectsLabel" type="Label" parent="CardMargin/CardLayout/ComparisonRow/CurrentPanel/CurrentEffectsMargin/CurrentEffectsLayout" unique_id=562000145]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Queue Capacity: 10
+Dispatch Control: Basic
+Priority Modes: FIFO
+Autonomous Scheduling: Locked"
+autowrap_mode = 3
+
+[node name="NextPanel" type="PanelContainer" parent="CardMargin/CardLayout/ComparisonRow" unique_id=781955452]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NextEffectsMargin" type="MarginContainer" parent="CardMargin/CardLayout/ComparisonRow/NextPanel" unique_id=55396163]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="NextEffectsLayout" type="VBoxContainer" parent="CardMargin/CardLayout/ComparisonRow/NextPanel/NextEffectsMargin" unique_id=1594203856]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="NextHeaderLabel" type="Label" parent="CardMargin/CardLayout/ComparisonRow/NextPanel/NextEffectsMargin/NextEffectsLayout" unique_id=2090338728]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "NEXT: QUEUE EXPANSION"
+
+[node name="NextEffectsLabel" type="Label" parent="CardMargin/CardLayout/ComparisonRow/NextPanel/NextEffectsMargin/NextEffectsLayout" unique_id=802847088]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Queue Capacity: 15
+Dispatch Control: Basic
+Priority Modes: FIFO
+Autonomous Scheduling: Locked"
+autowrap_mode = 3
+
+[node name="RequirementSpacer" type="Control" parent="CardMargin/CardLayout" unique_id=1925352998]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="RequirementPanel" type="PanelContainer" parent="CardMargin/CardLayout" unique_id=232997542]
+layout_mode = 2
+
+[node name="RequirementMargin" type="MarginContainer" parent="CardMargin/CardLayout/RequirementPanel" unique_id=1059672621]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 7
+
+[node name="RequirementLayout" type="VBoxContainer" parent="CardMargin/CardLayout/RequirementPanel/RequirementMargin" unique_id=200106645]
+layout_mode = 2
+
+[node name="RequirementHeaderLabel" type="Label" parent="CardMargin/CardLayout/RequirementPanel/RequirementMargin/RequirementLayout" unique_id=606735516]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "ACCOMPLISHMENT"
+
+[node name="RequirementLabel" type="Label" parent="CardMargin/CardLayout/RequirementPanel/RequirementMargin/RequirementLayout" unique_id=1098448897]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "ACCOMPLISHMENT UNLOCK"
+autowrap_mode = 3
+
+[node name="PurchaseSpacer" type="Control" parent="CardMargin/CardLayout" unique_id=1465329679]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="PurchaseRow" type="HBoxContainer" parent="CardMargin/CardLayout" unique_id=536144938]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CostLabel" type="Label" parent="CardMargin/CardLayout/PurchaseRow" unique_id=776949612]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 13
+text = "COST:"
+vertical_alignment = 1
+
+[node name="UpgradeButton" type="Button" parent="CardMargin/CardLayout/PurchaseRow" unique_id=1090555327]
+custom_minimum_size = Vector2(200, 34)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+disabled = true
+text = "LOCKED"
