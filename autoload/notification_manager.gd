@@ -124,7 +124,7 @@ func connect_notification_signals() -> void:
 		ObjectiveManager.progression_tier_changed.connect(
 			_on_progression_tier_changed
 		)
-		
+
 	if not ResearchManager.research_points_awarded.is_connected(
 		_on_research_points_awarded
 	):
@@ -159,28 +159,28 @@ func connect_notification_signals() -> void:
 		CrawlerManager.crawl_job_completed.connect(
 			_on_crawl_job_completed
 		)
-		
+
 	if not AutomationManager.auto_restart_unlock_earned.is_connected(
 		_on_auto_restart_unlock_earned
 	):
 		AutomationManager.auto_restart_unlock_earned.connect(
 			_on_auto_restart_unlock_earned
 		)
-		
+
 	if not AutomationManager.auto_throttle_unlock_earned.is_connected(
 		_on_auto_throttle_unlock_earned
 	):
 		AutomationManager.auto_throttle_unlock_earned.connect(
 			_on_auto_throttle_unlock_earned
 		)
-		
+
 	if not AutomationManager.auto_throttle_mastery_requirement_met.is_connected(
 		_on_auto_throttle_mastery_requirement_met
 	):
 		AutomationManager.auto_throttle_mastery_requirement_met.connect(
 			_on_auto_throttle_mastery_requirement_met
 		)
-		
+
 	if not AutomationManager.auto_throttle_upgrade_purchased.is_connected(
 		_on_auto_throttle_upgrade_purchased
 	):
@@ -193,6 +193,27 @@ func connect_notification_signals() -> void:
 	):
 		AutomationManager.auto_restart_triggered.connect(
 			_on_auto_restart_triggered
+		)
+
+	if not AutomationManager.scheduler_optimization_unlock_earned.is_connected(
+		_on_scheduler_optimization_unlock_earned
+	):
+		AutomationManager.scheduler_optimization_unlock_earned.connect(
+			_on_scheduler_optimization_unlock_earned
+		)
+
+	if not AutomationManager.scheduler_optimization_mastery_requirement_met.is_connected(
+		_on_scheduler_optimization_mastery_requirement_met
+	):
+		AutomationManager.scheduler_optimization_mastery_requirement_met.connect(
+			_on_scheduler_optimization_mastery_requirement_met
+		)
+
+	if not AutomationManager.scheduler_optimization_upgrade_purchased.is_connected(
+		_on_scheduler_optimization_upgrade_purchased
+	):
+		AutomationManager.scheduler_optimization_upgrade_purchased.connect(
+			_on_scheduler_optimization_upgrade_purchased
 		)
 
 
@@ -595,4 +616,89 @@ func _on_auto_restart_triggered() -> void:
 		),
 		TYPE_INFORMATION,
 		4.0
+	)
+	
+# -------------------------------------------------------------------
+# Scheduler Optimization notifications
+# -------------------------------------------------------------------
+
+func _on_scheduler_optimization_unlock_earned() -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	show_notification(
+		"SCHEDULER OPTIMIZATION UNLOCKED",
+		(
+			"Queue Expansion earned.\n"
+			+ "Scheduler queue capacity increased to 15."
+		),
+		TYPE_UNLOCK,
+		5.5
+	)
+
+
+func _on_scheduler_optimization_mastery_requirement_met() -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	var required_crawls: int = (
+		AutomationManager
+			.get_scheduler_autonomous_requirement()
+	)
+
+	show_notification(
+		"SCHEDULER MASTERY COMPLETE",
+		(
+			"%d Scheduler-started crawls completed.\n"
+			+ "Autonomous Scheduler requirement fulfilled."
+		)
+		% required_crawls,
+		TYPE_REWARD,
+		5.5
+	)
+
+
+func _on_scheduler_optimization_upgrade_purchased(
+	new_level: int,
+	_money_spent: float,
+	_research_points_spent: float
+) -> void:
+	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	var upgrade_name: String = (
+		AutomationManager
+			.get_scheduler_optimization_level_name(
+				new_level
+			)
+			.capitalize()
+	)
+
+	if (
+		new_level
+		>= AutomationManager
+			.SCHEDULER_OPTIMIZATION_MAX_LEVEL
+	):
+		show_notification(
+			"SCHEDULER OPTIMIZATION MASTERED",
+			(
+				"%s installed.\n"
+				+ "Maximum Scheduler Optimization level reached."
+			)
+			% upgrade_name,
+			TYPE_REWARD,
+			5.5
+		)
+
+		return
+
+	show_notification(
+		"SCHEDULER OPTIMIZATION UPGRADED",
+		"%s installed.\nLevel %d"
+		% [
+			upgrade_name,
+			new_level
+		],
+		TYPE_SUCCESS,
+		4.5
 	)
