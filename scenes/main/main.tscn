@@ -1469,6 +1469,23 @@ text = "Priority Mode"
 [node name="SchedulerPriorityOptionButton" type="OptionButton" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout/SchedulerPriorityRow" unique_id=149922154]
 layout_mode = 2
 
+[node name="SchedulerAutonomousRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=1863488322]
+layout_mode = 2
+
+[node name="SchedulerAutonomousLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout/SchedulerAutonomousRow" unique_id=1288878635]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Autonomous"
+
+[node name="SchedulerAutonomousToggleButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout/SchedulerAutonomousRow" unique_id=456645771]
+custom_minimum_size = Vector2(85, 0)
+layout_mode = 2
+text = "AUTO: OFF"
+
+[node name="SchedulerAutonomousJobOptionButton" type="OptionButton" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout/SchedulerAutonomousRow" unique_id=1612262681]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+
 [node name="SchedulerQueueScroll" type="ScrollContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/CrawlerJobsPage/CrawlerJobsMargin/CrawlerJobsPageLayout/CrawlerJobsPageBody/CrawlerJobsRightColumn/SchedulerManagementPanel/SchedulerManagementLayout" unique_id=2122650865]
 layout_mode = 2
 size_flags_vertical = 3

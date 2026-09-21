@@ -146,6 +146,29 @@ extends PanelContainer
 	+ "SchedulerPriorityRow/SchedulerPriorityOptionButton"
 ) as OptionButton
 
+@onready var scheduler_autonomous_label: Label = get_node(
+	"CrawlerJobsMargin/CrawlerJobsPageLayout/"
+	+ "CrawlerJobsPageBody/CrawlerJobsRightColumn/"
+	+ "SchedulerManagementPanel/SchedulerManagementLayout/"
+	+ "SchedulerAutonomousRow/SchedulerAutonomousLabel"
+) as Label
+
+
+@onready var scheduler_autonomous_toggle_button: Button = get_node(
+	"CrawlerJobsMargin/CrawlerJobsPageLayout/"
+	+ "CrawlerJobsPageBody/CrawlerJobsRightColumn/"
+	+ "SchedulerManagementPanel/SchedulerManagementLayout/"
+	+ "SchedulerAutonomousRow/SchedulerAutonomousToggleButton"
+) as Button
+
+
+@onready var scheduler_autonomous_job_option_button: OptionButton = get_node(
+	"CrawlerJobsMargin/CrawlerJobsPageLayout/"
+	+ "CrawlerJobsPageBody/CrawlerJobsRightColumn/"
+	+ "SchedulerManagementPanel/SchedulerManagementLayout/"
+	+ "SchedulerAutonomousRow/SchedulerAutonomousJobOptionButton"
+) as OptionButton
+
 @onready var scheduler_queue_list: VBoxContainer = get_node(
 	"CrawlerJobsMargin/CrawlerJobsPageLayout/"
 	+ "CrawlerJobsPageBody/CrawlerJobsRightColumn/"
@@ -167,11 +190,29 @@ extends PanelContainer
 
 func _ready() -> void:
 	apply_page_theme()
+
 	setup_scheduler_priority_options()
+	setup_scheduler_autonomous_options()
+
 	connect_crawler_job_signals()
 	connect_buttons()
 
 	refresh_jobs_page()
+	
+func setup_scheduler_autonomous_options() -> void:
+	scheduler_autonomous_job_option_button.clear()
+
+	scheduler_autonomous_job_option_button.add_item(
+		"Basic Crawl"
+	)
+
+	scheduler_autonomous_job_option_button.add_item(
+		"Expanded Crawl"
+	)
+
+	scheduler_autonomous_job_option_button.add_item(
+		"Deep Crawl"
+	)
 	
 func setup_scheduler_priority_options() -> void:
 	scheduler_priority_option_button.clear()
@@ -231,12 +272,26 @@ func connect_crawler_job_signals() -> void:
 		AutomationManager.scheduler_optimization_level_changed.connect(
 			_on_scheduler_optimization_level_changed
 		)
-		
+
 	if not AutomationManager.scheduler_priority_mode_changed.is_connected(
 		_on_scheduler_priority_mode_changed
 	):
 		AutomationManager.scheduler_priority_mode_changed.connect(
 			_on_scheduler_priority_mode_changed
+		)
+
+	if not AutomationManager.scheduler_autonomous_enabled_changed.is_connected(
+		_on_scheduler_autonomous_enabled_changed
+	):
+		AutomationManager.scheduler_autonomous_enabled_changed.connect(
+			_on_scheduler_autonomous_enabled_changed
+		)
+
+	if not AutomationManager.scheduler_autonomous_job_changed.is_connected(
+		_on_scheduler_autonomous_job_changed
+	):
+		AutomationManager.scheduler_autonomous_job_changed.connect(
+			_on_scheduler_autonomous_job_changed
 		)
 
 
@@ -260,6 +315,20 @@ func connect_buttons() -> void:
 	):
 		scheduler_priority_option_button.item_selected.connect(
 			_on_scheduler_priority_option_selected
+		)
+
+	if not scheduler_autonomous_toggle_button.pressed.is_connected(
+		_on_scheduler_autonomous_toggle_pressed
+	):
+		scheduler_autonomous_toggle_button.pressed.connect(
+			_on_scheduler_autonomous_toggle_pressed
+		)
+
+	if not scheduler_autonomous_job_option_button.item_selected.is_connected(
+		_on_scheduler_autonomous_job_selected
+	):
+		scheduler_autonomous_job_option_button.item_selected.connect(
+			_on_scheduler_autonomous_job_selected
 		)
 
 # -------------------------------------------------------------------
@@ -354,6 +423,7 @@ func refresh_jobs_page() -> void:
 	refresh_quick_crawls()
 	refresh_scheduler_controls()
 	refresh_scheduler_priority_controls()
+	refresh_scheduler_autonomous_controls()
 	refresh_scheduler_queue()
 	refresh_page_status()
 
@@ -816,6 +886,96 @@ func refresh_scheduler_priority_controls() -> void:
 			scheduler_priority_option_button.select(
 				0
 			)
+			
+func refresh_scheduler_autonomous_controls() -> void:
+	var autonomous_available: bool = (
+		AutomationManager.is_scheduler_autonomous_available()
+	)
+
+	if not autonomous_available:
+		scheduler_autonomous_label.text = (
+			"Autonomous — LEVEL 4"
+		)
+
+		scheduler_autonomous_toggle_button.text = (
+			"AUTO: OFF"
+		)
+
+		scheduler_autonomous_toggle_button.disabled = true
+
+		scheduler_autonomous_job_option_button.disabled = true
+
+		scheduler_autonomous_job_option_button.select(
+			0
+		)
+
+		scheduler_autonomous_label.tooltip_text = (
+			"Unlock Autonomous Scheduler at "
+			+ "Scheduler Optimization Level 4."
+		)
+
+		scheduler_autonomous_toggle_button.tooltip_text = (
+			"Autonomous Scheduler is not yet unlocked."
+		)
+
+		scheduler_autonomous_job_option_button.tooltip_text = (
+			"Autonomous Scheduler is not yet unlocked."
+		)
+
+		return
+
+	scheduler_autonomous_label.text = (
+		"Autonomous"
+	)
+
+	scheduler_autonomous_toggle_button.disabled = false
+	scheduler_autonomous_job_option_button.disabled = false
+
+	if AutomationManager.is_scheduler_autonomous_enabled():
+		scheduler_autonomous_toggle_button.text = (
+			"AUTO: ON"
+		)
+
+	else:
+		scheduler_autonomous_toggle_button.text = (
+			"AUTO: OFF"
+		)
+
+	scheduler_autonomous_toggle_button.tooltip_text = (
+		"When enabled, the Scheduler continues "
+		+ "running the selected crawl after the "
+		+ "normal queue becomes empty."
+	)
+
+	scheduler_autonomous_job_option_button.tooltip_text = (
+		"Select the crawl used when the normal "
+		+ "Scheduler queue is empty."
+	)
+
+	var autonomous_job_id: StringName = (
+		AutomationManager.get_scheduler_autonomous_job_id()
+	)
+
+	match autonomous_job_id:
+		CrawlerManager.CRAWL_JOB_BASIC:
+			scheduler_autonomous_job_option_button.select(
+				0
+			)
+
+		CrawlerManager.CRAWL_JOB_EXPANDED:
+			scheduler_autonomous_job_option_button.select(
+				1
+			)
+
+		CrawlerManager.CRAWL_JOB_DEEP:
+			scheduler_autonomous_job_option_button.select(
+				2
+			)
+
+		_:
+			scheduler_autonomous_job_option_button.select(
+				0
+			)
 
 
 # -------------------------------------------------------------------
@@ -1093,6 +1253,70 @@ func _on_scheduler_toggle_button_pressed() -> void:
 	AutomationManager.set_scheduler_enabled(
 		new_enabled
 	)
+	
+func _on_scheduler_autonomous_enabled_changed(
+	_is_enabled: bool
+) -> void:
+	refresh_scheduler_autonomous_controls()
+
+
+func _on_scheduler_autonomous_job_changed(
+	_job_id: StringName
+) -> void:
+	refresh_scheduler_autonomous_controls()
+	
+func _on_scheduler_autonomous_toggle_pressed() -> void:
+	if not AutomationManager.is_scheduler_autonomous_available():
+		refresh_scheduler_autonomous_controls()
+		return
+
+	var new_enabled: bool = (
+		not AutomationManager.is_scheduler_autonomous_enabled()
+	)
+
+	AutomationManager.set_scheduler_autonomous_enabled(
+		new_enabled
+	)
+
+	refresh_scheduler_autonomous_controls()
+
+
+func _on_scheduler_autonomous_job_selected(
+	option_index: int
+) -> void:
+	if not AutomationManager.is_scheduler_autonomous_available():
+		refresh_scheduler_autonomous_controls()
+		return
+
+	var selected_job_id: StringName = (
+		CrawlerManager.CRAWL_JOB_BASIC
+	)
+
+	match option_index:
+		0:
+			selected_job_id = (
+				CrawlerManager.CRAWL_JOB_BASIC
+			)
+
+		1:
+			selected_job_id = (
+				CrawlerManager.CRAWL_JOB_EXPANDED
+			)
+
+		2:
+			selected_job_id = (
+				CrawlerManager.CRAWL_JOB_DEEP
+			)
+
+		_:
+			refresh_scheduler_autonomous_controls()
+			return
+
+	AutomationManager.set_scheduler_autonomous_job(
+		selected_job_id
+	)
+
+	refresh_scheduler_autonomous_controls()
 	
 func _on_scheduler_priority_option_selected(
 	option_index: int

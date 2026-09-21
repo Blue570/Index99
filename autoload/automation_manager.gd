@@ -64,6 +64,14 @@ signal scheduler_priority_mode_changed(
 	new_mode: StringName
 )
 
+signal scheduler_autonomous_enabled_changed(
+	is_enabled: bool
+)
+
+signal scheduler_autonomous_job_changed(
+	job_id: StringName
+)
+
 
 # -------------------------------------------------------------------
 # Auto-Throttle Signals
@@ -338,7 +346,13 @@ var scheduler_unlocked: bool = false
 var scheduler_enabled: bool = false
 
 var scheduler_optimization_level: int = (
-	SCHEDULER_PRIORITY_LEVEL
+	SCHEDULER_OPTIMIZATION_MIN_LEVEL
+)
+
+var scheduler_autonomous_enabled: bool = false
+
+var scheduler_autonomous_job_id: StringName = (
+	CrawlerManager.CRAWL_JOB_BASIC
 )
 
 var scheduler_priority_mode: StringName = (
@@ -965,6 +979,81 @@ func is_scheduler_dispatch_controller_active() -> bool:
 		scheduler_optimization_level
 		>= SCHEDULER_DISPATCH_CONTROLLER_LEVEL
 	)
+	
+func is_scheduler_autonomous_available() -> bool:
+	return (
+		scheduler_optimization_level
+		>= SCHEDULER_AUTONOMOUS_LEVEL
+	)
+	
+func is_scheduler_autonomous_enabled() -> bool:
+	return (
+		is_scheduler_autonomous_available()
+		and scheduler_autonomous_enabled
+	)
+
+
+func get_scheduler_autonomous_job_id() -> StringName:
+	return scheduler_autonomous_job_id
+	
+func set_scheduler_autonomous_job(
+	new_job_id: StringName
+) -> bool:
+	if not is_scheduler_autonomous_available():
+		return false
+
+	if not CrawlerManager.is_crawl_job_unlocked(
+		new_job_id
+	):
+		return false
+
+	if scheduler_autonomous_job_id == new_job_id:
+		return false
+
+	scheduler_autonomous_job_id = new_job_id
+
+	scheduler_autonomous_job_changed.emit(
+		scheduler_autonomous_job_id
+	)
+
+	return true
+	
+
+	
+func set_scheduler_autonomous_enabled(
+	new_enabled: bool
+) -> bool:
+	if not is_scheduler_autonomous_available():
+		return false
+
+	if scheduler_autonomous_enabled == new_enabled:
+		return false
+
+	scheduler_autonomous_enabled = new_enabled
+
+	scheduler_autonomous_enabled_changed.emit(
+		scheduler_autonomous_enabled
+	)
+
+	if not scheduler_autonomous_enabled:
+		return true
+
+	if not is_scheduler_enabled():
+		return true
+
+	if GameState.crawler_running:
+		return true
+
+	if not CrawlerManager.is_current_job_complete():
+		return true
+
+	if scheduler_timer == null:
+		return true
+
+	scheduler_timer.stop()
+	scheduler_timer.start()
+
+	return true
 	
 	
 # -------------------------------------------------------------------
@@ -1972,6 +2061,16 @@ func set_scheduler_enabled(
 		scheduler_enabled
 	)
 
+	if (
+		scheduler_enabled
+		and is_scheduler_autonomous_enabled()
+		and not GameState.crawler_running
+		and CrawlerManager.is_current_job_complete()
+		and scheduler_timer != null
+	):
+		scheduler_timer.stop()
+		scheduler_timer.start()
+
 	return true
 	
 	
@@ -2134,9 +2233,18 @@ func _on_crawl_job_completed_for_scheduler() -> void:
 	if not is_auto_restart_unlocked():
 		return
 
-	if (
+	var has_queued_jobs: bool = (
 		CrawlerManager.get_crawl_job_queue_size()
-		<= 0
+		> 0
+	)
+
+	var can_run_autonomously: bool = (
+		is_scheduler_autonomous_enabled()
+	)
+
+	if (
+		not has_queued_jobs
+		and not can_run_autonomously
 	):
 		return
 
@@ -2162,9 +2270,18 @@ func _on_scheduler_timer_timeout() -> void:
 	if not CrawlerManager.is_current_job_complete():
 		return
 
-	if (
+	var has_queued_jobs: bool = (
 		CrawlerManager.get_crawl_job_queue_size()
-		<= 0
+		> 0
+	)
+
+	var can_run_autonomously: bool = (
+		is_scheduler_autonomous_enabled()
+	)
+
+	if (
+		not has_queued_jobs
+		and not can_run_autonomously
 	):
 		return
 
@@ -2184,18 +2301,30 @@ func _on_scheduler_timer_timeout() -> void:
 		scheduler_timer.start()
 		return
 
-	var selected_queue_index: int = (
-		get_scheduler_selected_queue_index()
-	)
+	var next_job_id: StringName = &""
+	var selected_queue_index: int = -1
+	var using_autonomous_job: bool = false
 
-	if selected_queue_index < 0:
-		return
-
-	var next_job_id: StringName = (
-		CrawlerManager.peek_queued_crawl_job_at(
-			selected_queue_index
+	if has_queued_jobs:
+		selected_queue_index = (
+			get_scheduler_selected_queue_index()
 		)
-	)
+
+		if selected_queue_index < 0:
+			return
+
+		next_job_id = (
+			CrawlerManager.peek_queued_crawl_job_at(
+				selected_queue_index
+			)
+		)
+
+	else:
+		using_autonomous_job = true
+
+		next_job_id = (
+			scheduler_autonomous_job_id
+		)
 
 	if next_job_id == &"":
 		return
@@ -2219,14 +2348,15 @@ func _on_scheduler_timer_timeout() -> void:
 	if not GameState.crawler_running:
 		return
 
-	var consumed_job_id: StringName = (
-		CrawlerManager.take_queued_crawl_job_at(
-			selected_queue_index
+	if not using_autonomous_job:
+		var consumed_job_id: StringName = (
+			CrawlerManager.take_queued_crawl_job_at(
+				selected_queue_index
+			)
 		)
-	)
 
-	if consumed_job_id != next_job_id:
-		return
+		if consumed_job_id != next_job_id:
+			return
 
 	current_crawl_started_by_scheduler = true
 
@@ -2724,6 +2854,14 @@ func reset_scheduler_optimization_progression() -> void:
 		scheduler_priority_mode
 	)
 
+	var was_autonomous_enabled: bool = (
+		scheduler_autonomous_enabled
+	)
+
+	var previous_autonomous_job_id: StringName = (
+		scheduler_autonomous_job_id
+	)
+
 	scheduler_optimization_level = (
 		SCHEDULER_OPTIMIZATION_MIN_LEVEL
 	)
@@ -2732,6 +2870,12 @@ func reset_scheduler_optimization_progression() -> void:
 
 	scheduler_priority_mode = (
 		SCHEDULER_PRIORITY_FIFO
+	)
+
+	scheduler_autonomous_enabled = false
+
+	scheduler_autonomous_job_id = (
+		CrawlerManager.CRAWL_JOB_BASIC
 	)
 
 	if (
@@ -2753,4 +2897,17 @@ func reset_scheduler_optimization_progression() -> void:
 	):
 		scheduler_priority_mode_changed.emit(
 			SCHEDULER_PRIORITY_FIFO
+		)
+
+	if was_autonomous_enabled:
+		scheduler_autonomous_enabled_changed.emit(
+			false
+		)
+
+	if (
+		previous_autonomous_job_id
+		!= CrawlerManager.CRAWL_JOB_BASIC
+	):
+		scheduler_autonomous_job_changed.emit(
+			CrawlerManager.CRAWL_JOB_BASIC
 		)
