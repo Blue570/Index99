@@ -5,76 +5,14 @@ extends PanelContainer
 # Node References
 # -------------------------------------------------------------------
 
-@onready var auto_throttle_level_label: Label = (
+@onready var auto_throttle_card: UpgradeCard = (
 	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
-	/UpgradesCatalog/AutoThrottleUpgradePanel
-	/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout
-	/AutoThrottleHeaderRow/AutoThrottleLevelLabel
-)
-
-@onready var auto_throttle_current_effects_label: Label = (
-	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
-	/UpgradesCatalog/AutoThrottleUpgradePanel
-	/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout
-	/AutoThrottleComparisonRow/AutoThrottleCurrentPanel
-	/CurrentEffectsMargin/CurrentEffectsLayout
-	/AutoThrottleCurrentEffectsLabel
-)
-
-@onready var auto_throttle_next_header_label: Label = (
-	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
-	/UpgradesCatalog/AutoThrottleUpgradePanel
-	/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout
-	/AutoThrottleComparisonRow/AutoThrottleNextPanel
-	/NextEffectsMargin/NextEffectsLayout
-	/AutoThrottleNextHeaderLabel
-)
-
-@onready var auto_throttle_next_effects_label: Label = (
-	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
-	/UpgradesCatalog/AutoThrottleUpgradePanel
-	/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout
-	/AutoThrottleComparisonRow/AutoThrottleNextPanel
-	/NextEffectsMargin/NextEffectsLayout
-	/AutoThrottleNextEffectsLabel
-)
-@onready var auto_throttle_requirement_label: Label = (
-	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
-	/UpgradesCatalog/AutoThrottleUpgradePanel
-	/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout
-	/AutoThrottleRequirementPanel
-	/RequirementMargin/RequirementLayout
-	/AutoThrottleRequirementLabel
-)
-
-@onready var auto_throttle_cost_label: Label = (
-	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
-	/UpgradesCatalog/AutoThrottleUpgradePanel
-	/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout
-	/AutoThrottlePurchaseRow
-	/AutoThrottleCostLabel
-)
-
-@onready var auto_throttle_upgrade_button: Button = (
-	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
-	/UpgradesCatalog/AutoThrottleUpgradePanel
-	/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout
-	/AutoThrottlePurchaseRow
-	/AutoThrottleUpgradeButton
+	/UpgradesCatalog/AutoThrottleUpgradeCard
 )
 
 @onready var scheduler_optimization_card: UpgradeCard = (
 	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
 	/UpgradesCatalog/SchedulerOptimizationUpgradeCard
-)
-
-@onready var requirement_header_label: Label = (
-	$UpgradesMargin/UpgradesPageLayout/UpgradesScroll
-	/UpgradesCatalog/AutoThrottleUpgradePanel
-	/AutoThrottleUpgradeMargin/AutoThrottleUpgradeLayout
-	/AutoThrottleRequirementPanel
-	/RequirementMargin/RequirementLayout
-	/RequirementHeaderLabel
 )
 
 
@@ -84,13 +22,19 @@ extends PanelContainer
 
 func _ready() -> void:
 	configure_upgrade_cards()
-	connect_buttons()
 	connect_upgrade_card_signals()
 	connect_upgrade_signals()
 
 	refresh_upgrades_page()
 	
 func configure_upgrade_cards() -> void:
+	auto_throttle_card.configure(
+		&"auto_throttle",
+		"AUTO-THROTTLE",
+		"Automatically regulates crawler load by pausing "
+		+ "and resuming crawl operations."
+	)
+
 	scheduler_optimization_card.configure(
 		&"scheduler_optimization",
 		"SCHEDULER OPTIMIZATION",
@@ -98,22 +42,19 @@ func configure_upgrade_cards() -> void:
 		+ "job prioritization, and autonomous crawling."
 	)
 
-
 func connect_upgrade_card_signals() -> void:
+	if not auto_throttle_card.upgrade_requested.is_connected(
+		_on_upgrade_card_requested
+	):
+		auto_throttle_card.upgrade_requested.connect(
+			_on_upgrade_card_requested
+		)
+
 	if not scheduler_optimization_card.upgrade_requested.is_connected(
 		_on_upgrade_card_requested
 	):
 		scheduler_optimization_card.upgrade_requested.connect(
 			_on_upgrade_card_requested
-		)
-
-
-func connect_buttons() -> void:
-	if not auto_throttle_upgrade_button.pressed.is_connected(
-		_on_auto_throttle_upgrade_button_pressed
-	):
-		auto_throttle_upgrade_button.pressed.connect(
-			_on_auto_throttle_upgrade_button_pressed
 		)
 
 
@@ -193,7 +134,7 @@ func refresh_auto_throttle_upgrade() -> void:
 		refresh_locked_auto_throttle()
 		return
 
-	auto_throttle_level_label.text = (
+	auto_throttle_card.set_level_text(
 		"LEVEL %d — %s"
 		% [
 			current_level,
@@ -202,11 +143,11 @@ func refresh_auto_throttle_upgrade() -> void:
 		]
 	)
 
-	auto_throttle_current_effects_label.text = (
+	auto_throttle_card.set_current_effects(
 		build_auto_throttle_effect_text(
 			current_level
+		)
 	)
-)
 
 	if AutomationManager.is_auto_throttle_maxed():
 		refresh_maxed_auto_throttle()
@@ -216,18 +157,15 @@ func refresh_auto_throttle_upgrade() -> void:
 		AutomationManager.get_next_auto_throttle_level()
 	)
 
-	auto_throttle_next_header_label.text = (
+	auto_throttle_card.set_next_upgrade(
 		"NEXT: %s"
 		% AutomationManager.get_auto_throttle_level_name(
 			next_level
-	)
-)
-
-	auto_throttle_next_effects_label.text = (
+		),
 		build_auto_throttle_effect_text(
 			next_level
+		)
 	)
-)
 
 	refresh_auto_throttle_requirement(
 		next_level
@@ -250,43 +188,29 @@ func refresh_locked_auto_throttle() -> void:
 	var required_crawls: int = (
 		AutomationManager.get_auto_throttle_unlock_requirement()
 	)
-	
-	requirement_header_label.text = (
-		"ACCOMPLISHMENT"
-	)
 
-	auto_throttle_level_label.text = (
-		"LOCKED"
-	)
-
-	auto_throttle_current_effects_label.text = (
-		"Auto-Throttle is not yet available."
-)
-
-	auto_throttle_next_effects_label.text = (
-		"UNLOCK: PROTOTYPE\n"
-		+ build_auto_throttle_effect_text(
+	auto_throttle_card.set_locked_state(
+		"LOCKED",
+		"Auto-Throttle is not yet available.",
+		"UNLOCK: PROTOTYPE",
+		build_auto_throttle_effect_text(
 			AutomationManager.AUTO_THROTTLE_PROTOTYPE_LEVEL
-		)
-	)
-
-	auto_throttle_requirement_label.text = (
+		),
+		"ACCOMPLISHMENT",
 		"Complete Scheduler-started crawls: %d / %d"
-	% [
-		completed_crawls,
-		required_crawls
-	]
-)
-
-	auto_throttle_cost_label.text = (
+		% [
+			completed_crawls,
+			required_crawls
+		],
 		"ACCOMPLISHMENT UNLOCK"
-)
-
-	auto_throttle_upgrade_button.text = (
-		"LOCKED"
 	)
 
-	auto_throttle_upgrade_button.disabled = true
+	auto_throttle_card.set_upgrade_button(
+		"LOCKED",
+		true,
+		"Complete %d Scheduler-started crawls to unlock Auto-Throttle."
+		% required_crawls
+	)
 
 
 # -------------------------------------------------------------------
@@ -294,26 +218,22 @@ func refresh_locked_auto_throttle() -> void:
 # -------------------------------------------------------------------
 
 func refresh_maxed_auto_throttle() -> void:
-	auto_throttle_next_effects_label.text = (
-		"NEXT UPGRADE\n"
-		+ "Maximum currently implemented level reached."
+	var current_level: int = (
+		AutomationManager.get_auto_throttle_level()
 	)
 
-	auto_throttle_requirement_label.text = (
-		"STATUS\n"
-		+ "Optimized Governor complete."
+	auto_throttle_card.set_maxed_state(
+		"LEVEL %d — %s"
+		% [
+			current_level,
+			AutomationManager
+				.get_current_auto_throttle_level_name()
+		],
+		build_auto_throttle_effect_text(
+			current_level
+		),
+		"Optimized Governor complete."
 	)
-	
-	auto_throttle_cost_label.text = (
-		"FULLY UPGRADED"
-	)
-
-	auto_throttle_upgrade_button.text = (
-		"MAXIMUM LEVEL"
-	)
-	
-
-	auto_throttle_upgrade_button.disabled = true
 
 
 # -------------------------------------------------------------------
@@ -323,11 +243,10 @@ func refresh_maxed_auto_throttle() -> void:
 func refresh_auto_throttle_requirement(
 	next_level: int
 ) -> void:
-	if next_level == 4:
-		requirement_header_label.text = (
-			"MASTERY REQUIREMENT"
-		)
-
+	if (
+		next_level
+		== AutomationManager.AUTO_THROTTLE_MAX_IMPLEMENTED_LEVEL
+	):
 		var completed_interventions: int = (
 			AutomationManager
 				.get_successful_auto_throttle_interventions()
@@ -338,11 +257,19 @@ func refresh_auto_throttle_requirement(
 				.get_auto_throttle_optimized_intervention_requirement()
 		)
 
+		var requirement_text: String = (
+			"%d / %d successful throttles"
+			% [
+				completed_interventions,
+				required_interventions
+			]
+		)
+
 		if (
 			completed_interventions
 			>= required_interventions
 		):
-			auto_throttle_requirement_label.text = (
+			requirement_text = (
 				"COMPLETE — %d / %d successful throttles"
 				% [
 					completed_interventions,
@@ -350,22 +277,15 @@ func refresh_auto_throttle_requirement(
 				]
 			)
 
-		else:
-			auto_throttle_requirement_label.text = (
-				"%d / %d successful throttles"
-				% [
-					completed_interventions,
-					required_interventions
-				]
-			)
+		auto_throttle_card.set_requirement(
+			"MASTERY REQUIREMENT",
+			requirement_text
+		)
 
 		return
 
-	requirement_header_label.text = (
-		"REQUIREMENT"
-	)
-
-	auto_throttle_requirement_label.text = (
+	auto_throttle_card.set_requirement(
+		"REQUIREMENT",
 		"READY — No additional accomplishment required."
 	)
 
@@ -404,63 +324,53 @@ func refresh_auto_throttle_upgrade_button(
 		)
 
 	if cost_parts.is_empty():
-		auto_throttle_cost_label.text = (
+		auto_throttle_card.set_cost_text(
 			"COST: NONE"
-	)
+		)
+
 	else:
-		auto_throttle_cost_label.text = (
+		auto_throttle_card.set_cost_text(
 			"COST: "
-			+ " + ".join(cost_parts)
-	)
+			+ " + ".join(
+				cost_parts
+			)
+		)
 
-	auto_throttle_upgrade_button.text = (
-		"UPGRADE"
-)
-
-	auto_throttle_upgrade_button.disabled = (
-		not AutomationManager
+	var can_purchase: bool = (
+		AutomationManager
 			.can_purchase_auto_throttle_upgrade()
 	)
 
-	update_auto_throttle_upgrade_tooltip(
-		next_level,
-		money_cost,
-		research_cost
+	auto_throttle_card.set_upgrade_button(
+		"UPGRADE",
+		not can_purchase,
+		get_auto_throttle_upgrade_tooltip(
+			next_level,
+			money_cost,
+			research_cost
+		)
 	)
-
-
-func update_auto_throttle_upgrade_tooltip(
+	
+func get_auto_throttle_upgrade_tooltip(
 	next_level: int,
 	money_cost: float,
 	research_cost: float
-) -> void:
+) -> String:
 	if not AutomationManager.is_auto_throttle_upgrade_accomplishment_met(
 		next_level
 	):
-		auto_throttle_upgrade_button.tooltip_text = (
+		return (
 			"Complete the mastery requirement "
 			+ "before purchasing this upgrade."
 		)
 
-		return
-
 	if GameState.revenue < money_cost:
-		auto_throttle_upgrade_button.tooltip_text = (
-			"Not enough revenue."
-		)
-
-		return
+		return "Not enough revenue."
 
 	if ResearchManager.research_points < research_cost:
-		auto_throttle_upgrade_button.tooltip_text = (
-			"Not enough Research Points."
-		)
+		return "Not enough Research Points."
 
-		return
-
-	auto_throttle_upgrade_button.tooltip_text = (
-		"Purchase this Auto-Throttle upgrade."
-	)
+	return "Purchase this Auto-Throttle upgrade."
 
 
 # -------------------------------------------------------------------
@@ -797,15 +707,13 @@ func refresh_maxed_scheduler_optimization() -> void:
 # Button Callback
 # -------------------------------------------------------------------
 
-func _on_auto_throttle_upgrade_button_pressed() -> void:
-	AutomationManager.purchase_auto_throttle_upgrade()
-
-	refresh_upgrades_page()
-	
 func _on_upgrade_card_requested(
 	upgrade_id: StringName
 ) -> void:
 	match upgrade_id:
+		&"auto_throttle":
+			AutomationManager.purchase_auto_throttle_upgrade()
+
 		&"scheduler_optimization":
 			AutomationManager.purchase_scheduler_optimization_upgrade()
 

@@ -192,32 +192,18 @@ func set_locked_state(
 	requirement_text: String,
 	cost_text: String = "ACCOMPLISHMENT UNLOCK"
 ) -> void:
-	set_level_text(
-		level_text
-	)
-
-	set_current_effects(
-		current_text
-	)
-
+	set_level_text(level_text)
+	set_current_effects(current_text)
 	set_next_upgrade(
 		next_header_text,
 		next_text
 	)
-
 	set_requirement(
 		requirement_header_text,
 		requirement_text
 	)
-
-	set_cost_text(
-		cost_text
-	)
-
-	set_upgrade_button(
-		"LOCKED",
-		true
-	)
+	set_cost_text(cost_text)
+	set_upgrade_button("LOCKED", true)
 
 
 func set_maxed_state(
