@@ -198,7 +198,8 @@ var next_category_index: int = 0
 func _ready() -> void:
 	connect_game_state_signals()
 	connect_crawler_manager_signals()
-	
+	connect_save_manager_signals()
+
 	initialize_content_categories()
 	refresh_index_page()
 
@@ -245,6 +246,35 @@ func connect_game_state_signals() -> void:
 		GameState.crawler_rate_changed.connect(
 			_on_crawler_rate_changed
 		)
+		
+func connect_save_manager_signals() -> void:
+	if not SaveManager.new_game_reset.is_connected(
+		_on_new_game_reset
+	):
+		SaveManager.new_game_reset.connect(
+			_on_new_game_reset
+		)
+
+	if not SaveManager.load_completed.is_connected(
+		_on_save_load_completed
+	):
+		SaveManager.load_completed.connect(
+			_on_save_load_completed
+		)
+		
+func _on_new_game_reset() -> void:
+	index_activity_history.clear()
+
+	reset_content_categories()
+	refresh_content_category_display()
+
+	refresh_index_page()
+	
+func _on_save_load_completed(
+	_save_path: String
+) -> void:
+	initialize_content_categories()
+	refresh_index_page()
 		
 func initialize_content_categories() -> void:
 	reset_content_categories()
