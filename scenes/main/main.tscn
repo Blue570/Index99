@@ -247,6 +247,12 @@ text = "Upgrades"
 tab_id = &"upgrades"
 tab_text = "Upgrades"
 
+[node name="ActivitiesTab" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1019763486 instance=ExtResource("3_k2fmo")]
+layout_mode = 2
+text = "Activities"
+tab_id = &"activities"
+tab_text = "Activities"
+
 [node name="TabFill" type="Control" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1482285346]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -2899,6 +2905,7 @@ autowrap_mode = 3
 layout_mode = 2
 
 [node name="UpgradesPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=2133878230]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2959,6 +2966,62 @@ upgrade_id = &"auto_throttle"
 [node name="SchedulerOptimizationUpgradeCard" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/UpgradesPage/UpgradesMargin/UpgradesPageLayout/UpgradesScroll/UpgradesCatalog" unique_id=849034936 instance=ExtResource("12_7smn1")]
 layout_mode = 2
 upgrade_id = &"scheduler_optimization"
+
+[node name="ActivitiesPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=1256219198]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ActivitiesMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage" unique_id=795243025]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="ActivitiesPageLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin" unique_id=928212835]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ActivitiesTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout" unique_id=2019642436]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "ACTIVE OPERATIONS"
+
+[node name="ActivitiesDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout" unique_id=1879070008]
+layout_mode = 2
+text = "Complete short manual operations while automated systems continue running in the background."
+autowrap_mode = 3
+
+[node name="ActivitiesCatalogHeaderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout" unique_id=1722659943]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "AVAILABLE ACTIVITIES"
+
+[node name="ActivitiesEmptyPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout" unique_id=419722781]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ActivitiesEmptyMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesEmptyPanel" unique_id=403844713]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="ActivitiesEmptyLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesEmptyPanel/ActivitiesEmptyMargin" unique_id=1853130830]
+layout_mode = 2
+size_flags_vertical = 1
+text = "No active operations are currently installed.
+
+Additional activity modules will become available as the Index 99 network expands."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="BackgroundJobsBar" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=1989258494]
 custom_minimum_size = Vector2(0, 48)

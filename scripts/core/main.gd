@@ -9,7 +9,8 @@ const PAGE_SHORTCUTS: Dictionary = {
 	KEY_4: &"index",
 	KEY_5: &"servers",
 	KEY_6: &"research",
-	KEY_7: &"upgrades"
+	KEY_7: &"upgrades",
+	KEY_8: &"activities"
 }
 
 # -------------------------------------------------------------------
@@ -220,6 +221,13 @@ var current_page_id: StringName = &""
 	) as TabButton
 )
 
+@onready var activities_tab := (
+	get_node(
+		"MainApplicationWindow/MainLayout/TabBar/"
+		+ "TabRow/ActivitiesTab"
+	) as TabButton
+)
+
 @onready var dashboard_page := (
 	get_node(
 		"MainApplicationWindow/MainLayout/PageArea/"
@@ -266,6 +274,13 @@ var current_page_id: StringName = &""
 	get_node(
 		"MainApplicationWindow/MainLayout/PageArea/"
 		+ "PageStack/UpgradesPage"
+	) as PanelContainer
+)
+
+@onready var activities_page := (
+	get_node(
+		"MainApplicationWindow/MainLayout/PageArea/"
+		+ "PageStack/ActivitiesPage"
 	) as PanelContainer
 )
 
@@ -757,40 +772,21 @@ func _ready() -> void:
 	connect_title_bar_buttons()
 	setup_application_menus()
 	setup_tabs()
+	setup_activities_unlock()
 	setup_placeholder_jobs()
 	setup_application_menu_popup_theme()
 	setup_session_statistics_window()
-	
+
 	setup_background_jobs_connections()
 	refresh_background_jobs_bar()
-	
+
 	setup_game_state_connections()
 	refresh_resource_displays()
 	setup_resource_tooltips()
-	
+
 	open_page(
 		DEFAULT_PAGE_ID
 	)
-	
-	TutorialManager.notify_page_opened(
-		DEFAULT_PAGE_ID
-	)
-	
-	print(
-	"WINDOW SIZE: ",
-	get_window().size 
-	)
-
-
-	print(
-	"CONTENT SCALE SIZE: ",
-	get_tree().root.content_scale_size
-)
-
-	print(
-	"ROOT VIEWPORT SIZE: ",
-	get_tree().root.get_visible_rect().size
-)
 
 	# ---------------------------------------------------------------
 	# Popup background
@@ -1917,7 +1913,8 @@ func setup_tabs() -> void:
 		&"index": index_tab,
 		&"servers": servers_tab,
 		&"research": research_tab,
-		&"upgrades": upgrades_tab
+		&"upgrades": upgrades_tab,
+		&"activities": activities_tab
 	}
 
 	pages = {
@@ -1927,7 +1924,8 @@ func setup_tabs() -> void:
 		&"index": index_page,
 		&"servers": servers_page,
 		&"research": research_page,
-		&"upgrades": upgrades_page
+		&"upgrades": upgrades_page,
+		&"activities": activities_page
 	}
 
 	for tab_id: StringName in tab_buttons:
@@ -1943,30 +1941,92 @@ func setup_tabs() -> void:
 			tab_button.tab_selected.connect(
 				_on_tab_selected
 			)
+			
+# -------------------------------------------------------------------
+# Activities Unlock
+# -------------------------------------------------------------------
+
+func setup_activities_unlock() -> void:
+	if not ObjectiveManager.progression_tier_changed.is_connected(
+		_on_progression_tier_changed_for_activities
+	):
+		ObjectiveManager.progression_tier_changed.connect(
+			_on_progression_tier_changed_for_activities
+		)
+
+	refresh_activities_tab_unlock_state()
+	
+func _on_progression_tier_changed_for_activities(
+	_new_tier: int
+) -> void:
+	refresh_activities_tab_unlock_state()
+	
+func is_activities_unlocked() -> bool:
+	return ObjectiveManager.is_progression_tier_unlocked(
+		ObjectiveManager.PROGRESSION_TIER_2
+	)
+	
+func refresh_activities_tab_unlock_state() -> void:
+	var activities_unlocked: bool = (
+		is_activities_unlocked()
+	)
+
+	activities_tab.disabled = (
+		not activities_unlocked
+	)
+
+	if activities_unlocked:
+		activities_tab.tooltip_text = (
+			"Open Active Operations."
+		)
+
+		return
+
+	activities_tab.tooltip_text = (
+		"Activities unlock at Progression Tier 2."
+	)
 
 
-func open_page(page_id: StringName) -> void:
+func open_page(
+	page_id: StringName
+) -> void:
 	if not pages.has(page_id):
 		push_warning(
 			"Unknown page ID: %s" % page_id
 		)
+
 		return
 
 	if not tab_buttons.has(page_id):
 		push_warning(
-			"No tab button exists for page ID: %s" % page_id
+			"No tab button exists for page ID: %s"
+			% page_id
 		)
+
+		return
+
+	if (
+		page_id == &"activities"
+		and not is_activities_unlocked()
+	):
 		return
 
 	current_page_id = page_id
 
 	for stored_page_id: StringName in pages:
-		var page := pages[stored_page_id] as Control
-		page.visible = stored_page_id == page_id
+		var page := (
+			pages[stored_page_id] as Control
+		)
+
+		page.visible = (
+			stored_page_id == page_id
+		)
 
 	for stored_tab_id: StringName in tab_buttons:
 		var tab_button := (
-			tab_buttons[stored_tab_id] as TabButton
+			tab_buttons[
+				stored_tab_id
+			] as TabButton
 		)
 
 		tab_button.set_active(
