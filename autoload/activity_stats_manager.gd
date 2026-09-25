@@ -93,6 +93,71 @@ func has_completed_type(
 		get_type_completed(activity_type)
 		> 0
 	)
+	
+	
+# -------------------------------------------------------------------
+# Save / Load
+# -------------------------------------------------------------------
+
+func get_completions_by_type_for_save() -> Dictionary:
+	var save_data: Dictionary = {}
+
+	for activity_type: Variant in completions_by_type.keys():
+		save_data[
+			str(activity_type)
+		] = int(
+			completions_by_type[
+				activity_type
+			]
+		)
+
+	return save_data
+
+
+func restore_saved_state(
+	saved_total: int,
+	saved_completions_by_type: Dictionary
+) -> void:
+	total_activities_completed = max(
+		saved_total,
+		0
+	)
+
+	completions_by_type.clear()
+
+	for raw_activity_type: Variant in saved_completions_by_type.keys():
+		var activity_type: StringName = StringName(
+			str(raw_activity_type)
+		)
+
+		if activity_type == &"":
+			continue
+
+		var raw_count: Variant = (
+			saved_completions_by_type[
+				raw_activity_type
+			]
+		)
+
+		if (
+			typeof(raw_count) != TYPE_INT
+			and typeof(raw_count) != TYPE_FLOAT
+		):
+			continue
+
+		var safe_count: int = max(
+			int(raw_count),
+			0
+		)
+
+		if safe_count <= 0:
+			continue
+
+		completions_by_type[
+			activity_type
+		] = safe_count
+
+	activity_stats_reset.emit()
 
 
 # -------------------------------------------------------------------

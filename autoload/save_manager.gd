@@ -292,6 +292,15 @@ func build_save_data() -> Dictionary:
 				ObjectiveManager.current_progression_tier
 		},
 		
+		"activity_stats": {
+			"total_activities_completed":
+				ActivityStatsManager.get_total_completed(),
+				
+			"completions_by_type":
+				ActivityStatsManager
+					.get_completions_by_type_for_save()
+		},
+		
 		"tutorial":{
 			"current_step_index":
 				TutorialManager.current_step_index,
@@ -313,6 +322,7 @@ func save_game() -> bool:
 	var save_data: Dictionary = (
 		build_save_data()
 	)
+	
 
 	var json_text: String = JSON.stringify(
 		save_data,
@@ -693,6 +703,17 @@ func restore_save_data(
 		"objective"
 	)
 	
+	var activity_stats_data: Dictionary = {}
+
+	if (
+		save_data.has("activity_stats")
+		and typeof(save_data["activity_stats"])
+		== TYPE_DICTIONARY
+	):
+		activity_stats_data = save_data[
+			"activity_stats"
+		]
+	
 	var automation_data: Dictionary = {}
 
 	if (
@@ -731,6 +752,10 @@ func restore_save_data(
 
 	restore_objective(
 		objective_data
+	)
+	
+	restore_activity_stats(
+		activity_stats_data
 	)
 	
 	restore_crawl_job_configuration(
@@ -1082,6 +1107,46 @@ func restore_objective(
 		saved_progression_tier
 	)
 	
+func restore_activity_stats(
+	data: Dictionary
+) -> void:
+	if data.is_empty():
+		ActivityStatsManager.restore_saved_state(
+			0,
+			{}
+		)
+
+		return
+
+	var saved_total: int = read_int(
+		data,
+		"total_activities_completed",
+		0
+	)
+
+	var saved_completions_by_type: Dictionary = {}
+
+	if data.has(
+		"completions_by_type"
+	):
+		var raw_completions: Variant = data[
+			"completions_by_type"
+		]
+
+		if typeof(raw_completions) == TYPE_DICTIONARY:
+			saved_completions_by_type = raw_completions
+
+		else:
+			push_warning(
+				"SaveManager: Invalid activity "
+				+ "completion statistics."
+			)
+
+	ActivityStatsManager.restore_saved_state(
+		saved_total,
+		saved_completions_by_type
+	)
+	
 func restore_tutorial(
 	data: Dictionary
 ) -> void:
@@ -1417,6 +1482,20 @@ func connect_event_autosave_signals() -> void:
 			_on_scheduler_autonomous_job_changed_for_save
 		)
 		
+	if not ActivityStatsManager.activity_completed.is_connected(
+		_on_activity_completed_for_save
+	):
+		ActivityStatsManager.activity_completed.connect(
+			_on_activity_completed_for_save
+		)
+		
+func _on_activity_completed_for_save(
+	_activity_type: StringName,
+	_type_total: int,
+	_overall_total: int
+) -> void:
+	request_event_autosave()
+		
 func _on_server_upgrade_purchased_for_save(
 	_upgrade_id: StringName,
 	_new_level: int,
@@ -1637,6 +1716,8 @@ func reset_to_new_game() -> bool:
 	)
 
 	CrawlerManager.apply_research_crawler_rate()
+	
+	ActivityStatsManager.reset_activity_stats()
 	
 	TutorialManager.reset_tutorial()
 

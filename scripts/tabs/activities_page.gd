@@ -304,6 +304,7 @@ var review_completed: bool = false
 
 func _ready() -> void:
 	setup_manual_index_review_card()
+	connect_activity_stats_signals()
 	connect_buttons()
 
 	apply_review_window_font_colors()
@@ -328,6 +329,28 @@ func setup_manual_index_review_card() -> void:
 		"START REVIEW"
 	)
 
+	manual_index_review_card.set_completion_count(
+		ActivityStatsManager.get_type_completed(
+			ACTIVITY_MANUAL_INDEX_REVIEW
+		)
+	)
+
+# -------------------------------------------------------------------
+# Activity Statistics
+# -------------------------------------------------------------------
+	
+func connect_activity_stats_signals() -> void:
+	if not ActivityStatsManager.activity_stats_reset.is_connected(
+		_on_activity_stats_reset
+	):
+		ActivityStatsManager.activity_stats_reset.connect(
+			_on_activity_stats_reset
+		)
+		
+func _on_activity_stats_reset() -> void:
+	refresh_activity_completion_counts()
+	
+func refresh_activity_completion_counts() -> void:
 	manual_index_review_card.set_completion_count(
 		ActivityStatsManager.get_type_completed(
 			ACTIVITY_MANUAL_INDEX_REVIEW
@@ -977,22 +1000,6 @@ func complete_manual_index_review() -> void:
 
 	minimized_review_button.visible = false
 	
-	print(
-		"TOTAL ACTIVITIES: ",
-		ActivityStatsManager.get_total_completed()
-	)
-
-	print(
-		"MANUAL REVIEWS: ",
-		ActivityStatsManager.get_type_completed(
-			ACTIVITY_MANUAL_INDEX_REVIEW
-		)
-	)
-
-	print(
-		"UNIQUE TYPES: ",
-		ActivityStatsManager.get_unique_types_completed()
-	)
 	
 func _on_close_review_button_pressed() -> void:
 	if not review_completed:
