@@ -3514,6 +3514,13 @@ theme_override_colors/font_hover_color = Color(0.95, 0.95, 0.95, 1)
 theme_override_styles/hover = SubResource("StyleBoxFlat_nvumn")
 text = "REJECT"
 
+[node name="CloseReviewButton" type="Button" parent="ManualIndexReviewWindow/ReviewWindowMargin/ReviewWindowLayout/ReviewDecisionRow" unique_id=1504656848]
+visible = false
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "CLOSE"
+
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/CrawlerOverview"]
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/ServerOverview"]

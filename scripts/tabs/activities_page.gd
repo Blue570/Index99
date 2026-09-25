@@ -29,6 +29,8 @@ const REVIEW_BUTTON_NORMAL_COLOR: Color = Color("#D4D0C8")
 
 const REVIEW_BUTTON_PRESSED_COLOR: Color = Color("#B0B0B0")
 
+const REVIEW_CLOSE_HOVER_COLOR: Color = Color("#4A5F7A")
+
 
 const REVIEW_CASES: Array[Dictionary] = [
 	{
@@ -288,6 +290,14 @@ const REVIEW_CASES: Array[Dictionary] = [
 	) as Label
 )
 
+@onready var close_review_button: Button = (
+	get_tree().current_scene.get_node(
+		"ManualIndexReviewWindow/"
+		+ "ReviewWindowMargin/ReviewWindowLayout/"
+		+ "ReviewDecisionRow/CloseReviewButton"
+	) as Button
+)
+
 
 # -------------------------------------------------------------------
 # Runtime State
@@ -297,7 +307,9 @@ var active_review_cases: Array[Dictionary] = []
 
 var current_review_index: int = 0
 var correct_review_count: int = 0
+
 var review_active: bool = false
+var review_completed: bool = false
 
 
 # -------------------------------------------------------------------
@@ -314,6 +326,9 @@ func _ready() -> void:
 
 	review_window.visible = false
 	minimized_review_button.visible = false
+
+	close_review_button.visible = false
+	close_review_button.disabled = true
 
 	review_status_label.text = "AVAILABLE"
 	
@@ -440,6 +455,13 @@ func connect_buttons() -> void:
 			_on_reject_button_pressed
 		)
 
+	if not close_review_button.pressed.is_connected(
+		_on_close_review_button_pressed
+	):
+		close_review_button.pressed.connect(
+			_on_close_review_button_pressed
+		)
+
 	if not review_minimize_button.pressed.is_connected(
 		_on_review_minimize_button_pressed
 	):
@@ -542,7 +564,9 @@ func start_manual_index_review() -> void:
 
 	current_review_index = 0
 	correct_review_count = 0
+
 	review_active = true
+	review_completed = false
 
 	review_status_label.text = "IN PROGRESS"
 
@@ -555,8 +579,16 @@ func start_manual_index_review() -> void:
 	start_review_button.disabled = true
 	start_review_button.text = "REVIEW IN PROGRESS"
 
+	accept_button.visible = true
 	accept_button.disabled = false
+
+	reject_button.visible = true
 	reject_button.disabled = false
+
+	close_review_button.visible = false
+	close_review_button.disabled = true
+
+	review_minimize_button.disabled = false
 
 	review_window.visible = true
 	minimized_review_button.visible = false
@@ -721,6 +753,11 @@ func apply_review_window_bottom_theme() -> void:
 		reject_button,
 		REVIEW_REJECT_HOVER_COLOR
 	)
+
+	apply_review_action_button_style(
+		close_review_button,
+		REVIEW_CLOSE_HOVER_COLOR
+	)
 	
 func apply_review_action_button_style(
 	button: Button,
@@ -850,6 +887,7 @@ func submit_review_decision(
 
 func complete_manual_index_review() -> void:
 	review_active = false
+	review_completed = true
 
 	accept_button.disabled = true
 	reject_button.disabled = true
@@ -869,40 +907,104 @@ func complete_manual_index_review() -> void:
 		>= REVIEW_PAGE_COUNT
 	)
 
+	var research_reward: float = 0.0
+
 	if perfect_review:
+		research_reward = (
+			PERFECT_REVIEW_RESEARCH_REWARD
+		)
+
 		ResearchManager.add_research_points(
 			PERFECT_REVIEW_RESEARCH_REWARD
 		)
 
 	review_status_label.text = "COMPLETE"
 
+	review_details_label.text = (
+		"Last Review: %d / %d correct\n"
+		% [
+			correct_review_count,
+			REVIEW_PAGE_COUNT
+		]
+		+ "Revenue Earned: $%.0f\n"
+		% money_reward
+		+ "Research Earned: +%.0f RP"
+		% research_reward
+	)
+
+	review_progress_label.text = (
+		"REVIEW COMPLETE"
+	)
+
+	review_url_label.text = (
+		"RESULTS"
+	)
+
+	review_data_label.text = (
+		"Correct Reviews: %d / %d\n"
+		+ "Revenue Earned: $%.0f\n"
+		+ "Research Earned: +%.0f RP"
+	) % [
+		correct_review_count,
+		REVIEW_PAGE_COUNT,
+		money_reward,
+		research_reward
+	]
+
 	if perfect_review:
-		review_details_label.text = (
-			"Last Review: %d / %d correct\n"
-			% [
-				correct_review_count,
-				REVIEW_PAGE_COUNT
-			]
-			+ "Revenue Earned: $%.0f\n"
-			% money_reward
-			+ "Research Earned: +%.0f RP"
-			% PERFECT_REVIEW_RESEARCH_REWARD
+		review_feedback_label.text = (
+			"PERFECT REVIEW — All pages were classified correctly."
 		)
 
 	else:
-		review_details_label.text = (
-			"Last Review: %d / %d correct\n"
+		review_feedback_label.text = (
+			"REVIEW COMPLETE — %d of %d pages classified correctly."
 			% [
 				correct_review_count,
 				REVIEW_PAGE_COUNT
 			]
-			+ "Revenue Earned: $%.0f\n"
-			% money_reward
-			+ "Research Earned: 0 RP"
 		)
 
+	accept_button.visible = false
+	reject_button.visible = false
+
+	close_review_button.visible = true
+	close_review_button.disabled = false
+
+	review_minimize_button.disabled = true
+
+	minimized_review_button.visible = false
+	
+func _on_close_review_button_pressed() -> void:
+	if not review_completed:
+		return
+
+	close_manual_index_review()
+	
+func close_manual_index_review() -> void:
 	review_window.visible = false
 	minimized_review_button.visible = false
+
+	review_active = false
+	review_completed = false
+
+	active_review_cases.clear()
+
+	current_review_index = 0
+	correct_review_count = 0
+
+	close_review_button.visible = false
+	close_review_button.disabled = true
+
+	accept_button.visible = true
+	accept_button.disabled = false
+
+	reject_button.visible = true
+	reject_button.disabled = false
+
+	review_minimize_button.disabled = false
+
+	review_status_label.text = "AVAILABLE"
 
 	start_review_button.disabled = false
 	start_review_button.text = "START ANOTHER REVIEW"
