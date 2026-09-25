@@ -14,8 +14,14 @@ const ACTIVITY_BROKEN_LINK_CLEANUP: StringName = (
 )
 
 const REVIEW_PAGE_COUNT: int = 5
+const CLEANUP_RECORD_COUNT: int = 5
 const MONEY_REWARD_PER_CORRECT: float = 5.0
 const PERFECT_REVIEW_RESEARCH_REWARD: float = 1.0
+const CLEANUP_FEEDBACK_DELAY_SECONDS: float = 0.70
+
+const CLEANUP_MONEY_REWARD_PER_CORRECT: float = 5.0
+
+const PERFECT_CLEANUP_RESEARCH_REWARD: float = 1.0
 
 const REVIEW_WINDOW_TEXT_COLOR: Color = Color("#202020")
 
@@ -124,6 +130,214 @@ const REVIEW_CASES: Array[Dictionary] = [
 		"duplicate": false,
 		"spam": true,
 		"should_accept": false
+	}
+]
+
+
+# -------------------------------------------------------------------
+# Broken Link Cleanup Records
+# -------------------------------------------------------------------
+
+const BROKEN_LINK_CASES: Array[Dictionary] = [
+	{
+		"id": &"driver_directory",
+		"url": (
+			"http://www.pcgarage.org/downloads/"
+			+ "video_driver_98.zip"
+		),
+		"server_response": "404 - File Not Found",
+		"requested_file": "video_driver_98.zip",
+		"diagnostic": (
+			"Directory check found the same file "
+			+ "under /drivers/."
+		),
+		"choices": [
+			"/downloads/video_driver_99.zip",
+			"/drivers/video_driver_98.zip",
+			"/downloads/video_driver_98.exe",
+			"REMOVE LINK"
+		],
+		"correct_choice": 1
+	},
+	{
+		"id": &"html_extension",
+		"url": (
+			"http://www.bytewire.net/guides/"
+			+ "network_setup.html"
+		),
+		"server_response": "404 - File Not Found",
+		"requested_file": "network_setup.html",
+		"diagnostic": (
+			"Archive index lists network_setup.htm "
+			+ "in the same directory."
+		),
+		"choices": [
+			"/guides/network_setup.txt",
+			"/guides/network_setup.php",
+			"/guides/network_setup.htm",
+			"REMOVE LINK"
+		],
+		"correct_choice": 2
+	},
+	{
+		"id": &"reviews_typo",
+		"url": (
+			"http://www.gamezone.net/games/"
+			+ "revews/latest.htm"
+		),
+		"server_response": "404 - File Not Found",
+		"requested_file": "latest.htm",
+		"diagnostic": (
+			"Site directory contains /games/reviews/ "
+			+ "but no /games/revews/ directory."
+		),
+		"choices": [
+			"/games/reviews/latest.htm",
+			"/games/revews/index.htm",
+			"/reviews/games/latest.htm",
+			"REMOVE LINK"
+		],
+		"correct_choice": 0
+	},
+	{
+		"id": &"image_case",
+		"url": (
+			"http://www.digitalcorner.net/"
+			+ "Images/site_logo.gif"
+		),
+		"server_response": "404 - File Not Found",
+		"requested_file": "site_logo.gif",
+		"diagnostic": (
+			"Server is case-sensitive. The /images/ "
+			+ "directory contains site_logo.gif."
+		),
+		"choices": [
+			"/Images/SITE_LOGO.GIF",
+			"/images/site_logo.gif",
+			"/graphics/site_logo.gif",
+			"REMOVE LINK"
+		],
+		"correct_choice": 1
+	},
+	{
+		"id": &"forum_index",
+		"url": (
+			"http://www.superlinks.net/members/"
+			+ "forum.html"
+		),
+		"server_response": "404 - File Not Found",
+		"requested_file": "forum.html",
+		"diagnostic": (
+			"The /members/forum/ directory exists "
+			+ "and contains index.htm."
+		),
+		"choices": [
+			"/members/forum.htm",
+			"/forum/members/index.htm",
+			"/members/forum/index.htm",
+			"REMOVE LINK"
+		],
+		"correct_choice": 2
+	},
+	{
+		"id": &"patch_version",
+		"url": (
+			"http://www.webdeals99.com/patches/"
+			+ "browser_patch_4.zip"
+		),
+		"server_response": "404 - File Not Found",
+		"requested_file": "browser_patch_4.zip",
+		"diagnostic": (
+			"Patch archive lists browser_patch_5.zip "
+			+ "as the current download."
+		),
+		"choices": [
+			"/patches/browser_patch_5.zip",
+			"/patches/browser_patch_4.exe",
+			"/downloads/browser_patch_4.zip",
+			"REMOVE LINK"
+		],
+		"correct_choice": 0
+	},
+	{
+		"id": &"modem_article",
+		"url": (
+			"http://www.networkdaily.net/support/"
+			+ "modem56k.htm"
+		),
+		"server_response": "404 - File Not Found",
+		"requested_file": "modem56k.htm",
+		"diagnostic": (
+			"Support index moved the article to "
+			+ "/support/modems/56k.htm."
+		),
+		"choices": [
+			"/support/56k/modem.htm",
+			"/support/modems/56k.htm",
+			"/modems/support56k.htm",
+			"REMOVE LINK"
+		],
+		"correct_choice": 1
+	},
+	{
+		"id": &"banner_format",
+		"url": (
+			"http://www.searchworld.com/images/"
+			+ "banner.jpg"
+		),
+		"server_response": "404 - File Not Found",
+		"requested_file": "banner.jpg",
+		"diagnostic": (
+			"Asset listing contains banner.gif "
+			+ "but no banner.jpg."
+		),
+		"choices": [
+			"/images/banner.bmp",
+			"/graphics/banner.jpg",
+			"/images/banner.gif",
+			"REMOVE LINK"
+		],
+		"correct_choice": 2
+	},
+	{
+		"id": &"expired_promotion",
+		"url": (
+			"http://www.click4cash99.net/promos/"
+			+ "summer98.htm"
+		),
+		"server_response": "410 - Gone",
+		"requested_file": "summer98.htm",
+		"diagnostic": (
+			"The promotion has expired and the site "
+			+ "reports no replacement page."
+		),
+		"choices": [
+			"/promos/summer99.htm",
+			"/archive/summer98.htm",
+			"/promos/index.htm",
+			"REMOVE LINK"
+		],
+		"correct_choice": 3
+	},
+	{
+		"id": &"archive_directory",
+		"url": (
+			"http://www.techbase.org/archive/"
+			+ "index99.htm"
+		),
+		"server_response": "404 - File Not Found",
+		"requested_file": "index99.htm",
+		"diagnostic": (
+			"Archive listing places 1999 content "
+			+ "under /archive/1999/index.htm."
+		),
+		"choices": [
+			"/archive/index.htm",
+			"/archive/1999/index.htm",
+			"/1999/archive/index99.htm",
+			"REMOVE LINK"
+		],
+		"correct_choice": 1
 	}
 ]
 
@@ -484,8 +698,17 @@ var correct_review_count: int = 0
 var review_active: bool = false
 var review_completed: bool = false
 
+var cleanup_answer_locked: bool = false
+
 var cleanup_active: bool = false
 var cleanup_completed: bool = false
+
+var active_cleanup_cases: Array[Dictionary] = []
+
+var current_cleanup_index: int = 0
+var correct_cleanup_count: int = 0
+
+var current_cleanup_correct_choice: int = -1
 
 
 # -------------------------------------------------------------------
@@ -864,6 +1087,34 @@ func connect_buttons() -> void:
 			_on_close_cleanup_button_pressed
 		)
 		
+	if not cleanup_answer_button_1.pressed.is_connected(
+		_on_cleanup_answer_button_1_pressed
+	):
+		cleanup_answer_button_1.pressed.connect(
+			_on_cleanup_answer_button_1_pressed
+		)
+
+	if not cleanup_answer_button_2.pressed.is_connected(
+		_on_cleanup_answer_button_2_pressed
+	):
+		cleanup_answer_button_2.pressed.connect(
+			_on_cleanup_answer_button_2_pressed
+		)
+
+	if not cleanup_answer_button_3.pressed.is_connected(
+		_on_cleanup_answer_button_3_pressed
+	):
+		cleanup_answer_button_3.pressed.connect(
+			_on_cleanup_answer_button_3_pressed
+		)
+
+	if not cleanup_answer_button_4.pressed.is_connected(
+		_on_cleanup_answer_button_4_pressed
+	):
+		cleanup_answer_button_4.pressed.connect(
+			_on_cleanup_answer_button_4_pressed
+		)
+		
 func _on_activity_card_start_requested(
 	activity_id: StringName
 ) -> void:
@@ -1055,12 +1306,38 @@ func start_manual_index_review() -> void:
 
 	show_current_review_case()
 	
+func build_broken_link_cleanup_run() -> void:
+	active_cleanup_cases.clear()
+
+	for cleanup_case: Dictionary in BROKEN_LINK_CASES:
+		active_cleanup_cases.append(
+			cleanup_case.duplicate(true)
+		)
+
+	active_cleanup_cases.shuffle()
+
+	while (
+		active_cleanup_cases.size()
+		> CLEANUP_RECORD_COUNT
+	):
+		active_cleanup_cases.remove_at(
+			active_cleanup_cases.size() - 1
+		)
+
+	current_cleanup_index = 0
+	correct_cleanup_count = 0
+	current_cleanup_correct_choice = -1
+	
+	
 func start_broken_link_cleanup() -> void:
 	if cleanup_active:
 		return
 
+	build_broken_link_cleanup_run()
+
 	cleanup_active = true
 	cleanup_completed = false
+	cleanup_answer_locked = false
 
 	broken_link_cleanup_card.set_in_progress_state(
 		"CLEANUP IN PROGRESS"
@@ -1086,28 +1363,265 @@ func start_broken_link_cleanup() -> void:
 	cleanup_window.visible = true
 	minimized_cleanup_button.visible = false
 
+	cleanup_feedback_label.text = (
+		"Select the best repair option."
+	)
+
+	show_current_cleanup_case()
+	
+	
+# -------------------------------------------------------------------
+# Broken Link Cleanup Display
+# -------------------------------------------------------------------
+
+func show_current_cleanup_case() -> void:
+	if not cleanup_active:
+		return
+
+	if (
+		current_cleanup_index
+		>= active_cleanup_cases.size()
+	):
+		return
+
+	var cleanup_case: Dictionary = (
+		active_cleanup_cases[
+			current_cleanup_index
+		]
+	)
+
+	var raw_choices: Variant = (
+		cleanup_case.get(
+			"choices",
+			[]
+		)
+	)
+
+	if typeof(raw_choices) != TYPE_ARRAY:
+		push_warning(
+			"ActivitiesPage: Broken Link Cleanup "
+			+ "record has invalid choices."
+		)
+
+		return
+
+	var choices: Array = raw_choices
+
+	if choices.size() != 4:
+		push_warning(
+			"ActivitiesPage: Broken Link Cleanup "
+			+ "record must contain exactly 4 choices."
+		)
+
+		return
+
+	var correct_choice: int = int(
+		cleanup_case.get(
+			"correct_choice",
+			-1
+		)
+	)
+
+	if (
+		correct_choice < 0
+		or correct_choice >= 4
+	):
+		push_warning(
+			"ActivitiesPage: Broken Link Cleanup "
+			+ "record has an invalid correct choice."
+		)
+
+		return
+
+	current_cleanup_correct_choice = (
+		correct_choice
+	)
+
 	cleanup_progress_label.text = (
-		"RECORD 1 OF 5"
+		"RECORD %d OF %d"
+		% [
+			current_cleanup_index + 1,
+			CLEANUP_RECORD_COUNT
+		]
 	)
 
 	cleanup_url_label.text = (
-		"URL: www.example99.com/downloads/"
-		+ "video_driver_98.zip"
+		"URL: %s"
+		% str(
+			cleanup_case.get(
+				"url",
+				"Unknown"
+			)
+		)
 	)
 
 	cleanup_link_data_label.text = (
-		"Server Response: 404 - File Not Found\n"
-		+ "Requested File: video_driver_98.zip"
+		"Server Response: %s\n"
+		+ "Requested File: %s\n"
+		+ "Diagnostic: %s"
+	) % [
+		str(
+			cleanup_case.get(
+				"server_response",
+				"Unknown"
+			)
+		),
+		str(
+			cleanup_case.get(
+				"requested_file",
+				"Unknown"
+			)
+		),
+		str(
+			cleanup_case.get(
+				"diagnostic",
+				"No diagnostic information."
+			)
+		)
+	]
+
+	var answer_buttons: Array[Button] = [
+		cleanup_answer_button_1,
+		cleanup_answer_button_2,
+		cleanup_answer_button_3,
+		cleanup_answer_button_4
+	]
+
+	for choice_index: int in range(
+		answer_buttons.size()
+	):
+		answer_buttons[
+			choice_index
+		].text = str(
+			choices[
+				choice_index
+			]
+		)
+
+		answer_buttons[
+			choice_index
+		].disabled = false
+
+	cleanup_answer_locked = false
+
+	set_cleanup_answer_buttons_disabled(
+		false
 	)
 
 	cleanup_feedback_label.text = (
 		"Select the best repair option."
 	)
 
-	cleanup_answer_button_1.text = "OPTION A"
-	cleanup_answer_button_2.text = "OPTION B"
-	cleanup_answer_button_3.text = "OPTION C"
-	cleanup_answer_button_4.text = "OPTION D"
+	cleanup_feedback_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_PRIMARY
+	)
+
+	update_minimized_cleanup_button()
+	
+func finish_cleanup_record_sequence() -> void:
+	cleanup_completed = true
+	cleanup_answer_locked = true
+
+	set_cleanup_answer_buttons_disabled(
+		true
+	)
+
+	var money_reward: float = (
+		float(correct_cleanup_count)
+		* CLEANUP_MONEY_REWARD_PER_CORRECT
+	)
+
+	GameState.set_revenue(
+		GameState.revenue
+		+ money_reward
+	)
+
+	var perfect_cleanup: bool = (
+		correct_cleanup_count
+		>= CLEANUP_RECORD_COUNT
+	)
+
+	var research_reward: float = 0.0
+
+	if perfect_cleanup:
+		research_reward = (
+			PERFECT_CLEANUP_RESEARCH_REWARD
+		)
+
+		ResearchManager.award_research_points(
+			PERFECT_CLEANUP_RESEARCH_REWARD,
+			"Perfect Broken Link Cleanup"
+		)
+
+	ActivityStatsManager.record_completion(
+		ACTIVITY_BROKEN_LINK_CLEANUP
+	)
+
+	broken_link_cleanup_card.set_completion_count(
+		ActivityStatsManager.get_type_completed(
+			ACTIVITY_BROKEN_LINK_CLEANUP
+		)
+	)
+
+	broken_link_cleanup_card.set_completed_state(
+		"RESULTS OPEN"
+	)
+
+	cleanup_answer_button_1.visible = false
+	cleanup_answer_button_2.visible = false
+	cleanup_answer_button_3.visible = false
+	cleanup_answer_button_4.visible = false
+
+	close_cleanup_button.visible = true
+	close_cleanup_button.disabled = false
+
+	cleanup_minimize_button.disabled = true
+	minimized_cleanup_button.visible = false
+
+	cleanup_progress_label.text = (
+		"CLEANUP COMPLETE"
+	)
+
+	cleanup_url_label.text = (
+		"RESULTS"
+	)
+
+	cleanup_link_data_label.text = (
+		"Correct Repairs: %d / %d\n"
+		+ "Revenue Earned: $%.0f\n"
+		+ "Research Earned: +%.0f RP"
+	) % [
+		correct_cleanup_count,
+		CLEANUP_RECORD_COUNT,
+		money_reward,
+		research_reward
+	]
+
+	if perfect_cleanup:
+		cleanup_feedback_label.text = (
+			"PERFECT CLEANUP — "
+			+ "All broken links repaired correctly."
+		)
+
+		cleanup_feedback_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+	else:
+		cleanup_feedback_label.text = (
+			"CLEANUP COMPLETE — %d of %d links "
+			+ "repaired correctly."
+		) % [
+			correct_cleanup_count,
+			CLEANUP_RECORD_COUNT
+		]
+
+		cleanup_feedback_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_INFORMATION
+		)
 	
 	
 # -------------------------------------------------------------------
@@ -1181,8 +1695,25 @@ func update_minimized_cleanup_button() -> void:
 		minimized_cleanup_button.visible = false
 		return
 
+	if cleanup_completed:
+		minimized_cleanup_button.text = (
+			"Broken Link Cleanup — COMPLETE"
+		)
+
+		return
+
+	var displayed_record: int = clampi(
+		current_cleanup_index + 1,
+		1,
+		CLEANUP_RECORD_COUNT
+	)
+
 	minimized_cleanup_button.text = (
-		"Broken Link Cleanup — 1/5"
+		"Broken Link Cleanup — %d/%d"
+		% [
+			displayed_record,
+			CLEANUP_RECORD_COUNT
+		]
 	)
 	
 func _on_close_cleanup_button_pressed() -> void:
@@ -1198,6 +1729,7 @@ func close_broken_link_cleanup() -> void:
 
 	cleanup_active = false
 	cleanup_completed = false
+	cleanup_answer_locked = false
 
 	close_cleanup_button.visible = false
 	close_cleanup_button.disabled = true
@@ -1503,6 +2035,126 @@ func submit_review_decision(
 	current_review_index += 1
 
 	show_current_review_case()
+	
+func _on_cleanup_answer_button_1_pressed() -> void:
+	submit_cleanup_answer(0)
+
+
+func _on_cleanup_answer_button_2_pressed() -> void:
+	submit_cleanup_answer(1)
+
+
+func _on_cleanup_answer_button_3_pressed() -> void:
+	submit_cleanup_answer(2)
+
+
+func _on_cleanup_answer_button_4_pressed() -> void:
+	submit_cleanup_answer(3)
+	
+func set_cleanup_answer_buttons_disabled(
+	disabled: bool
+) -> void:
+	cleanup_answer_button_1.disabled = disabled
+	cleanup_answer_button_2.disabled = disabled
+	cleanup_answer_button_3.disabled = disabled
+	cleanup_answer_button_4.disabled = disabled
+	
+func submit_cleanup_answer(
+	selected_choice: int
+) -> void:
+	if not cleanup_active:
+		return
+
+	if cleanup_completed:
+		return
+
+	if cleanup_answer_locked:
+		return
+
+	if (
+		selected_choice < 0
+		or selected_choice >= 4
+	):
+		return
+
+	if (
+		current_cleanup_correct_choice < 0
+		or current_cleanup_correct_choice >= 4
+	):
+		push_warning(
+			"ActivitiesPage: No valid Broken Link "
+			+ "correct answer is available."
+		)
+
+		return
+
+	cleanup_answer_locked = true
+
+	set_cleanup_answer_buttons_disabled(
+		true
+	)
+
+	var answer_is_correct: bool = (
+		selected_choice
+		== current_cleanup_correct_choice
+	)
+
+	if answer_is_correct:
+		correct_cleanup_count += 1
+
+		cleanup_feedback_label.text = (
+			"CORRECT — Link repaired."
+		)
+
+		cleanup_feedback_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+	else:
+		var answer_letters: Array[String] = [
+			"A",
+			"B",
+			"C",
+			"D"
+		]
+
+		var correct_letter: String = (
+			answer_letters[
+				current_cleanup_correct_choice
+			]
+		)
+
+		cleanup_feedback_label.text = (
+			"INCORRECT — Correct option: %s"
+			% correct_letter
+		)
+
+		cleanup_feedback_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_ERROR
+		)
+
+	await get_tree().create_timer(
+		CLEANUP_FEEDBACK_DELAY_SECONDS
+	).timeout
+
+	if not cleanup_active:
+		return
+
+	advance_cleanup_record()
+	
+func advance_cleanup_record() -> void:
+	current_cleanup_index += 1
+
+	if (
+		current_cleanup_index
+		>= active_cleanup_cases.size()
+	):
+		finish_cleanup_record_sequence()
+		return
+
+	show_current_cleanup_case()
 
 
 # -------------------------------------------------------------------

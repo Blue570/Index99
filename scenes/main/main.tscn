@@ -3606,6 +3606,7 @@ custom_minimum_size = Vector2(0, 34)
 layout_mode = 2
 size_flags_vertical = 1
 text = "Select the best repair option."
+horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ReviewDecisionRow" type="HBoxContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout" unique_id=1114399147]
