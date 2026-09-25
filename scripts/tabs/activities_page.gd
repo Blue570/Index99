@@ -9,6 +9,10 @@ const ACTIVITY_MANUAL_INDEX_REVIEW: StringName = (
 	&"manual_index_review"
 )
 
+const ACTIVITY_BROKEN_LINK_CLEANUP: StringName = (
+	&"broken_link_cleanup"
+)
+
 const REVIEW_PAGE_COUNT: int = 5
 const MONEY_REWARD_PER_CORRECT: float = 5.0
 const PERFECT_REVIEW_RESEARCH_REWARD: float = 1.0
@@ -34,6 +38,10 @@ const REVIEW_BUTTON_NORMAL_COLOR: Color = Color("#D4D0C8")
 const REVIEW_BUTTON_PRESSED_COLOR: Color = Color("#B0B0B0")
 
 const REVIEW_CLOSE_HOVER_COLOR: Color = Color("#4A5F7A")
+
+const REVIEW_WINDOW_BACKGROUND_COLOR: Color = Color("#C0C0C0")
+
+const REVIEW_WINDOW_BORDER_COLOR: Color = Color("#404040")
 
 
 const REVIEW_CASES: Array[Dictionary] = [
@@ -128,6 +136,14 @@ const REVIEW_CASES: Array[Dictionary] = [
 	$ActivitiesMargin/ActivitiesPageLayout
 	/ActivitiesScroll/ActivitiesCatalog
 	/ManualIndexReviewCard
+)
+
+@onready var broken_link_cleanup_card: ActivityCard = (
+	find_child(
+		"BrokenLinkCleanupCard",
+		true,
+		false
+	) as ActivityCard
 )
 
 
@@ -286,6 +302,177 @@ const REVIEW_CASES: Array[Dictionary] = [
 
 
 # -------------------------------------------------------------------
+# Broken Link Cleanup Window
+# -------------------------------------------------------------------
+
+@onready var cleanup_window: PanelContainer = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow"
+	) as PanelContainer
+)
+
+@onready var cleanup_window_header_panel: PanelContainer = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupWindowHeaderPanel"
+	) as PanelContainer
+)
+
+@onready var cleanup_window_title_label: Label = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupWindowHeaderPanel/"
+		+ "CleanupWindowHeader/"
+		+ "CleanupWindowTitleLabel"
+	) as Label
+)
+
+@onready var cleanup_minimize_button: Button = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupWindowHeaderPanel/"
+		+ "CleanupWindowHeader/"
+		+ "CleanupMinimizeButton"
+	) as Button
+)
+
+@onready var cleanup_progress_label: Label = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupWindowBody/CleanupLinkInfoPanel/"
+		+ "CleanupLinkInfoMargin/CleanupLinkInfoLayout/"
+		+ "CleanupProgressLabel"
+	) as Label
+)
+
+@onready var cleanup_url_label: Label = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupWindowBody/CleanupLinkInfoPanel/"
+		+ "CleanupLinkInfoMargin/CleanupLinkInfoLayout/"
+		+ "CleanupUrlLabel"
+	) as Label
+)
+
+@onready var cleanup_link_data_label: Label = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupWindowBody/CleanupLinkInfoPanel/"
+		+ "CleanupLinkInfoMargin/CleanupLinkInfoLayout/"
+		+ "CleanupLinkDataLabel"
+	) as Label
+)
+
+@onready var cleanup_feedback_panel: PanelContainer = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupFeedbackPanel"
+	) as PanelContainer
+)
+
+@onready var cleanup_feedback_label: Label = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupFeedbackPanel/"
+		+ "CleanupFeedbackLabel"
+	) as Label
+)
+
+@onready var cleanup_link_info_panel: PanelContainer = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupWindowBody/CleanupLinkInfoPanel"
+	) as PanelContainer
+)
+
+@onready var cleanup_instructions_panel: PanelContainer = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupWindowBody/CleanupInstructionsPanel"
+	) as PanelContainer
+)
+
+@onready var cleanup_link_info_header_label: Label = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupWindowBody/CleanupLinkInfoPanel/"
+		+ "CleanupLinkInfoMargin/CleanupLinkInfoLayout/"
+		+ "CleanupLinkInfoHeaderLabel"
+	) as Label
+)
+
+@onready var cleanup_instructions_header_label: Label = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupWindowBody/CleanupInstructionsPanel/"
+		+ "CleanupInstructionsMargin/"
+		+ "CleanupInstructionsLayout/"
+		+ "CleanupInstructionsHeaderLabel"
+	) as Label
+)
+
+@onready var cleanup_answer_button_1: Button = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupAnswerGrid/CleanupAnswerButton1"
+	) as Button
+)
+
+@onready var cleanup_answer_button_2: Button = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupAnswerGrid/CleanupAnswerButton2"
+	) as Button
+)
+
+@onready var cleanup_answer_button_3: Button = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupAnswerGrid/CleanupAnswerButton3"
+	) as Button
+)
+
+@onready var cleanup_answer_button_4: Button = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CleanupAnswerGrid/CleanupAnswerButton4"
+	) as Button
+)
+
+@onready var close_cleanup_button: Button = (
+	get_tree().current_scene.get_node(
+		"BrokenLinkCleanupWindow/"
+		+ "CleanupWindowMargin/CleanupWindowLayout/"
+		+ "CloseCleanupButton"
+	) as Button
+)
+
+@onready var minimized_cleanup_button: Button = (
+	get_tree().current_scene.get_node(
+		"MainApplicationWindow/MainLayout/"
+		+ "BackgroundJobsBar/JobsLayout/"
+		+ "MinimizedBrokenLinkCleanupButton"
+	) as Button
+)
+
+
+# -------------------------------------------------------------------
 # Runtime State
 # -------------------------------------------------------------------
 
@@ -297,6 +484,9 @@ var correct_review_count: int = 0
 var review_active: bool = false
 var review_completed: bool = false
 
+var cleanup_active: bool = false
+var cleanup_completed: bool = false
+
 
 # -------------------------------------------------------------------
 # Setup
@@ -304,19 +494,41 @@ var review_completed: bool = false
 
 func _ready() -> void:
 	setup_manual_index_review_card()
+	setup_broken_link_cleanup_card()
+	setup_broken_link_cleanup_workspace()
+
 	connect_activity_stats_signals()
 	connect_buttons()
+
+	apply_activity_window_shell_theme(
+		review_window
+	)
 
 	apply_review_window_font_colors()
 	apply_review_window_title_bar_theme()
 	apply_review_window_content_theme()
 	apply_review_window_bottom_theme()
 
+	apply_activity_window_shell_theme(
+		cleanup_window
+	)
+
+	apply_cleanup_window_font_colors()
+	apply_cleanup_window_title_bar_theme()
+	apply_cleanup_window_content_theme()
+	apply_cleanup_window_bottom_theme()
+
 	review_window.visible = false
 	minimized_review_button.visible = false
 
 	close_review_button.visible = false
 	close_review_button.disabled = true
+
+	cleanup_window.visible = false
+	minimized_cleanup_button.visible = false
+
+	close_cleanup_button.visible = false
+	close_cleanup_button.disabled = true
 
 	
 func setup_manual_index_review_card() -> void:
@@ -334,6 +546,46 @@ func setup_manual_index_review_card() -> void:
 			ACTIVITY_MANUAL_INDEX_REVIEW
 		)
 	)
+	
+func setup_broken_link_cleanup_card() -> void:
+	broken_link_cleanup_card.configure(
+		ACTIVITY_BROKEN_LINK_CLEANUP,
+		"BROKEN LINK CLEANUP",
+		"Identify broken URLs and choose the correct repair.",
+		"15-30 sec",
+		"$5/correct + Perfect RP",
+		"START CLEANUP"
+	)
+
+	broken_link_cleanup_card.set_completion_count(
+		ActivityStatsManager.get_type_completed(
+			ACTIVITY_BROKEN_LINK_CLEANUP
+		)
+	)
+	
+func setup_broken_link_cleanup_workspace() -> void:
+	cleanup_progress_label.text = (
+		"RECORD 1 OF 5"
+	)
+
+	cleanup_url_label.text = (
+		"URL: www.example99.com/downloads/"
+		+ "video_driver_98.zip"
+	)
+
+	cleanup_link_data_label.text = (
+		"Server Response: 404 - File Not Found\n"
+		+ "Requested File: video_driver_98.zip"
+	)
+
+	cleanup_feedback_label.text = (
+		"Select the best repair option."
+	)
+
+	cleanup_answer_button_1.text = "OPTION A"
+	cleanup_answer_button_2.text = "OPTION B"
+	cleanup_answer_button_3.text = "OPTION C"
+	cleanup_answer_button_4.text = "OPTION D"
 
 # -------------------------------------------------------------------
 # Activity Statistics
@@ -356,14 +608,55 @@ func refresh_activity_completion_counts() -> void:
 			ACTIVITY_MANUAL_INDEX_REVIEW
 		)
 	)
+
+	broken_link_cleanup_card.set_completion_count(
+		ActivityStatsManager.get_type_completed(
+			ACTIVITY_BROKEN_LINK_CLEANUP
+		)
+	)
 	
 # -------------------------------------------------------------------
 # Review Window Theme
 # -------------------------------------------------------------------
 
+func apply_activity_window_shell_theme(
+	window: PanelContainer
+) -> void:
+	var window_style: StyleBoxFlat = (
+		StyleBoxFlat.new()
+	)
+
+	window_style.bg_color = (
+		REVIEW_WINDOW_BACKGROUND_COLOR
+	)
+
+	window_style.border_color = (
+		REVIEW_WINDOW_BORDER_COLOR
+	)
+
+	window_style.border_width_left = 2
+	window_style.border_width_top = 2
+	window_style.border_width_right = 2
+	window_style.border_width_bottom = 2
+
+	window_style.corner_radius_top_left = 0
+	window_style.corner_radius_top_right = 0
+	window_style.corner_radius_bottom_left = 0
+	window_style.corner_radius_bottom_right = 0
+
+	window.add_theme_stylebox_override(
+		"panel",
+		window_style
+	)
+
 func apply_review_window_font_colors() -> void:
 	apply_font_color_recursive(
 		review_window
+	)
+	
+func apply_cleanup_window_font_colors() -> void:
+	apply_font_color_recursive(
+		cleanup_window
 	)
 	
 func apply_review_window_title_bar_theme() -> void:
@@ -403,6 +696,47 @@ func apply_review_window_title_bar_theme() -> void:
 	)
 
 	review_minimize_button.add_theme_color_override(
+		"font_pressed_color",
+		ThemeManager.TEXT_LIGHT
+	)
+	
+func apply_cleanup_window_title_bar_theme() -> void:
+	cleanup_window_header_panel.add_theme_stylebox_override(
+		"panel",
+		ThemeManager.create_title_bar_style()
+	)
+
+	cleanup_window_title_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_LIGHT
+	)
+
+	cleanup_minimize_button.add_theme_stylebox_override(
+		"normal",
+		ThemeManager.create_window_button_normal_style()
+	)
+
+	cleanup_minimize_button.add_theme_stylebox_override(
+		"hover",
+		ThemeManager.create_window_button_hover_style()
+	)
+
+	cleanup_minimize_button.add_theme_stylebox_override(
+		"pressed",
+		ThemeManager.create_window_button_pressed_style()
+	)
+
+	cleanup_minimize_button.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_PRIMARY
+	)
+
+	cleanup_minimize_button.add_theme_color_override(
+		"font_hover_color",
+		ThemeManager.TEXT_PRIMARY
+	)
+
+	cleanup_minimize_button.add_theme_color_override(
 		"font_pressed_color",
 		ThemeManager.TEXT_LIGHT
 	)
@@ -466,6 +800,13 @@ func connect_buttons() -> void:
 		manual_index_review_card.start_requested.connect(
 			_on_activity_card_start_requested
 		)
+		
+	if not broken_link_cleanup_card.start_requested.is_connected(
+		_on_activity_card_start_requested
+	):
+		broken_link_cleanup_card.start_requested.connect(
+			_on_activity_card_start_requested
+		)
 
 	if not accept_button.pressed.is_connected(
 		_on_accept_button_pressed
@@ -502,11 +843,42 @@ func connect_buttons() -> void:
 			_on_minimized_review_button_pressed
 		)
 		
+	if not cleanup_minimize_button.pressed.is_connected(
+		_on_cleanup_minimize_button_pressed
+	):
+		cleanup_minimize_button.pressed.connect(
+			_on_cleanup_minimize_button_pressed
+		)
+
+	if not minimized_cleanup_button.pressed.is_connected(
+		_on_minimized_cleanup_button_pressed
+	):
+		minimized_cleanup_button.pressed.connect(
+			_on_minimized_cleanup_button_pressed
+		)
+
+	if not close_cleanup_button.pressed.is_connected(
+		_on_close_cleanup_button_pressed
+	):
+		close_cleanup_button.pressed.connect(
+			_on_close_cleanup_button_pressed
+		)
+		
 func _on_activity_card_start_requested(
 	activity_id: StringName
 ) -> void:
 	if activity_id == ACTIVITY_MANUAL_INDEX_REVIEW:
 		start_manual_index_review()
+		return
+
+	if activity_id == ACTIVITY_BROKEN_LINK_CLEANUP:
+		start_broken_link_cleanup()
+		return
+
+	push_warning(
+		"ActivitiesPage: Unknown activity ID: %s"
+		% activity_id
+	)
 		
 func apply_review_window_content_theme() -> void:
 	var content_panels: Array[PanelContainer] = [
@@ -563,6 +935,65 @@ func apply_review_window_content_theme() -> void:
 	)
 
 	review_progress_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_SECONDARY
+	)
+	
+func apply_cleanup_window_content_theme() -> void:
+	var content_panels: Array[PanelContainer] = [
+		cleanup_link_info_panel,
+		cleanup_instructions_panel
+	]
+
+	for panel: PanelContainer in content_panels:
+		var panel_style: StyleBoxFlat = (
+			StyleBoxFlat.new()
+		)
+
+		panel_style.bg_color = (
+			REVIEW_PANEL_BACKGROUND_COLOR
+		)
+
+		panel_style.border_color = (
+			REVIEW_PANEL_BORDER_COLOR
+		)
+
+		panel_style.border_width_left = 1
+		panel_style.border_width_top = 1
+		panel_style.border_width_right = 1
+		panel_style.border_width_bottom = 1
+
+		panel_style.corner_radius_top_left = 0
+		panel_style.corner_radius_top_right = 0
+		panel_style.corner_radius_bottom_left = 0
+		panel_style.corner_radius_bottom_right = 0
+
+		panel.add_theme_stylebox_override(
+			"panel",
+			panel_style
+		)
+
+	cleanup_link_info_header_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.ACCENT_BLUE
+	)
+
+	cleanup_instructions_header_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.ACCENT_BLUE
+	)
+
+	cleanup_link_info_header_label.add_theme_font_size_override(
+		"font_size",
+		ThemeManager.FONT_SIZE_NORMAL
+	)
+
+	cleanup_instructions_header_label.add_theme_font_size_override(
+		"font_size",
+		ThemeManager.FONT_SIZE_NORMAL
+	)
+
+	cleanup_progress_label.add_theme_color_override(
 		"font_color",
 		ThemeManager.TEXT_SECONDARY
 	)
@@ -624,6 +1055,60 @@ func start_manual_index_review() -> void:
 
 	show_current_review_case()
 	
+func start_broken_link_cleanup() -> void:
+	if cleanup_active:
+		return
+
+	cleanup_active = true
+	cleanup_completed = false
+
+	broken_link_cleanup_card.set_in_progress_state(
+		"CLEANUP IN PROGRESS"
+	)
+
+	cleanup_answer_button_1.visible = true
+	cleanup_answer_button_1.disabled = false
+
+	cleanup_answer_button_2.visible = true
+	cleanup_answer_button_2.disabled = false
+
+	cleanup_answer_button_3.visible = true
+	cleanup_answer_button_3.disabled = false
+
+	cleanup_answer_button_4.visible = true
+	cleanup_answer_button_4.disabled = false
+
+	close_cleanup_button.visible = false
+	close_cleanup_button.disabled = true
+
+	cleanup_minimize_button.disabled = false
+
+	cleanup_window.visible = true
+	minimized_cleanup_button.visible = false
+
+	cleanup_progress_label.text = (
+		"RECORD 1 OF 5"
+	)
+
+	cleanup_url_label.text = (
+		"URL: www.example99.com/downloads/"
+		+ "video_driver_98.zip"
+	)
+
+	cleanup_link_data_label.text = (
+		"Server Response: 404 - File Not Found\n"
+		+ "Requested File: video_driver_98.zip"
+	)
+
+	cleanup_feedback_label.text = (
+		"Select the best repair option."
+	)
+
+	cleanup_answer_button_1.text = "OPTION A"
+	cleanup_answer_button_2.text = "OPTION B"
+	cleanup_answer_button_3.text = "OPTION C"
+	cleanup_answer_button_4.text = "OPTION D"
+	
 	
 # -------------------------------------------------------------------
 # Review Window State
@@ -665,6 +1150,74 @@ func update_minimized_review_button() -> void:
 			displayed_page,
 			REVIEW_PAGE_COUNT
 		]
+	)
+	
+	
+# -------------------------------------------------------------------
+# Broken Link Cleanup Window State
+# -------------------------------------------------------------------
+
+func _on_cleanup_minimize_button_pressed() -> void:
+	if not cleanup_active:
+		return
+
+	cleanup_window.visible = false
+	minimized_cleanup_button.visible = true
+
+	update_minimized_cleanup_button()
+
+
+func _on_minimized_cleanup_button_pressed() -> void:
+	if not cleanup_active:
+		minimized_cleanup_button.visible = false
+		return
+
+	minimized_cleanup_button.visible = false
+	cleanup_window.visible = true
+
+
+func update_minimized_cleanup_button() -> void:
+	if not cleanup_active:
+		minimized_cleanup_button.visible = false
+		return
+
+	minimized_cleanup_button.text = (
+		"Broken Link Cleanup — 1/5"
+	)
+	
+func _on_close_cleanup_button_pressed() -> void:
+	if not cleanup_completed:
+		return
+
+	close_broken_link_cleanup()
+
+
+func close_broken_link_cleanup() -> void:
+	cleanup_window.visible = false
+	minimized_cleanup_button.visible = false
+
+	cleanup_active = false
+	cleanup_completed = false
+
+	close_cleanup_button.visible = false
+	close_cleanup_button.disabled = true
+
+	cleanup_answer_button_1.visible = true
+	cleanup_answer_button_1.disabled = false
+
+	cleanup_answer_button_2.visible = true
+	cleanup_answer_button_2.disabled = false
+
+	cleanup_answer_button_3.visible = true
+	cleanup_answer_button_3.disabled = false
+
+	cleanup_answer_button_4.visible = true
+	cleanup_answer_button_4.disabled = false
+
+	cleanup_minimize_button.disabled = false
+
+	broken_link_cleanup_card.set_available_state(
+		"START ANOTHER CLEANUP"
 	)
 
 
@@ -781,6 +1334,52 @@ func apply_review_window_bottom_theme() -> void:
 
 	apply_review_action_button_style(
 		close_review_button,
+		REVIEW_CLOSE_HOVER_COLOR
+	)
+	
+func apply_cleanup_window_bottom_theme() -> void:
+	var feedback_style: StyleBoxFlat = StyleBoxFlat.new()
+
+	feedback_style.bg_color = (
+		REVIEW_FEEDBACK_BACKGROUND_COLOR
+	)
+
+	feedback_style.border_color = (
+		REVIEW_FEEDBACK_BORDER_COLOR
+	)
+
+	feedback_style.border_width_left = 1
+	feedback_style.border_width_top = 1
+	feedback_style.border_width_right = 1
+	feedback_style.border_width_bottom = 1
+
+	cleanup_feedback_panel.add_theme_stylebox_override(
+		"panel",
+		feedback_style
+	)
+
+	apply_review_action_button_style(
+		cleanup_answer_button_1,
+		REVIEW_CLOSE_HOVER_COLOR
+	)
+
+	apply_review_action_button_style(
+		cleanup_answer_button_2,
+		REVIEW_CLOSE_HOVER_COLOR
+	)
+
+	apply_review_action_button_style(
+		cleanup_answer_button_3,
+		REVIEW_CLOSE_HOVER_COLOR
+	)
+
+	apply_review_action_button_style(
+		cleanup_answer_button_4,
+		REVIEW_CLOSE_HOVER_COLOR
+	)
+
+	apply_review_action_button_style(
+		close_cleanup_button,
 		REVIEW_CLOSE_HOVER_COLOR
 	)
 	

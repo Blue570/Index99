@@ -3048,7 +3048,9 @@ theme_override_constants/v_separation = 10
 columns = 2
 
 [node name="ManualIndexReviewCard" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog" unique_id=726242520 instance=ExtResource("14_hxu8e")]
-custom_minimum_size = Vector2(0, 250)
+layout_mode = 2
+
+[node name="BrokenLinkCleanupCard" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog" unique_id=1217706826 instance=ExtResource("14_hxu8e")]
 layout_mode = 2
 
 [node name="BackgroundJobsBar" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=1989258494]
@@ -3139,6 +3141,12 @@ visible = false
 custom_minimum_size = Vector2(190, 28)
 layout_mode = 2
 text = "Manual Index Review — 1/5"
+
+[node name="MinimizedBrokenLinkCleanupButton" type="Button" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout" unique_id=67130319]
+visible = false
+custom_minimum_size = Vector2(190, 28)
+layout_mode = 2
+text = "Broken Link Cleanup — 1/5"
 
 [node name="JobsSpacer" type="Control" parent="MainApplicationWindow/MainLayout/BackgroundJobsBar/JobsLayout" unique_id=1462917428]
 layout_mode = 2
@@ -3472,6 +3480,197 @@ visible = false
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
+text = "CLOSE"
+
+[node name="BrokenLinkCleanupWindow" type="PanelContainer" parent="." unique_id=857775135]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -210.0
+offset_right = 360.0
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_pg34l")
+
+[node name="CleanupWindowMargin" type="MarginContainer" parent="BrokenLinkCleanupWindow" unique_id=1820534614]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="CleanupWindowLayout" type="VBoxContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin" unique_id=1817669291]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CleanupWindowHeaderPanel" type="PanelContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout" unique_id=535930126]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="CleanupWindowHeader" type="HBoxContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowHeaderPanel" unique_id=1939214080]
+layout_mode = 2
+
+[node name="CleanupWindowTitleLabel" type="Label" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowHeaderPanel/CleanupWindowHeader" unique_id=2075746427]
+layout_mode = 2
+text = "BROKEN LINK CLEANUP"
+
+[node name="CleanupWindowHeaderSpacer" type="Control" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowHeaderPanel/CleanupWindowHeader" unique_id=2070289526]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CleanupMinimizeButton" type="Button" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowHeaderPanel/CleanupWindowHeader" unique_id=150317420]
+custom_minimum_size = Vector2(28, 24)
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/hover = SubResource("StyleBoxFlat_ou6is")
+text = "_"
+
+[node name="CleanupWindowBody" type="HBoxContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout" unique_id=1705510089]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="CleanupLinkInfoPanel" type="PanelContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody" unique_id=284566791]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CleanupLinkInfoMargin" type="MarginContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody/CleanupLinkInfoPanel" unique_id=494949634]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="CleanupLinkInfoLayout" type="VBoxContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody/CleanupLinkInfoPanel/CleanupLinkInfoMargin" unique_id=1017746120]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CleanupLinkInfoHeaderLabel" type="Label" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody/CleanupLinkInfoPanel/CleanupLinkInfoMargin/CleanupLinkInfoLayout" unique_id=1248436791]
+layout_mode = 2
+text = "FAILED LINK"
+
+[node name="CleanupProgressLabel" type="Label" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody/CleanupLinkInfoPanel/CleanupLinkInfoMargin/CleanupLinkInfoLayout" unique_id=350384310]
+layout_mode = 2
+text = "RECORD 1 OF 5"
+
+[node name="CleanupUrlLabel" type="Label" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody/CleanupLinkInfoPanel/CleanupLinkInfoMargin/CleanupLinkInfoLayout" unique_id=930057673]
+layout_mode = 2
+text = "URL: www.example99.com/downloads/video_driver_98.zip"
+autowrap_mode = 3
+
+[node name="CleanupLinkDataLabel" type="Label" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody/CleanupLinkInfoPanel/CleanupLinkInfoMargin/CleanupLinkInfoLayout" unique_id=760424496]
+layout_mode = 2
+text = "Server Response: 404 - File Not Found
+
+Requested File:
+video_driver_98.zip"
+
+[node name="CleanupInstructionsPanel" type="PanelContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody" unique_id=809349438]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CleanupInstructionsMargin" type="MarginContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody/CleanupInstructionsPanel" unique_id=1315888501]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="CleanupInstructionsLayout" type="VBoxContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody/CleanupInstructionsPanel/CleanupInstructionsMargin" unique_id=1138207688]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CleanupInstructionsHeaderLabel" type="Label" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody/CleanupInstructionsPanel/CleanupInstructionsMargin/CleanupInstructionsLayout" unique_id=942779873]
+layout_mode = 2
+text = "LINK REPAIR"
+
+[node name="CleanupInstructionsLabel" type="Label" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupWindowBody/CleanupInstructionsPanel/CleanupInstructionsMargin/CleanupInstructionsLayout" unique_id=1499904509]
+layout_mode = 2
+text = "Review the failed link.
+
+Select the repair that most likely
+points to the intended resource."
+
+[node name="CleanupFeedbackPanel" type="PanelContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout" unique_id=1495719504]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+
+[node name="CleanupFeedbackLabel" type="Label" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupFeedbackPanel" unique_id=382906261]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_vertical = 1
+text = "Select the best repair option."
+vertical_alignment = 1
+
+[node name="ReviewDecisionRow" type="HBoxContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout" unique_id=1114399147]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="AcceptButton" type="Button" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/ReviewDecisionRow" unique_id=988180209]
+visible = false
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/hover = SubResource("StyleBoxFlat_hxu8e")
+text = "ACCEPT"
+
+[node name="RejectButton" type="Button" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/ReviewDecisionRow" unique_id=1751747505]
+visible = false
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_hover_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_styles/hover = SubResource("StyleBoxFlat_nvumn")
+text = "REJECT"
+
+[node name="CloseReviewButton" type="Button" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/ReviewDecisionRow" unique_id=1087883821]
+visible = false
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "CLOSE"
+
+[node name="CleanupAnswerGrid" type="GridContainer" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout" unique_id=1079717030]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="CleanupAnswerButton1" type="Button" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupAnswerGrid" unique_id=555038633]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "OPTION A"
+
+[node name="CleanupAnswerButton2" type="Button" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupAnswerGrid" unique_id=1583168664]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "OPTION B"
+
+[node name="CleanupAnswerButton3" type="Button" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupAnswerGrid" unique_id=1735168566]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "OPTION C"
+
+[node name="CleanupAnswerButton4" type="Button" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout/CleanupAnswerGrid" unique_id=342568106]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "OPTION D"
+
+[node name="CloseCleanupButton" type="Button" parent="BrokenLinkCleanupWindow/CleanupWindowMargin/CleanupWindowLayout" unique_id=349883925]
+visible = false
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
 text = "CLOSE"
 
 [editable path="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview"]
