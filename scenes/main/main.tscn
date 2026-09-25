@@ -15,6 +15,7 @@
 [ext_resource type="Script" uid="uid://dmyvn7htye42r" path="res://scripts/tabs/upgrades_page.gd" id="11_th5th"]
 [ext_resource type="PackedScene" uid="uid://cm10rhl32a5ti" path="res://scenes/components/upgrade_card.tscn" id="12_7smn1"]
 [ext_resource type="Script" uid="uid://ujgyrhxhd1ev" path="res://scripts/tabs/activities_page.gd" id="13_raeie"]
+[ext_resource type="PackedScene" uid="uid://c48y3wwlf2xjt" path="res://scenes/components/activity_card.tscn" id="14_hxu8e"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
@@ -50,13 +51,6 @@ border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 border_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_raeie"]
-bg_color = Color(0.16078432, 0.24313726, 0.32156864, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pg34l"]
 bg_color = Color(0.7529412, 0.7529412, 0.7529412, 1)
@@ -3046,57 +3040,16 @@ layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="ActivitiesCatalog" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll" unique_id=1391506417]
+[node name="ActivitiesCatalog" type="GridContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll" unique_id=1171177883]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
 
-[node name="ManualIndexReviewPanel" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog" unique_id=1450161095]
-custom_minimum_size = Vector2(0, 150)
+[node name="ManualIndexReviewCard" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog" unique_id=726242520 instance=ExtResource("14_hxu8e")]
+custom_minimum_size = Vector2(0, 250)
 layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="ManualIndexReviewMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog/ManualIndexReviewPanel" unique_id=560343652]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
-
-[node name="ManualIndexReviewLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog/ManualIndexReviewPanel/ManualIndexReviewMargin" unique_id=696370717]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="ReviewHeaderRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog/ManualIndexReviewPanel/ManualIndexReviewMargin/ManualIndexReviewLayout" unique_id=1085475563]
-layout_mode = 2
-
-[node name="ReviewTitleLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog/ManualIndexReviewPanel/ManualIndexReviewMargin/ManualIndexReviewLayout/ReviewHeaderRow" unique_id=1170724273]
-layout_mode = 2
-text = "MANUAL INDEX REVIEW"
-
-[node name="ReviewHeaderSpacer" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog/ManualIndexReviewPanel/ManualIndexReviewMargin/ManualIndexReviewLayout/ReviewHeaderRow" unique_id=344801116]
-layout_mode = 2
-
-[node name="ReviewStatusLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog/ManualIndexReviewPanel/ManualIndexReviewMargin/ManualIndexReviewLayout/ReviewHeaderRow" unique_id=27823362]
-layout_mode = 2
-text = "AVAILABLE"
-
-[node name="ReviewDescriptionLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog/ManualIndexReviewPanel/ManualIndexReviewMargin/ManualIndexReviewLayout" unique_id=1726714937]
-layout_mode = 2
-text = "Review newly discovered pages and decide whether they should be added to the search index."
-autowrap_mode = 3
-
-[node name="ReviewDetailsLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog/ManualIndexReviewPanel/ManualIndexReviewMargin/ManualIndexReviewLayout" unique_id=838577531]
-layout_mode = 2
-text = "Estimated Time: 10–20 seconds
-Reward: $5 per correct review
-Perfect Review: +1 RP"
-
-[node name="StartReviewButton" type="Button" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog/ManualIndexReviewPanel/ManualIndexReviewMargin/ManualIndexReviewLayout" unique_id=44337272]
-custom_minimum_size = Vector2(180, 0)
-layout_mode = 2
-theme_override_styles/hover = SubResource("StyleBoxFlat_raeie")
-text = "START REVIEW"
 
 [node name="BackgroundJobsBar" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=1989258494]
 custom_minimum_size = Vector2(0, 48)

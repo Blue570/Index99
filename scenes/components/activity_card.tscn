@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://c48y3wwlf2xjt"]
+
+[ext_resource type="Script" uid="uid://sdschgi7fqhi" path="res://scripts/components/activity_card.gd" id="1_dvv6m"]
+
+[node name="ActivityCard" type="PanelContainer" unique_id=726242520]
+custom_minimum_size = Vector2(0, 250)
+size_flags_horizontal = 3
+script = ExtResource("1_dvv6m")
+
+[node name="CardMargin" type="MarginContainer" parent="." unique_id=379465131]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="CardLayout" type="VBoxContainer" parent="CardMargin" unique_id=227752920]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HeaderRow" type="HBoxContainer" parent="CardMargin/CardLayout" unique_id=345060694]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="CardMargin/CardLayout/HeaderRow" unique_id=1966363832]
+layout_mode = 2
+
+[node name="HeaderSpacer" type="Control" parent="CardMargin/CardLayout/HeaderRow" unique_id=329920671]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StatusLabel" type="Label" parent="CardMargin/CardLayout/HeaderRow" unique_id=979524907]
+layout_mode = 2
+
+[node name="DescriptionLabel" type="Label" parent="CardMargin/CardLayout" unique_id=427136663]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="InfoRow" type="HBoxContainer" parent="CardMargin/CardLayout" unique_id=1747123919]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TimeLabel" type="Label" parent="CardMargin/CardLayout/InfoRow" unique_id=682071732]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RewardLabel" type="Label" parent="CardMargin/CardLayout/InfoRow" unique_id=1184539751]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CompletionLabel" type="Label" parent="CardMargin/CardLayout/InfoRow" unique_id=1774789065]
+layout_mode = 2
+
+[node name="ButtonSpacer" type="Control" parent="CardMargin/CardLayout" unique_id=347969967]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StartButton" type="Button" parent="CardMargin/CardLayout" unique_id=1632203429]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "START"

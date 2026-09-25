@@ -5,6 +5,10 @@ extends PanelContainer
 # Activity Configuration
 # -------------------------------------------------------------------
 
+const ACTIVITY_MANUAL_INDEX_REVIEW: StringName = (
+	&"manual_index_review"
+)
+
 const REVIEW_PAGE_COUNT: int = 5
 const MONEY_REWARD_PER_CORRECT: float = 5.0
 const PERFECT_REVIEW_RESEARCH_REWARD: float = 1.0
@@ -120,28 +124,10 @@ const REVIEW_CASES: Array[Dictionary] = [
 # Node References
 # -------------------------------------------------------------------
 
-@onready var review_status_label: Label = (
+@onready var manual_index_review_card: ActivityCard = (
 	$ActivitiesMargin/ActivitiesPageLayout
 	/ActivitiesScroll/ActivitiesCatalog
-	/ManualIndexReviewPanel
-	/ManualIndexReviewMargin/ManualIndexReviewLayout
-	/ReviewHeaderRow/ReviewStatusLabel
-)
-
-@onready var review_details_label: Label = (
-	$ActivitiesMargin/ActivitiesPageLayout
-	/ActivitiesScroll/ActivitiesCatalog
-	/ManualIndexReviewPanel
-	/ManualIndexReviewMargin/ManualIndexReviewLayout
-	/ReviewDetailsLabel
-)
-
-@onready var start_review_button: Button = (
-	$ActivitiesMargin/ActivitiesPageLayout
-	/ActivitiesScroll/ActivitiesCatalog
-	/ManualIndexReviewPanel
-	/ManualIndexReviewMargin/ManualIndexReviewLayout
-	/StartReviewButton
+	/ManualIndexReviewCard
 )
 
 
@@ -317,6 +303,7 @@ var review_completed: bool = false
 # -------------------------------------------------------------------
 
 func _ready() -> void:
+	setup_manual_index_review_card()
 	connect_buttons()
 
 	apply_review_window_font_colors()
@@ -330,7 +317,22 @@ func _ready() -> void:
 	close_review_button.visible = false
 	close_review_button.disabled = true
 
-	review_status_label.text = "AVAILABLE"
+	
+func setup_manual_index_review_card() -> void:
+	manual_index_review_card.configure(
+		ACTIVITY_MANUAL_INDEX_REVIEW,
+		"MANUAL INDEX REVIEW",
+		"Review discovered pages before adding them to the index.",
+		"10-20 sec",
+		"$5/correct + Perfect RP",
+		"START REVIEW"
+	)
+
+	manual_index_review_card.set_completion_count(
+		ActivityStatsManager.get_type_completed(
+			ACTIVITY_MANUAL_INDEX_REVIEW
+		)
+	)
 	
 # -------------------------------------------------------------------
 # Review Window Theme
@@ -434,11 +436,12 @@ func apply_font_color_recursive(
 
 
 func connect_buttons() -> void:
-	if not start_review_button.pressed.is_connected(
-		_on_start_review_button_pressed
+	
+	if not manual_index_review_card.start_requested.is_connected(
+		_on_activity_card_start_requested
 	):
-		start_review_button.pressed.connect(
-			_on_start_review_button_pressed
+		manual_index_review_card.start_requested.connect(
+			_on_activity_card_start_requested
 		)
 
 	if not accept_button.pressed.is_connected(
@@ -475,6 +478,12 @@ func connect_buttons() -> void:
 		minimized_review_button.pressed.connect(
 			_on_minimized_review_button_pressed
 		)
+		
+func _on_activity_card_start_requested(
+	activity_id: StringName
+) -> void:
+	if activity_id == ACTIVITY_MANUAL_INDEX_REVIEW:
+		start_manual_index_review()
 		
 func apply_review_window_content_theme() -> void:
 	var content_panels: Array[PanelContainer] = [
@@ -567,17 +576,10 @@ func start_manual_index_review() -> void:
 
 	review_active = true
 	review_completed = false
-
-	review_status_label.text = "IN PROGRESS"
-
-	review_details_label.text = (
-		"Estimated Time: 10–20 seconds\n"
-		+ "Reward: $5 per correct review\n"
-		+ "Perfect Review: +1 RP"
+	
+	manual_index_review_card.set_in_progress_state(
+		"REVIEW IN PROGRESS"
 	)
-
-	start_review_button.disabled = true
-	start_review_button.text = "REVIEW IN PROGRESS"
 
 	accept_button.visible = true
 	accept_button.disabled = false
@@ -888,6 +890,20 @@ func submit_review_decision(
 func complete_manual_index_review() -> void:
 	review_active = false
 	review_completed = true
+	
+	ActivityStatsManager.record_completion(
+		ACTIVITY_MANUAL_INDEX_REVIEW
+	)
+
+	manual_index_review_card.set_completion_count(
+		ActivityStatsManager.get_type_completed(
+			ACTIVITY_MANUAL_INDEX_REVIEW
+		)
+	)
+	
+	manual_index_review_card.set_completed_state(
+		"RESULTS OPEN"
+	)
 
 	accept_button.disabled = true
 	reject_button.disabled = true
@@ -917,20 +933,6 @@ func complete_manual_index_review() -> void:
 		ResearchManager.add_research_points(
 			PERFECT_REVIEW_RESEARCH_REWARD
 		)
-
-	review_status_label.text = "COMPLETE"
-
-	review_details_label.text = (
-		"Last Review: %d / %d correct\n"
-		% [
-			correct_review_count,
-			REVIEW_PAGE_COUNT
-		]
-		+ "Revenue Earned: $%.0f\n"
-		% money_reward
-		+ "Research Earned: +%.0f RP"
-		% research_reward
-	)
 
 	review_progress_label.text = (
 		"REVIEW COMPLETE"
@@ -975,6 +977,23 @@ func complete_manual_index_review() -> void:
 
 	minimized_review_button.visible = false
 	
+	print(
+		"TOTAL ACTIVITIES: ",
+		ActivityStatsManager.get_total_completed()
+	)
+
+	print(
+		"MANUAL REVIEWS: ",
+		ActivityStatsManager.get_type_completed(
+			ACTIVITY_MANUAL_INDEX_REVIEW
+		)
+	)
+
+	print(
+		"UNIQUE TYPES: ",
+		ActivityStatsManager.get_unique_types_completed()
+	)
+	
 func _on_close_review_button_pressed() -> void:
 	if not review_completed:
 		return
@@ -1003,8 +1022,7 @@ func close_manual_index_review() -> void:
 	reject_button.disabled = false
 
 	review_minimize_button.disabled = false
-
-	review_status_label.text = "AVAILABLE"
-
-	start_review_button.disabled = false
-	start_review_button.text = "START ANOTHER REVIEW"
+	
+	manual_index_review_card.set_available_state(
+		"START ANOTHER REVIEW"
+	)
