@@ -399,10 +399,9 @@ minimum_panel_height = 170.0
 [node name="TrafficOverviewLayout" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(847923036, 287423228) index="0" unique_id=1751482519]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 6
 
 [node name="TrafficMetricsRow" type="HBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout" unique_id=1922121618]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 theme_override_constants/separation = 6
 
@@ -418,14 +417,14 @@ alignment = 1
 
 [node name="RevenueValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/RevenueMetricPanel/RevenueMetricLayout" unique_id=1522506854]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 14
 text = "$0.00"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="RevenueNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/RevenueMetricPanel/RevenueMetricLayout" unique_id=2064731538]
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
 text = "Revenue"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -442,14 +441,14 @@ alignment = 1
 
 [node name="ActiveUsersValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/ActiveUsersMetricPanel/ActiveUsersMetricLayout" unique_id=1504392257]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "10"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ActiveUsersNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/ActiveUsersMetricPanel/ActiveUsersMetricLayout" unique_id=1394697625]
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
 text = "New Users"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -466,14 +465,14 @@ alignment = 1
 
 [node name="IndexedPagesValueLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/IndexedPagesMetricPanel/IndexedPagesMetricLayout" unique_id=1235474255]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="IndexedPagesNameLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficMetricsRow/IndexedPagesMetricPanel/IndexedPagesMetricLayout" unique_id=1776124508]
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
 text = "Indexed Pages"
 horizontal_alignment = 1
 vertical_alignment = 1

@@ -136,6 +136,9 @@ func build_save_data() -> Dictionary:
 			"reputation": GameState.reputation,
 			"server_load": GameState.server_load
 		},
+		
+		"traffic":
+			TrafficManager.get_save_data(),
 
 		"crawler": {
 			"current_job_pages":
@@ -713,6 +716,17 @@ func restore_save_data(
 		save_data,
 		"objective"
 	)
+	
+	var traffic_data: Dictionary = {}
+
+	if (
+		save_data.has("traffic")
+		and typeof(save_data["traffic"])
+		== TYPE_DICTIONARY
+	):
+		traffic_data = save_data[
+			"traffic"
+		]
 
 	var activity_stats_data: Dictionary = {}
 
@@ -802,6 +816,10 @@ func restore_save_data(
 
 	restore_crawler(
 		crawler_data
+	)
+	
+	TrafficManager.restore_saved_state(
+		traffic_data
 	)
 
 	ResearchManager.finish_save_restore()
@@ -1854,6 +1872,8 @@ func reset_to_new_game() -> bool:
 	)
 
 	CrawlerManager.apply_research_crawler_rate()
+	
+	TrafficManager.reset_traffic_history()
 
 	ActivityStatsManager.reset_activity_stats()
 

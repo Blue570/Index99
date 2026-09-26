@@ -12,10 +12,13 @@ const GRID_DIVISIONS_Y: int = 3
 
 const CHART_PADDING_LEFT: float = 4.0
 const CHART_PADDING_RIGHT: float = 4.0
-const CHART_PADDING_TOP: float = 4.0
-const CHART_PADDING_BOTTOM: float = 4.0
+const CHART_PADDING_TOP: float = 13.0
+const CHART_PADDING_BOTTOM: float = 11.0
 
 const TRAFFIC_LINE_WIDTH: float = 2.0
+
+const STATUS_FONT_SIZE: int = 8
+const TIME_FONT_SIZE: int = 7
 
 
 # -------------------------------------------------------------------
@@ -27,11 +30,30 @@ var outgoing_traffic: Array[float] = []
 
 
 # -------------------------------------------------------------------
+# Display Nodes
+# -------------------------------------------------------------------
+
+var status_row: HBoxContainer
+
+var incoming_status_label: Label
+var outgoing_status_label: Label
+
+var time_row: HBoxContainer
+
+var oldest_time_label: Label
+var middle_time_label: Label
+var newest_time_label: Label
+
+
+# -------------------------------------------------------------------
 # Setup
 # -------------------------------------------------------------------
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	build_status_display()
+	build_time_display()
 
 	if not resized.is_connected(
 		_on_chart_resized
@@ -43,14 +65,190 @@ func _ready() -> void:
 	tooltip_text = (
 		"24-Hour Traffic Trend\n\n"
 		+ "Blue: Incoming traffic\n"
-		+ "Green: Outgoing traffic"
+		+ "Green: Outgoing traffic\n\n"
+		+ "Traffic responds to active users, crawler activity, "
+		+ "and crawler processing rate."
 	)
+
+	refresh_chart_labels()
 
 	queue_redraw()
 
 
 func _on_chart_resized() -> void:
 	queue_redraw()
+
+
+# -------------------------------------------------------------------
+# Display Construction
+# -------------------------------------------------------------------
+
+func build_status_display() -> void:
+	status_row = HBoxContainer.new()
+
+	status_row.name = "TrafficStatusRow"
+
+	status_row.set_anchors_preset(
+		Control.PRESET_TOP_WIDE
+	)
+
+	status_row.offset_left = 4.0
+	status_row.offset_top = 0.0
+	status_row.offset_right = -4.0
+	status_row.offset_bottom = 11.0
+
+	status_row.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	add_child(
+		status_row
+	)
+
+	incoming_status_label = Label.new()
+
+	incoming_status_label.name = (
+		"IncomingTrafficLabel"
+	)
+
+	incoming_status_label.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
+	incoming_status_label.horizontal_alignment = (
+		HORIZONTAL_ALIGNMENT_LEFT
+	)
+
+	incoming_status_label.add_theme_font_size_override(
+		"font_size",
+		STATUS_FONT_SIZE
+	)
+
+	incoming_status_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.CHART_LINE_BLUE
+	)
+
+	incoming_status_label.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	status_row.add_child(
+		incoming_status_label
+	)
+
+	outgoing_status_label = Label.new()
+
+	outgoing_status_label.name = (
+		"OutgoingTrafficLabel"
+	)
+
+	outgoing_status_label.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
+	outgoing_status_label.horizontal_alignment = (
+		HORIZONTAL_ALIGNMENT_RIGHT
+	)
+
+	outgoing_status_label.add_theme_font_size_override(
+		"font_size",
+		STATUS_FONT_SIZE
+	)
+
+	outgoing_status_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.CHART_LINE_GREEN
+	)
+
+	outgoing_status_label.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	status_row.add_child(
+		outgoing_status_label
+	)
+
+
+func build_time_display() -> void:
+	time_row = HBoxContainer.new()
+
+	time_row.name = "TrafficTimeRow"
+
+	time_row.set_anchors_preset(
+		Control.PRESET_BOTTOM_WIDE
+	)
+
+	time_row.offset_left = 4.0
+	time_row.offset_top = -10.0
+	time_row.offset_right = -4.0
+	time_row.offset_bottom = 0.0
+
+	time_row.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	add_child(
+		time_row
+	)
+
+	oldest_time_label = create_time_label(
+		"-24h",
+		HORIZONTAL_ALIGNMENT_LEFT
+	)
+
+	middle_time_label = create_time_label(
+		"-12h",
+		HORIZONTAL_ALIGNMENT_CENTER
+	)
+
+	newest_time_label = create_time_label(
+		"NOW",
+		HORIZONTAL_ALIGNMENT_RIGHT
+	)
+
+	time_row.add_child(
+		oldest_time_label
+	)
+
+	time_row.add_child(
+		middle_time_label
+	)
+
+	time_row.add_child(
+		newest_time_label
+	)
+
+
+func create_time_label(
+	label_text: String,
+	alignment: HorizontalAlignment
+) -> Label:
+	var time_label: Label = Label.new()
+
+	time_label.text = label_text
+
+	time_label.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
+	time_label.horizontal_alignment = alignment
+
+	time_label.add_theme_font_size_override(
+		"font_size",
+		TIME_FONT_SIZE
+	)
+
+	time_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_DISABLED
+	)
+
+	time_label.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	return time_label
 
 
 # -------------------------------------------------------------------
@@ -69,46 +267,79 @@ func set_traffic_data(
 		new_outgoing_traffic.duplicate()
 	)
 
+	refresh_chart_labels()
+
 	queue_redraw()
 
 
-func create_preview_data() -> void:
-	incoming_traffic.clear()
-	outgoing_traffic.clear()
+# -------------------------------------------------------------------
+# Live Labels
+# -------------------------------------------------------------------
 
-	for hour_index: int in range(24):
-		var hour_value: float = float(
-			hour_index
+func refresh_chart_labels() -> void:
+	if incoming_status_label == null:
+		return
+
+	if outgoing_status_label == null:
+		return
+
+	var current_incoming: float = 0.0
+	var current_outgoing: float = 0.0
+
+	if not incoming_traffic.is_empty():
+		current_incoming = (
+			incoming_traffic[
+				incoming_traffic.size() - 1
+			]
 		)
 
-		var incoming_value: float = (
-			28.0
-			+ sin(hour_value * 0.48) * 9.0
-			+ sin(hour_value * 0.17) * 5.0
+	if not outgoing_traffic.is_empty():
+		current_outgoing = (
+			outgoing_traffic[
+				outgoing_traffic.size() - 1
+			]
 		)
 
-		var outgoing_value: float = (
-			22.0
-			+ sin(
-				hour_value * 0.48
-				+ 0.65
-			) * 7.0
-			+ sin(hour_value * 0.20) * 4.0
+	incoming_status_label.text = (
+		"IN  %s"
+		% format_traffic_value(
+			current_incoming
+		)
+	)
+
+	outgoing_status_label.text = (
+		"OUT  %s"
+		% format_traffic_value(
+			current_outgoing
+		)
+	)
+
+
+func format_traffic_value(
+	value: float
+) -> String:
+	var safe_value: float = maxf(
+		value,
+		0.0
+	)
+
+	if safe_value >= 1000000.0:
+		return "%.1fM" % (
+			safe_value
+			/ 1000000.0
 		)
 
-		incoming_traffic.append(
-			maxf(
-				incoming_value,
-				1.0
-			)
+	if safe_value >= 1000.0:
+		return "%.1fK" % (
+			safe_value
+			/ 1000.0
 		)
 
-		outgoing_traffic.append(
-			maxf(
-				outgoing_value,
-				1.0
-			)
+	return str(
+		roundi(
+			safe_value
 		)
+	)
 
 
 # -------------------------------------------------------------------
@@ -116,7 +347,9 @@ func create_preview_data() -> void:
 # -------------------------------------------------------------------
 
 func _draw() -> void:
-	var chart_rect: Rect2 = get_chart_rect()
+	var chart_rect: Rect2 = (
+		get_chart_rect()
+	)
 
 	if (
 		chart_rect.size.x <= 1.0
