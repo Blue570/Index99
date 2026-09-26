@@ -1028,20 +1028,10 @@ func _on_research_points_changed(
 func format_research_points(
 	value: float
 ) -> String:
-	var safe_value: float = maxf(
-		value,
-		0.0
+	return "%d RP" % maxi(
+		roundi(value),
+		0
 	)
-
-	if is_equal_approx(
-		safe_value,
-		float(roundi(safe_value))
-	):
-		return "%d RP" % roundi(
-			safe_value
-		)
-
-	return "%.1f RP" % safe_value
 	
 func format_research_cost(
 	value: float

@@ -391,6 +391,11 @@ var current_page_id: StringName = &""
 	+ "ResourceRow/ReputationDisplay"
 ) as ResourceDisplay
 
+@onready var research_points_display: ResourceDisplay = get_node(
+	"MainApplicationWindow/MainLayout/ResourceBar/"
+	+ "ResourceRow/ResearchPointsDisplay"
+) as ResourceDisplay
+
 @onready var technical_points_display: ResourceDisplay = get_node(
 	"MainApplicationWindow/MainLayout/ResourceBar/"
 	+ "ResourceRow/TechnicalPointsDisplay"
@@ -908,6 +913,13 @@ func setup_game_state_connections() -> void:
 			_on_resource_maximum_safe_load_level_changed
 		)
 
+	if not ResearchManager.research_points_changed.is_connected(
+		_on_research_points_changed
+	):
+		ResearchManager.research_points_changed.connect(
+			_on_research_points_changed
+		)
+
 	if not TechnicalPointsManager.technical_points_changed.is_connected(
 		_on_technical_points_changed
 	):
@@ -940,6 +952,10 @@ func refresh_resource_displays() -> void:
 		GameState.reputation
 	)
 
+	_on_research_points_changed(
+		ResearchManager.research_points
+	)
+
 	_on_technical_points_changed(
 		TechnicalPointsManager.get_technical_points()
 	)
@@ -969,6 +985,18 @@ func _on_indexed_pages_changed(new_value: int) -> void:
 func _on_reputation_changed(new_value: float) -> void:
 	reputation_display.set_display_value(
 		"%.1f" % new_value
+	)
+	
+func _on_research_points_changed(
+	new_value: float
+) -> void:
+	research_points_display.set_display_value(
+		format_whole_number(
+			maxi(
+				roundi(new_value),
+				0
+			)
+		)
 	)
 	
 func _on_technical_points_changed(
@@ -1232,6 +1260,12 @@ func setup_resource_tooltips() -> void:
 		"Reputation\n\n"
 		+ "Represents the overall standing and credibility "
 		+ "of the search service."
+	)
+
+	research_points_display.tooltip_text = (
+		"Research Points\n\n"
+		+ "A progression resource used to purchase Research "
+		+ "upgrades and certain advanced technologies."
 	)
 
 	technical_points_display.tooltip_text = (

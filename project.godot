@@ -33,6 +33,7 @@ ActivityStatsManager="*uid://ck01mmu53du83"
 BuildManager="*uid://cwan2o0fws0t0"
 TechTreeManager="*uid://b58ogyybd860u"
 TechnicalPointsManager="*uid://cyl6kyginu5kl"
+TrafficManager="*uid://duoqmqn1ch7xx"
 SaveManager="*uid://dph2koncc6egq"
 
 [display]

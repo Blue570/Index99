@@ -35,6 +35,14 @@ const OBJECTIVE_TARGET: int = 100
 	+ "IndexedPagesValueLabel"
 ) as Label
 
+@onready var traffic_chart: TrafficChart = get_node(
+	"DashboardMargin/DashboardLayout/OverviewRow/"
+	+ "OverviewLeftGroup/TrafficOverview/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "TrafficOverviewLayout/TrafficChartPanel/"
+	+ "TrafficChartLayout/TrafficChart"
+) as TrafficChart
+
 
 # -------------------------------------------------------------------
 # Crawler Overview
@@ -340,11 +348,38 @@ func _ready() -> void:
 	connect_game_state_signals()
 	refresh_dashboard()
 
+	connect_traffic_signals()
+	refresh_traffic_chart()
+
 	connect_objective_signals()
 	refresh_current_objective()
 
 	connect_event_log_signals()
 	refresh_recent_events()
+	
+	
+# -------------------------------------------------------------------
+# Traffic Chart
+# -------------------------------------------------------------------
+
+func connect_traffic_signals() -> void:
+	if not TrafficManager.traffic_history_changed.is_connected(
+		_on_traffic_history_changed
+	):
+		TrafficManager.traffic_history_changed.connect(
+			_on_traffic_history_changed
+		)
+
+
+func _on_traffic_history_changed() -> void:
+	refresh_traffic_chart()
+
+
+func refresh_traffic_chart() -> void:
+	traffic_chart.set_traffic_data(
+		TrafficManager.incoming_traffic_history,
+		TrafficManager.outgoing_traffic_history
+	)
 	
 
 # -------------------------------------------------------------------

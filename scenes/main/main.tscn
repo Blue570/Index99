@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://cfoop710hprex" path="res://scenes/components/tab_button.tscn" id="3_k2fmo"]
 [ext_resource type="Script" uid="uid://ym5imyiwd2jr" path="res://scripts/tabs/dashboard_page.gd" id="4_6q06x"]
 [ext_resource type="PackedScene" uid="uid://e2d0iq6wxrof" path="res://scenes/components/section_panel.tscn" id="4_l3cfh"]
+[ext_resource type="Script" uid="uid://bkyxpmg4l4g84" path="res://scripts/components/traffic_chart.gd" id="6_ou6is"]
 [ext_resource type="Script" uid="uid://ckgps5y2xuknd" path="res://scripts/tabs/crawler_page.gd" id="6_ow5a4"]
 [ext_resource type="Script" uid="uid://d07n6eusyx0lf" path="res://scripts/tabs/crawler_jobs_page.gd" id="7_blune"]
 [ext_resource type="Script" uid="uid://cc4fl2orgeyr1" path="res://scripts/tabs/index_page.gd" id="7_hujxm"]
@@ -230,6 +231,11 @@ icon_text = "★"
 accent_color = Color(0.77254903, 0.5411765, 0.07450981, 1)
 value_color = Color(0.77254903, 0.5411765, 0.07450981, 1)
 
+[node name="ResearchPointsDisplay" parent="MainApplicationWindow/MainLayout/ResourceBar/ResourceRow" unique_id=922295271 instance=ExtResource("2_iuonh")]
+layout_mode = 2
+display_name = "Research Points"
+icon_text = "RP"
+
 [node name="TechnicalPointsDisplay" parent="MainApplicationWindow/MainLayout/ResourceBar/ResourceRow" unique_id=1024711534 instance=ExtResource("2_iuonh")]
 layout_mode = 2
 display_name = "Tech Points"
@@ -313,7 +319,6 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_6gwxi")
 layout_mode = 2
 
 [node name="DashboardPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=374740521]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -491,13 +496,11 @@ text = "24-HOUR TRAFFIC TREND"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="TrafficChartPlaceholderLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficChartPanel/TrafficChartLayout" unique_id=455916174]
+[node name="TrafficChart" type="Control" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup/TrafficOverview/PanelLayout/ContentPanel/ContentMargin/ContentContainer/TrafficOverviewLayout/TrafficChartPanel/TrafficChartLayout" unique_id=835127031]
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 12
-text = "Chart data unavailable"
-horizontal_alignment = 1
-vertical_alignment = 1
+script = ExtResource("6_ou6is")
 
 [node name="CrawlerOverview" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/OverviewRow/OverviewLeftGroup" unique_id=1728367714 instance=ExtResource("4_l3cfh")]
 custom_minimum_size = Vector2(0, 0)

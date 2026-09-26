@@ -328,12 +328,23 @@ func connect_milestone_signals() -> void:
 # Research points
 # -------------------------------------------------------------------
 
+func normalize_research_point_value(
+	value: float
+) -> float:
+	return float(
+		maxi(
+			roundi(value),
+			0
+		)
+	)
+
 func set_research_points(
 	new_points: float
 ) -> void:
-	var safe_points: float = maxf(
-		new_points,
-		0.0
+	var safe_points: float = (
+		normalize_research_point_value(
+			new_points
+		)
 	)
 
 	if is_equal_approx(
@@ -352,25 +363,39 @@ func set_research_points(
 func add_research_points(
 	amount: float
 ) -> void:
-	if amount <= 0.0:
+	var safe_amount: float = (
+		normalize_research_point_value(
+			amount
+		)
+	)
+
+	if safe_amount <= 0.0:
 		return
 
 	set_research_points(
-		research_points + amount
+		research_points
+		+ safe_amount
 	)
 
 
 func spend_research_points(
 	amount: float
 ) -> bool:
-	if amount <= 0.0:
+	var safe_amount: float = (
+		normalize_research_point_value(
+			amount
+		)
+	)
+
+	if safe_amount <= 0.0:
 		return false
 
-	if research_points < amount:
+	if research_points < safe_amount:
 		return false
 
 	set_research_points(
-		research_points - amount
+		research_points
+		- safe_amount
 	)
 
 	return true
@@ -380,15 +405,21 @@ func award_research_points(
 	amount: float,
 	source: String
 ) -> void:
-	if amount <= 0.0:
+	var safe_amount: float = (
+		normalize_research_point_value(
+			amount
+		)
+	)
+
+	if safe_amount <= 0.0:
 		return
 
 	add_research_points(
-		amount
+		safe_amount
 	)
 
 	research_points_awarded.emit(
-		amount,
+		safe_amount,
 		source
 	)
 
