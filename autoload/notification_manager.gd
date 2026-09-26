@@ -222,10 +222,34 @@ func connect_notification_signals() -> void:
 # -------------------------------------------------------------------
 
 func _on_objective_completed(
-	_objective_id: StringName,
+	objective_id: StringName,
 	title: String
 ) -> void:
 	if ObjectiveManager.suppress_objective_evaluation:
+		return
+
+	var tier_2_reward_text: String = (
+		ObjectiveManager
+			.get_tier_2_objective_reward_text(
+				objective_id
+			)
+	)
+
+	if not tier_2_reward_text.is_empty():
+		show_notification(
+			"OBJECTIVE COMPLETE",
+			(
+				"%s\n"
+				+ "Reward: %s"
+			)
+			% [
+				title,
+				tier_2_reward_text
+			],
+			TYPE_REWARD,
+			5.5
+		)
+
 		return
 
 	show_notification(

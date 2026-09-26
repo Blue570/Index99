@@ -304,6 +304,8 @@ const TIER_2_OBJECTIVE_ORDER: Array[StringName] = [
 	OBJECTIVE_T2_EARN_250_REVENUE
 ]
 
+var tier_2_reward_in_progress: bool = false
+
 # -------------------------------------------------------------------
 # Tier 2 Tracking State
 # -------------------------------------------------------------------
@@ -592,6 +594,8 @@ func _on_crawl_job_completed_for_tier_2() -> void:
 		tier_2_expanded_crawls_completed,
 		" / 2"
 	)
+
+	evaluate_tier_2_active_objectives()
 
 
 # -------------------------------------------------------------------
@@ -925,6 +929,9 @@ func complete_current_objective() -> void:
 func evaluate_tier_2_active_objectives() -> void:
 	if suppress_objective_evaluation:
 		return
+		
+	if tier_2_reward_in_progress:
+		return
 
 	if not is_tier_2_tracking_active():
 		return
@@ -999,9 +1006,13 @@ func complete_tier_2_objective(
 
 	tier_2_completed_objectives[
 		objective_id
-	] = true
+		] = true
 
 	tier_2_active_objective_ids.erase(
+		objective_id
+	)
+
+	grant_tier_2_objective_reward(
 		objective_id
 	)
 
@@ -1030,6 +1041,151 @@ func complete_tier_2_objective(
 	call_deferred(
 		"evaluate_tier_2_active_objectives"
 	)
+	
+func award_tier_2_money(
+	amount: float,
+	source: String
+) -> void:
+	if amount <= 0.0:
+		return
+
+	suppress_tier_2_revenue_tracking = true
+
+	GameState.set_revenue(
+		GameState.revenue + amount
+	)
+
+	suppress_tier_2_revenue_tracking = false
+
+	print(
+		"ObjectiveManager: Awarded $%.2f - %s"
+		% [
+			amount,
+			source
+		]
+	)
+	
+func award_tier_2_research_points(
+	amount: float,
+	source: String
+) -> void:
+	if amount <= 0.0:
+		return
+
+	ResearchManager.award_research_points(
+		amount,
+		source
+	)
+	
+func award_tier_2_active_users(
+	amount: int
+) -> void:
+	if amount <= 0:
+		return
+
+	GameState.set_active_users(
+		GameState.active_users + amount
+	)
+	
+func grant_tier_2_objective_reward(
+	objective_id: StringName
+) -> void:
+	tier_2_reward_in_progress = true
+
+	match objective_id:
+		OBJECTIVE_T2_INDEX_2000_PAGES:
+			award_tier_2_money(
+				100.0,
+				"Index 2,000 Pages"
+			)
+
+			award_tier_2_research_points(
+				25.0,
+				"Tier 2 Objective: Index 2,000 Pages"
+			)
+
+		OBJECTIVE_T2_REACH_150_USERS:
+			award_tier_2_research_points(
+				10.0,
+				"Tier 2 Objective: Reach 150 Active Users"
+			)
+
+		OBJECTIVE_T2_COMPLETE_3_ACTIVITIES:
+			# Repeatable Activity cooldown unlock will
+			# be implemented with the third Tier 2 Activity.
+			print(
+				"ObjectiveManager: "
+				+ "Activity repeat unlock earned."
+			)
+
+		OBJECTIVE_T2_PURCHASE_3_SERVER_LEVELS:
+			award_tier_2_money(
+				100.0,
+				"Purchase 3 Server Upgrade Levels"
+			)
+
+		OBJECTIVE_T2_PURCHASE_2_RESEARCH_LEVELS:
+			award_tier_2_research_points(
+				25.0,
+				(
+					"Tier 2 Objective: "
+					+ "Purchase 2 Research Upgrade Levels"
+				)
+			)
+
+		OBJECTIVE_T2_COMPLETE_2_EXPANDED_CRAWLS:
+			award_tier_2_money(
+				100.0,
+				"Complete 2 Expanded Crawl Jobs"
+			)
+
+			award_tier_2_research_points(
+				20.0,
+				(
+					"Tier 2 Objective: "
+					+ "Complete 2 Expanded Crawl Jobs"
+				)
+			)
+
+			award_tier_2_active_users(
+				30
+			)
+
+		OBJECTIVE_T2_EARN_250_REVENUE:
+			award_tier_2_money(
+				50.0,
+				"Earn $250 Revenue During Tier"
+			)
+
+	tier_2_reward_in_progress = false
+	
+func get_tier_2_objective_reward_text(
+	objective_id: StringName
+) -> String:
+	match objective_id:
+		OBJECTIVE_T2_INDEX_2000_PAGES:
+			return "$100 + 25 RP"
+
+		OBJECTIVE_T2_REACH_150_USERS:
+			return "10 RP"
+
+		OBJECTIVE_T2_COMPLETE_3_ACTIVITIES:
+			return "Repeatable Activities Unlock"
+
+		OBJECTIVE_T2_PURCHASE_3_SERVER_LEVELS:
+			return "$100"
+
+		OBJECTIVE_T2_PURCHASE_2_RESEARCH_LEVELS:
+			return "25 RP"
+
+		OBJECTIVE_T2_COMPLETE_2_EXPANDED_CRAWLS:
+			return "$100 + 20 RP + 30 Active Users"
+
+		OBJECTIVE_T2_EARN_250_REVENUE:
+			return "$50"
+
+	return ""
+	
 	
 func finish_tier_2_standard_objectives() -> void:
 	if tier_2_standard_objectives_finished:
@@ -1383,6 +1539,8 @@ func reset_objectives() -> void:
 	current_objective_index = 0
 	current_event_progress = 0
 	sequence_completed = false
+	
+	reset_tier_2_objective_state()
 
 	set_progression_tier(
 		PROGRESSION_TIER_1
@@ -1402,26 +1560,14 @@ func restore_saved_state(
 	saved_objective_index: int,
 	saved_event_progress: int,
 	saved_sequence_completed: bool,
-	saved_progression_tier: int
+	saved_progression_tier: int,
+	saved_tier_2_data: Dictionary = {}
 ) -> void:
-	var migrated_from_old_tier_1_sequence: bool = (
-		saved_sequence_completed
-		and saved_objective_index
-		== TIER_1_OBJECTIVE_COUNT
-		and saved_progression_tier
-		>= PROGRESSION_TIER_2
-	)
-
 	current_objective_index = clampi(
 		saved_objective_index,
 		0,
 		OBJECTIVES.size()
 	)
-
-	if migrated_from_old_tier_1_sequence:
-		current_objective_index = (
-			TIER_1_OBJECTIVE_COUNT
-		)
 
 	current_event_progress = maxi(
 		saved_event_progress,
@@ -1429,12 +1575,9 @@ func restore_saved_state(
 	)
 
 	sequence_completed = (
-		(
-			saved_sequence_completed
-			and not migrated_from_old_tier_1_sequence
-		)
+		saved_sequence_completed
 		or current_objective_index
-		>= OBJECTIVES.size()
+			>= OBJECTIVES.size()
 	)
 
 	var restored_tier: int = clampi(
@@ -1443,14 +1586,25 @@ func restore_saved_state(
 		MAX_PROGRESSION_TIER
 	)
 
-	if (
-		current_objective_index
-		>= TIER_1_OBJECTIVE_COUNT
-	):
+	# Older completed saves should migrate into
+	# the new Tier 2 objective structure.
+	if sequence_completed:
 		restored_tier = maxi(
 			restored_tier,
 			PROGRESSION_TIER_2
 		)
+
+	if restored_tier >= PROGRESSION_TIER_2:
+		current_objective_index = (
+			TIER_1_OBJECTIVE_COUNT
+		)
+
+		sequence_completed = false
+
+	restore_tier_2_saved_state(
+		saved_tier_2_data,
+		restored_tier
+	)
 
 	set_progression_tier(
 		restored_tier
@@ -1458,11 +1612,262 @@ func restore_saved_state(
 
 	suppress_objective_evaluation = false
 
+	if (
+		restored_tier >= PROGRESSION_TIER_2
+		and tier_2_tracking_started
+	):
+		tier_2_active_objectives_changed.emit()
+
+		emit_current_objective()
+
+		call_deferred(
+			"evaluate_tier_2_active_objectives"
+		)
+
+		return
+
 	if sequence_completed:
 		all_objectives_completed.emit()
+
 		return
 
 	emit_current_objective()
 	emit_current_progress()
+	
+func get_tier_2_save_data() -> Dictionary:
+	var active_ids: Array[String] = []
 
-	evaluate_current_objective()
+	for objective_id: StringName in tier_2_active_objective_ids:
+		active_ids.append(
+			str(objective_id)
+		)
+
+	var completed_ids: Array[String] = []
+
+	for objective_id_variant: Variant in (
+		tier_2_completed_objectives.keys()
+	):
+		completed_ids.append(
+			str(objective_id_variant)
+		)
+
+	return {
+		"tracking_started":
+			tier_2_tracking_started,
+
+		"activities_completed":
+			tier_2_activities_completed,
+
+		"server_upgrade_levels_purchased":
+			tier_2_server_upgrade_levels_purchased,
+
+		"research_upgrade_levels_purchased":
+			tier_2_research_upgrade_levels_purchased,
+
+		"expanded_crawls_completed":
+			tier_2_expanded_crawls_completed,
+
+		"revenue_earned":
+			tier_2_revenue_earned,
+
+		"active_objective_ids":
+			active_ids,
+
+		"completed_objective_ids":
+			completed_ids,
+
+		"next_queue_index":
+			tier_2_next_queue_index,
+
+		"standard_objectives_finished":
+			tier_2_standard_objectives_finished
+	}
+	
+func reset_tier_2_objective_state() -> void:
+	tier_2_tracking_started = false
+
+	tier_2_activities_completed = 0
+
+	tier_2_server_upgrade_levels_purchased = 0
+
+	tier_2_research_upgrade_levels_purchased = 0
+
+	tier_2_expanded_crawls_completed = 0
+
+	tier_2_revenue_earned = 0.0
+
+	tier_2_last_observed_revenue = (
+		GameState.revenue
+	)
+
+	suppress_tier_2_revenue_tracking = false
+
+	tier_2_active_objective_ids.clear()
+
+	tier_2_completed_objectives.clear()
+
+	tier_2_next_queue_index = 0
+
+	tier_2_standard_objectives_finished = false
+	
+func restore_tier_2_saved_state(
+	data: Dictionary,
+	restored_tier: int
+) -> void:
+	reset_tier_2_objective_state()
+
+	if restored_tier < PROGRESSION_TIER_2:
+		return
+
+	tier_2_tracking_started = true
+
+	tier_2_last_observed_revenue = (
+		GameState.revenue
+	)
+
+	# Older saves will not contain Tier 2 queue data.
+	# Start those saves at the beginning of the new
+	# Tier 2 objective structure.
+	if data.is_empty():
+		tier_2_next_queue_index = 0
+
+		fill_tier_2_active_objective_slots()
+
+		return
+
+	tier_2_activities_completed = maxi(
+		int(
+			data.get(
+				"activities_completed",
+				0
+			)
+		),
+		0
+	)
+
+	tier_2_server_upgrade_levels_purchased = maxi(
+		int(
+			data.get(
+				"server_upgrade_levels_purchased",
+				0
+			)
+		),
+		0
+	)
+
+	tier_2_research_upgrade_levels_purchased = maxi(
+		int(
+			data.get(
+				"research_upgrade_levels_purchased",
+				0
+			)
+		),
+		0
+	)
+
+	tier_2_expanded_crawls_completed = maxi(
+		int(
+			data.get(
+				"expanded_crawls_completed",
+				0
+			)
+		),
+		0
+	)
+
+	tier_2_revenue_earned = maxf(
+		float(
+			data.get(
+				"revenue_earned",
+				0.0
+			)
+		),
+		0.0
+	)
+
+	tier_2_next_queue_index = clampi(
+		int(
+			data.get(
+				"next_queue_index",
+				0
+			)
+		),
+		0,
+		TIER_2_OBJECTIVE_ORDER.size()
+	)
+
+	var raw_completed_ids: Variant = (
+		data.get(
+			"completed_objective_ids",
+			[]
+		)
+	)
+
+	if typeof(raw_completed_ids) == TYPE_ARRAY:
+		for raw_id: Variant in raw_completed_ids:
+			var objective_id: StringName = (
+				StringName(
+					str(raw_id)
+				)
+			)
+
+			if not TIER_2_OBJECTIVE_ORDER.has(
+				objective_id
+			):
+				continue
+
+			tier_2_completed_objectives[
+				objective_id
+			] = true
+
+	var raw_active_ids: Variant = (
+		data.get(
+			"active_objective_ids",
+			[]
+		)
+	)
+
+	if typeof(raw_active_ids) == TYPE_ARRAY:
+		for raw_id: Variant in raw_active_ids:
+			var objective_id: StringName = (
+				StringName(
+					str(raw_id)
+				)
+			)
+
+			if not TIER_2_OBJECTIVE_ORDER.has(
+				objective_id
+			):
+				continue
+
+			if tier_2_completed_objectives.has(
+				objective_id
+			):
+				continue
+
+			if tier_2_active_objective_ids.has(
+				objective_id
+			):
+				continue
+
+			tier_2_active_objective_ids.append(
+				objective_id
+			)
+
+	tier_2_standard_objectives_finished = (
+		bool(
+			data.get(
+				"standard_objectives_finished",
+				false
+			)
+		)
+		or tier_2_completed_objectives.size()
+			>= TIER_2_OBJECTIVE_ORDER.size()
+	)
+
+	if tier_2_standard_objectives_finished:
+		tier_2_active_objective_ids.clear()
+
+		return
+
+	fill_tier_2_active_objective_slots()
