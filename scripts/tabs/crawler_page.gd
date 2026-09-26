@@ -793,76 +793,27 @@ func connect_crawler_signals() -> void:
 		CrawlerManager.crawl_job_completed.connect(
 			_on_crawl_job_completed
 		)
-		
+
 	if not AutomationManager.auto_crawl_assist_level_changed.is_connected(
 		_on_auto_crawl_assist_level_changed
 	):
 		AutomationManager.auto_crawl_assist_level_changed.connect(
 			_on_auto_crawl_assist_level_changed
 		)
-		
-	if not CrawlerManager.crawler_priority_changed.is_connected(
-		_on_crawler_priority_changed
-	):
-		CrawlerManager.crawler_priority_changed.connect(
-			_on_crawler_priority_changed
-		)
-		
-	if not AutomationManager.auto_restart_unlock_changed.is_connected(
-		_on_auto_restart_unlock_changed
-	):
-		AutomationManager.auto_restart_unlock_changed.connect(
-			_on_auto_restart_unlock_changed
-		)
 
-	if not AutomationManager.auto_restart_enabled_changed.is_connected(
-		_on_auto_restart_enabled_changed
+	if not TechTreeManager.tech_level_changed.is_connected(
+		_on_tech_level_changed
 	):
-		AutomationManager.auto_restart_enabled_changed.connect(
-			_on_auto_restart_enabled_changed
+		TechTreeManager.tech_level_changed.connect(
+			_on_tech_level_changed
 		)
 		
-	if not CrawlerManager.quick_crawl_jobs_changed.is_connected(
-		_on_quick_crawl_jobs_changed
-	):
-		CrawlerManager.quick_crawl_jobs_changed.connect(
-			_on_quick_crawl_jobs_changed
-		)
-		
-	if not CrawlerManager.crawl_job_queue_changed.is_connected(
-		_on_crawl_job_queue_changed
-	):
-		CrawlerManager.crawl_job_queue_changed.connect(
-			_on_crawl_job_queue_changed
-		)
-		
-	if not AutomationManager.auto_throttle_unlock_changed.is_connected(
-		_on_auto_throttle_unlock_changed
-	):
-		AutomationManager.auto_throttle_unlock_changed.connect(
-			_on_auto_throttle_unlock_changed
-		)
-
-	if not AutomationManager.auto_throttle_level_changed.is_connected(
-		_on_auto_throttle_level_changed
-	):
-		AutomationManager.auto_throttle_level_changed.connect(
-			_on_auto_throttle_level_changed
-		)
-
-	if not AutomationManager.auto_throttle_enabled_changed.is_connected(
-		_on_auto_throttle_enabled_changed
-	):
-		AutomationManager.auto_throttle_enabled_changed.connect(
-			_on_auto_throttle_enabled_changed
-		)
-
-	if not AutomationManager.scheduled_crawl_completed_count_changed.is_connected(
-		_on_scheduled_crawl_completed_count_changed
-	):
-		AutomationManager.scheduled_crawl_completed_count_changed.connect(
-			_on_scheduled_crawl_completed_count_changed
-		)
+func _on_tech_level_changed(
+	_tech_id: StringName,
+	_new_level: int
+) -> void:
+	refresh_auto_crawl_assist_status()
+	refresh_effective_crawler_rate()
 		
 func _on_quick_crawl_jobs_changed() -> void:
 	refresh_crawl_job_selection()

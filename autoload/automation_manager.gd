@@ -2726,6 +2726,44 @@ func restore_auto_throttle_state(
 		auto_throttle_intervention_count_changed.emit(
 			successful_auto_throttle_interventions
 		)
+		
+# -------------------------------------------------------------------
+# Tech Tree Automation Effects
+# -------------------------------------------------------------------
+
+func get_automation_efficiency_percent() -> float:
+	return maxf(
+		TechTreeManager.get_total_effect_value(
+			&"automation_efficiency_percent"
+		),
+		0.0
+	)
+
+
+func get_automation_work_multiplier() -> float:
+	var efficiency_percent: float = (
+		get_automation_efficiency_percent()
+	)
+
+	return (
+		1.0
+		+ efficiency_percent
+		/ 100.0
+	)
+
+
+func get_automation_load_multiplier() -> float:
+	var efficiency_percent: float = clampf(
+		get_automation_efficiency_percent(),
+		0.0,
+		95.0
+	)
+
+	return (
+		1.0
+		- efficiency_percent
+		/ 100.0
+	)
 
 
 # -------------------------------------------------------------------
@@ -2771,9 +2809,14 @@ func get_auto_assist_work_per_second() -> float:
 		)
 	)
 
-	return (
+	var priority_adjusted_work: float = (
 		base_work_per_second
 		* CrawlerManager.get_priority_crawl_multiplier()
+	)
+
+	return (
+		priority_adjusted_work
+		* get_automation_work_multiplier()
 	)
 
 
@@ -2784,9 +2827,14 @@ func get_auto_assist_load_per_second() -> float:
 		)
 	)
 
-	return (
+	var priority_adjusted_load: float = (
 		base_load_per_second
 		* CrawlerManager.get_priority_load_multiplier()
+	)
+
+	return (
+		priority_adjusted_load
+		* get_automation_load_multiplier()
 	)
 
 

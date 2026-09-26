@@ -312,19 +312,37 @@ func create_server_load_timer() -> void:
 	server_load_timer.start()
 	
 func get_effective_active_users_per_page() -> float:
-	var bonus_percent: float = (
+	var research_bonus_percent: float = (
 		ResearchManager
 		.get_audience_discovery_bonus_percent()
 	)
 
-	var multiplier: float = (
+	var research_multiplier: float = (
 		1.0
-		+ bonus_percent / 100.0
+		+ research_bonus_percent
+		/ 100.0
+	)
+
+	var growth_after_research: float = (
+		ACTIVE_USERS_PER_PAGE
+		* research_multiplier
+	)
+
+	var tech_bonus_percent: float = (
+		TechTreeManager.get_total_effect_value(
+			&"active_user_growth_percent"
+		)
+	)
+
+	var tech_multiplier: float = (
+		1.0
+		+ tech_bonus_percent
+		/ 100.0
 	)
 
 	return (
-		ACTIVE_USERS_PER_PAGE
-		* multiplier
+		growth_after_research
+		* tech_multiplier
 	)
 	
 func get_current_job_target_pages() -> int:
@@ -911,25 +929,78 @@ func get_effective_automatic_crawl_rate() -> float:
 # -------------------------------------------------------------------
 
 func get_effective_cooling_rate() -> float:
-	return (
+	var server_upgrade_bonus: float = (
+		ServerManager.get_cooling_speed_bonus()
+	)
+
+	var cooling_after_server_upgrades: float = (
 		SERVER_LOAD_COOLING_PER_TICK
-		+ ServerManager.get_cooling_speed_bonus()
+		+ server_upgrade_bonus
+	)
+
+	var tech_bonus_percent: float = (
+		TechTreeManager.get_total_effect_value(
+			&"cooling_speed_percent"
+		)
+	)
+
+	var tech_multiplier: float = (
+		1.0
+		+ tech_bonus_percent
+		/ 100.0
+	)
+
+	var effective_cooling_rate: float = (
+		cooling_after_server_upgrades
+		* tech_multiplier
+	)
+
+	return maxf(
+		effective_cooling_rate,
+		0.0
 	)
 
 
 func get_effective_server_load_generation() -> float:
-	var reduced_load: float = (
-		SERVER_LOAD_GAIN_PER_TICK
-		- ServerManager.get_crawler_efficiency_reduction()
+	var server_upgrade_reduction: float = (
+		ServerManager.get_crawler_efficiency_reduction()
 	)
 
-	var priority_adjusted_load: float = (
-		reduced_load
-		* get_priority_load_multiplier()
+	var load_after_server_upgrades: float = (
+		SERVER_LOAD_GAIN_PER_TICK
+		- server_upgrade_reduction
+	)
+
+	load_after_server_upgrades = maxf(
+		load_after_server_upgrades,
+		0.1
+	)
+
+	var tech_reduction_percent: float = (
+		TechTreeManager.get_total_effect_value(
+			&"crawler_load_reduction_percent"
+		)
+	)
+
+	var safe_tech_reduction: float = clampf(
+		tech_reduction_percent,
+		0.0,
+		95.0
+	)
+
+	var tech_multiplier: float = (
+		1.0
+		- safe_tech_reduction
+		/ 100.0
+	)
+
+	var effective_load: float = (
+		load_after_server_upgrades
+		* tech_multiplier
 	)
 
 	return maxf(
-		priority_adjusted_load,
+		effective_load,
 		0.1
 	)
 

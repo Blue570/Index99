@@ -289,11 +289,12 @@ func _ready() -> void:
 
 	connect_game_state_signals()
 	connect_server_manager_signals()
+	connect_tech_tree_signals()
 	connect_upgrade_buttons()
 
 	refresh_server_page()
 	refresh_server_upgrades()
-	
+
 	connect_progression_signals()
 
 
@@ -1267,3 +1268,17 @@ func _on_objective_changed(
 	_target_value: int
 ) -> void:
 	refresh_server_upgrades()
+	
+func connect_tech_tree_signals() -> void:
+	if not TechTreeManager.tech_level_changed.is_connected(
+		_on_tech_level_changed
+	):
+		TechTreeManager.tech_level_changed.connect(
+			_on_tech_level_changed
+		)
+		
+func _on_tech_level_changed(
+	_tech_id: StringName,
+	_new_level: int
+) -> void:
+	refresh_server_page()
