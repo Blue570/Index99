@@ -152,12 +152,12 @@ func build_save_data() -> Dictionary:
 
 			"paused_for_overload":
 				CrawlerManager.paused_for_overload,
-				
+
 			"selected_job_id":
 				str(
-				CrawlerManager.get_selected_job_id()
-			),
-			
+					CrawlerManager.get_selected_job_id()
+				),
+
 			"priority_id":
 				str(
 					CrawlerManager.get_current_crawler_priority()
@@ -173,8 +173,8 @@ func build_save_data() -> Dictionary:
 					CrawlerManager.get_crawl_job_queue()
 				)
 		},
-		
-				"automation": {
+
+		"automation": {
 			"auto_restart_unlocked":
 				AutomationManager.is_auto_restart_unlocked(),
 
@@ -283,35 +283,37 @@ func build_save_data() -> Dictionary:
 				ObjectiveManager.current_objective_index,
 
 			"current_event_progress":
-		ObjectiveManager.current_event_progress,
+				ObjectiveManager.current_event_progress,
 
-		"sequence_completed":
-		ObjectiveManager.sequence_completed,
+			"sequence_completed":
+				ObjectiveManager.sequence_completed,
 
-		"current_progression_tier":
-		ObjectiveManager.current_progression_tier,
+			"current_progression_tier":
+				ObjectiveManager.current_progression_tier,
 
-		"tier_2":
-			ObjectiveManager.get_tier_2_save_data()
-	},
-		
+			"tier_2":
+				ObjectiveManager.get_tier_2_save_data()
+		},
+
+		"build":
+			BuildManager.get_save_data(),
+
 		"activity_stats": {
 			"total_activities_completed":
 				ActivityStatsManager.get_total_completed(),
-				
+
 			"completions_by_type":
 				ActivityStatsManager
 					.get_completions_by_type_for_save()
 		},
-		
-		"tutorial":{
+
+		"tutorial": {
 			"current_step_index":
 				TutorialManager.current_step_index,
-				
+
 			"completed":
 				TutorialManager.tutorial_has_been_completed
 		}
-		
 	}
 	
 # -------------------------------------------------------------------
@@ -705,7 +707,7 @@ func restore_save_data(
 		save_data,
 		"objective"
 	)
-	
+
 	var activity_stats_data: Dictionary = {}
 
 	if (
@@ -716,7 +718,7 @@ func restore_save_data(
 		activity_stats_data = save_data[
 			"activity_stats"
 		]
-	
+
 	var automation_data: Dictionary = {}
 
 	if (
@@ -724,7 +726,9 @@ func restore_save_data(
 		and typeof(save_data["automation"])
 		== TYPE_DICTIONARY
 	):
-		automation_data = save_data["automation"]
+		automation_data = save_data[
+			"automation"
+		]
 
 	var tutorial_data: Dictionary = {}
 
@@ -733,7 +737,20 @@ func restore_save_data(
 		and typeof(save_data["tutorial"])
 		== TYPE_DICTIONARY
 	):
-		tutorial_data = save_data["tutorial"]
+		tutorial_data = save_data[
+			"tutorial"
+		]
+
+	var build_data: Dictionary = {}
+
+	if (
+		save_data.has("build")
+		and typeof(save_data["build"])
+		== TYPE_DICTIONARY
+	):
+		build_data = save_data[
+			"build"
+		]
 
 	restore_server_upgrades(
 		server_data
@@ -756,25 +773,69 @@ func restore_save_data(
 	restore_objective(
 		objective_data
 	)
-	
+
+	restore_build(
+		build_data
+	)
+
 	restore_activity_stats(
 		activity_stats_data
 	)
-	
+
 	restore_crawl_job_configuration(
 		crawler_data
 	)
-	
+
 	restore_crawler_priority(
 		crawler_data
 	)
-	
+
 	restore_automation(
 		automation_data
 	)
 
 	restore_tutorial(
 		tutorial_data
+	)
+	
+func restore_build(
+	data: Dictionary
+) -> void:
+	if data.is_empty():
+		BuildManager.reset_build_state()
+
+		BuildManager.apply_progression_tier(
+			ObjectiveManager.get_current_progression_tier()
+		)
+
+		return
+
+	var saved_major: int = read_int(
+		data,
+		"major",
+		BuildManager.STARTING_MAJOR
+	)
+
+	var saved_minor: int = read_int(
+		data,
+		"minor",
+		BuildManager.STARTING_MINOR
+	)
+
+	var saved_patch: int = read_int(
+		data,
+		"patch",
+		BuildManager.STARTING_PATCH
+	)
+
+	BuildManager.restore_saved_state(
+		saved_major,
+		saved_minor,
+		saved_patch
+	)
+
+	BuildManager.apply_progression_tier(
+		ObjectiveManager.get_current_progression_tier()
 	)
 	
 func restore_server_upgrades(
@@ -1729,6 +1790,8 @@ func reset_to_new_game() -> bool:
 
 	ResearchManager.finish_save_restore()
 
+	BuildManager.reset_build_state()
+
 	ObjectiveManager.restore_saved_state(
 		0,
 		0,
@@ -1737,9 +1800,9 @@ func reset_to_new_game() -> bool:
 	)
 
 	CrawlerManager.apply_research_crawler_rate()
-	
+
 	ActivityStatsManager.reset_activity_stats()
-	
+
 	TutorialManager.reset_tutorial()
 
 	save_actions_blocked = false
@@ -1758,13 +1821,13 @@ func reset_to_new_game() -> bool:
 			"SaveManager: Runtime reset completed, "
 			+ "but the new save could not be written."
 		)
-	
+
 	new_game_reset.emit()
-	
+
 	call_deferred(
 		"start_tutorial_after_load"
 	)
-	
+
 	return save_successful
 	
 # -------------------------------------------------------------------

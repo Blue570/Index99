@@ -724,7 +724,13 @@ func refresh_tier_2_objectives() -> void:
 		ObjectiveManager.TIER_2_OBJECTIVE_ORDER.size()
 	)
 
-	if completed_count >= objective_count:
+	if ObjectiveManager.is_tier_2_capstone_completed():
+		current_objective_panel.set_status(
+			"TIER 2 COMPLETE",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+	elif completed_count >= objective_count:
 		current_objective_panel.set_status(
 			"%d / %d COMPLETE"
 			% [
@@ -733,6 +739,7 @@ func refresh_tier_2_objectives() -> void:
 			],
 			ThemeManager.STATUS_SUCCESS
 		)
+
 	else:
 		current_objective_panel.set_status(
 			"%d / %d COMPLETE"
@@ -1215,6 +1222,65 @@ func refresh_tier_2_capstone_row() -> void:
 		) as Label
 	)
 
+	if ObjectiveManager.is_tier_2_capstone_completed():
+		status_label.text = "COMPLETE"
+
+		status_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+		title_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+		description_label.text = (
+			"Expanded Operations Test completed successfully."
+		)
+
+		return
+
+	if ObjectiveManager.is_tier_2_capstone_attempt_active():
+		status_label.text = "IN PROGRESS"
+
+		status_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_INFORMATION
+		)
+
+		title_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.TEXT_PRIMARY
+		)
+
+		description_label.text = (
+			"Expanded Crawl in progress. "
+			+ "Avoid triggering a server overload."
+		)
+
+		return
+
+	if ObjectiveManager.has_tier_2_capstone_attempt_failed():
+		status_label.text = "FAILED"
+
+		status_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_ERROR
+		)
+
+		title_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_ERROR
+		)
+
+		description_label.text = (
+			"Server overload detected. Finish the current "
+			+ "crawl, then start a new Expanded Crawl to retry."
+		)
+
+		return
+
 	if (
 		ObjectiveManager
 			.are_tier_2_standard_objectives_complete()
@@ -1392,28 +1458,60 @@ func show_tier_2_standard_complete_state() -> void:
 # -------------------------------------------------------------------
 
 func connect_game_state_signals() -> void:
-	GameState.revenue_changed.connect(
+	if not GameState.revenue_changed.is_connected(
 		_on_revenue_changed
-	)
+	):
+		GameState.revenue_changed.connect(
+			_on_revenue_changed
+		)
 
-	GameState.active_users_changed.connect(
+	if not GameState.active_users_changed.is_connected(
 		_on_active_users_changed
-	)
+	):
+		GameState.active_users_changed.connect(
+			_on_active_users_changed
+		)
 
-	GameState.indexed_pages_changed.connect(
+	if not GameState.indexed_pages_changed.is_connected(
 		_on_indexed_pages_changed
-	)
+	):
+		GameState.indexed_pages_changed.connect(
+			_on_indexed_pages_changed
+		)
 
-	GameState.server_load_changed.connect(
+	if not GameState.server_load_changed.is_connected(
 		_on_server_load_changed
-	)
+	):
+		GameState.server_load_changed.connect(
+			_on_server_load_changed
+		)
 
-	GameState.crawler_state_changed.connect(
+	if not GameState.crawler_state_changed.is_connected(
 		_on_crawler_state_changed
-	)
+	):
+		GameState.crawler_state_changed.connect(
+			_on_crawler_state_changed
+		)
 
-	GameState.crawler_rate_changed.connect(
+	if not GameState.crawler_rate_changed.is_connected(
 		_on_crawler_rate_changed
+	):
+		GameState.crawler_rate_changed.connect(
+			_on_crawler_rate_changed
+		)
+
+	if not ServerManager.maximum_safe_load_level_changed.is_connected(
+		_on_dashboard_maximum_safe_load_level_changed
+	):
+		ServerManager.maximum_safe_load_level_changed.connect(
+			_on_dashboard_maximum_safe_load_level_changed
+		)
+		
+func _on_dashboard_maximum_safe_load_level_changed(
+	_new_level: int
+) -> void:
+	_on_server_load_changed(
+		GameState.server_load
 	)
 
 
@@ -1489,20 +1587,46 @@ func _on_crawler_rate_changed(new_value: float) -> void:
 # Server updates
 # -------------------------------------------------------------------
 
-func _on_server_load_changed(new_value: float) -> void:
+func _on_server_load_changed(
+	new_value: float
+) -> void:
+	var maximum_safe_load: float = (
+		CrawlerManager.get_effective_maximum_safe_load()
+	)
+
+	var warning_threshold: float = (
+		CrawlerManager.get_effective_warning_threshold()
+	)
+
 	var safe_load: float = clampf(
 		new_value,
 		0.0,
-		100.0
+		maximum_safe_load
 	)
 
-	server_load_value_label.text = format_percentage(
-		safe_load
+	var load_usage_percent: float = (
+		CrawlerManager.get_server_load_usage_percent(
+			safe_load
+		)
 	)
 
-	server_load_progress.value = safe_load
+	server_load_value_label.text = (
+		"%d%% / %d%%"
+		% [
+			roundi(safe_load),
+			roundi(maximum_safe_load)
+		]
+	)
 
-	if safe_load >= 100.0:
+	server_load_progress.min_value = 0.0
+	server_load_progress.max_value = 100.0
+	server_load_progress.value = load_usage_percent
+
+	update_server_load_progress_color(
+		load_usage_percent
+	)
+
+	if safe_load >= maximum_safe_load:
 		server_health_value_label.text = "Critical"
 
 		server_overview.set_status(
@@ -1510,7 +1634,7 @@ func _on_server_load_changed(new_value: float) -> void:
 			ThemeManager.STATUS_ERROR
 		)
 
-	elif safe_load >= 90.0:
+	elif safe_load >= warning_threshold:
 		server_health_value_label.text = "Warning"
 
 		server_overview.set_status(
@@ -1523,8 +1647,67 @@ func _on_server_load_changed(new_value: float) -> void:
 
 		server_overview.set_status(
 			"NORMAL",
-			ThemeManager.ACCENT_BLUE
+			ThemeManager.STATUS_SUCCESS
 		)
+		
+func update_server_load_progress_color(
+	load_usage_percent: float
+) -> void:
+	var safe_percent: float = clampf(
+		load_usage_percent,
+		0.0,
+		100.0
+	)
+
+	var load_color: Color
+
+	if safe_percent <= 50.0:
+		var transition: float = (
+			safe_percent / 50.0
+		)
+
+		load_color = (
+			ThemeManager.STATUS_SUCCESS.lerp(
+				ThemeManager.STATUS_WARNING,
+				transition
+			)
+		)
+
+	else:
+		var transition: float = (
+			(safe_percent - 50.0)
+			/ 50.0
+		)
+
+		load_color = (
+			ThemeManager.STATUS_WARNING.lerp(
+				ThemeManager.STATUS_ERROR,
+				transition
+			)
+		)
+
+	var current_fill_style: StyleBox = (
+		server_load_progress.get_theme_stylebox(
+			"fill"
+		)
+	)
+
+	var fill_style: StyleBoxFlat
+
+	if current_fill_style is StyleBoxFlat:
+		fill_style = (
+			current_fill_style.duplicate()
+			as StyleBoxFlat
+		)
+	else:
+		fill_style = StyleBoxFlat.new()
+
+	fill_style.bg_color = load_color
+
+	server_load_progress.add_theme_stylebox_override(
+		"fill",
+		fill_style
+	)
 
 
 # -------------------------------------------------------------------

@@ -334,6 +334,12 @@ var tier_2_last_observed_revenue: float = 0.0
 
 var suppress_tier_2_revenue_tracking: bool = false
 
+var tier_2_capstone_completed: bool = false
+
+var tier_2_capstone_attempt_active: bool = false
+
+var tier_2_capstone_attempt_failed: bool = false
+
 # -------------------------------------------------------------------
 # Tier 2 Objective Queue State
 # -------------------------------------------------------------------
@@ -424,6 +430,13 @@ func connect_objective_signals() -> void:
 	):
 		GameState.revenue_changed.connect(
 			_on_revenue_changed_for_tier_2
+		)
+		
+	if not CrawlerManager.crawler_state_changed.is_connected(
+		_on_crawler_state_changed_for_tier_2_capstone
+	):
+		CrawlerManager.crawler_state_changed.connect(
+			_on_crawler_state_changed_for_tier_2_capstone
 		)
 
 
@@ -595,15 +608,109 @@ func _on_crawl_job_completed_for_tier_2() -> void:
 	):
 		return
 
-	tier_2_expanded_crawls_completed += 1
+	# Before the Capstone unlocks, Expanded Crawls
+	# contribute to the standard Tier 2 objective.
+	if not tier_2_standard_objectives_finished:
+		tier_2_expanded_crawls_completed += 1
 
-	print(
-		"Tier 2 Expanded Crawls: ",
-		tier_2_expanded_crawls_completed,
-		" / 2"
-	)
+		print(
+			"Tier 2 Expanded Crawls: ",
+			tier_2_expanded_crawls_completed,
+			" / 2"
+		)
 
-	evaluate_tier_2_active_objectives()
+		evaluate_tier_2_active_objectives()
+
+		return
+
+	if tier_2_capstone_completed:
+		return
+
+	# A successful Capstone attempt must have begun
+	# as a fresh Expanded Crawl with Auto Assist.
+	if (
+		tier_2_capstone_attempt_active
+		and not tier_2_capstone_attempt_failed
+		and AutomationManager.is_auto_assist_unlocked()
+		and AutomationManager.get_auto_assist_level() > 0
+	):
+		complete_tier_2_capstone()
+
+		return
+
+	# The player finished a previously failed crawl.
+	# The next fresh Expanded Crawl can be attempted again.
+	if tier_2_capstone_attempt_failed:
+		tier_2_capstone_attempt_failed = false
+
+		print(
+			"ObjectiveManager: "
+			+ "Tier 2 Capstone ready for another attempt."
+		)
+
+		tier_2_active_objectives_changed.emit()
+	
+func _on_crawler_state_changed_for_tier_2_capstone(
+	is_running: bool
+) -> void:
+	if suppress_objective_evaluation:
+		return
+
+	if not is_tier_2_tracking_active():
+		return
+
+	if not tier_2_standard_objectives_finished:
+		return
+
+	if tier_2_capstone_completed:
+		return
+
+	if is_running:
+		if tier_2_capstone_attempt_active:
+			return
+
+		if (
+			CrawlerManager.get_selected_job_id()
+			!= CrawlerManager.CRAWL_JOB_EXPANDED
+		):
+			return
+
+		# A Capstone attempt must begin with a fresh
+		# Expanded Crawl, not one already in progress.
+		if CrawlerManager.current_job_pages > 0:
+			return
+
+		if not AutomationManager.is_auto_assist_unlocked():
+			return
+
+		if AutomationManager.get_auto_assist_level() <= 0:
+			return
+
+		tier_2_capstone_attempt_active = true
+		tier_2_capstone_attempt_failed = false
+
+		print(
+			"ObjectiveManager: "
+			+ "Tier 2 Capstone attempt started."
+		)
+
+		tier_2_active_objectives_changed.emit()
+
+		return
+
+	if (
+		tier_2_capstone_attempt_active
+		and CrawlerManager.paused_for_overload
+	):
+		tier_2_capstone_attempt_active = false
+		tier_2_capstone_attempt_failed = true
+
+		print(
+			"ObjectiveManager: "
+			+ "Tier 2 Capstone attempt failed - overload."
+		)
+
+		tier_2_active_objectives_changed.emit()
 
 
 # -------------------------------------------------------------------
@@ -1152,6 +1259,24 @@ func grant_tier_2_objective_reward(
 				"Earn $250 Revenue During Tier"
 			)
 
+		OBJECTIVE_T2_CAPSTONE:
+			award_tier_2_money(
+				200.0,
+				"Expanded Operations Test"
+			)
+
+			award_tier_2_research_points(
+				25.0,
+				(
+					"Tier 2 Objective: "
+					+ "Expanded Operations Test"
+				)
+			)
+
+			award_tier_2_active_users(
+				50
+			)
+
 	tier_2_reward_in_progress = false
 	
 func get_tier_2_objective_reward_text(
@@ -1178,6 +1303,9 @@ func get_tier_2_objective_reward_text(
 
 		OBJECTIVE_T2_EARN_250_REVENUE:
 			return "$50"
+			
+		OBJECTIVE_T2_CAPSTONE:
+			return "$200 + 25 RP + 50 Active Users"
 
 	return ""
 	
@@ -1198,6 +1326,33 @@ func finish_tier_2_standard_objectives() -> void:
 	tier_2_active_objectives_changed.emit()
 
 	tier_2_standard_objectives_completed.emit()
+	
+func complete_tier_2_capstone() -> void:
+	if tier_2_capstone_completed:
+		return
+
+	if not tier_2_standard_objectives_finished:
+		return
+
+	tier_2_capstone_completed = true
+	tier_2_capstone_attempt_active = false
+	tier_2_capstone_attempt_failed = false
+
+	grant_tier_2_objective_reward(
+		OBJECTIVE_T2_CAPSTONE
+	)
+
+	print(
+		"ObjectiveManager: "
+		+ "Tier 2 Capstone complete."
+	)
+
+	objective_completed.emit(
+		OBJECTIVE_T2_CAPSTONE,
+		"Expanded Operations Test"
+	)
+
+	tier_2_active_objectives_changed.emit()
 
 
 func finish_objective_sequence() -> void:
@@ -1567,6 +1722,17 @@ func is_progression_tier_unlocked(
 	
 func get_current_progression_tier() -> int:
 	return current_progression_tier
+	
+func is_tier_2_capstone_completed() -> bool:
+	return tier_2_capstone_completed
+
+
+func is_tier_2_capstone_attempt_active() -> bool:
+	return tier_2_capstone_attempt_active
+
+
+func has_tier_2_capstone_attempt_failed() -> bool:
+	return tier_2_capstone_attempt_failed
 
 
 # -------------------------------------------------------------------
@@ -1718,7 +1884,16 @@ func get_tier_2_save_data() -> Dictionary:
 			tier_2_next_queue_index,
 
 		"standard_objectives_finished":
-			tier_2_standard_objectives_finished
+			tier_2_standard_objectives_finished,
+			
+		"capstone_completed":
+			tier_2_capstone_completed,
+
+		"capstone_attempt_active":
+			tier_2_capstone_attempt_active,
+
+		"capstone_attempt_failed":
+			tier_2_capstone_attempt_failed,
 	}
 	
 func reset_tier_2_objective_state() -> void:
@@ -1747,6 +1922,9 @@ func reset_tier_2_objective_state() -> void:
 	tier_2_next_queue_index = 0
 
 	tier_2_standard_objectives_finished = false
+	tier_2_capstone_completed = false
+	tier_2_capstone_attempt_active = false
+	tier_2_capstone_attempt_failed = false
 	
 func restore_tier_2_saved_state(
 	data: Dictionary,
@@ -1861,6 +2039,35 @@ func restore_tier_2_saved_state(
 		tier_2_next_queue_index = (
 			TIER_2_OBJECTIVE_ORDER.size()
 		)
+		
+		tier_2_capstone_completed = bool(
+		data.get(
+			"capstone_completed",
+			false
+		)
+	)
+
+	tier_2_capstone_attempt_active = bool(
+		data.get(
+			"capstone_attempt_active",
+			false
+		)
+	)
+
+	tier_2_capstone_attempt_failed = bool(
+		data.get(
+			"capstone_attempt_failed",
+			false
+		)
+	)
+
+	if tier_2_capstone_completed:
+		tier_2_capstone_attempt_active = false
+		tier_2_capstone_attempt_failed = false
+
+	if not tier_2_standard_objectives_finished:
+		tier_2_capstone_attempt_active = false
+		tier_2_capstone_attempt_failed = false
 
 		return
 

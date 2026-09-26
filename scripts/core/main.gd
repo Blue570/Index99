@@ -33,6 +33,8 @@ var tab_buttons: Dictionary = {}
 var pages: Dictionary = {}
 var current_page_id: StringName = &""
 
+
+
 @onready var desktop_background := (
 	get_node("DesktopBackground") as ColorRect
 )
@@ -113,12 +115,10 @@ var current_page_id: StringName = &""
 	) as MenuButton
 )
 
-@onready var build_label := (
-	get_node(
-		"MainApplicationWindow/MainLayout/TitleBar/"
-		+ "TitleBarLayout/BuildLabel"
-	) as Label
-)
+@onready var build_label: Label = get_node(
+	"MainApplicationWindow/MainLayout/TitleBar/"
+	+ "TitleBarLayout/BuildLabel"
+) as Label
 
 @onready var window_controls := (
 	get_node(
@@ -783,9 +783,38 @@ func _ready() -> void:
 	setup_game_state_connections()
 	refresh_resource_displays()
 	setup_resource_tooltips()
+	
+	setup_build_number_display()
 
 	open_page(
 		DEFAULT_PAGE_ID
+	)
+	
+func setup_build_number_display() -> void:
+	if not BuildManager.build_number_changed.is_connected(
+		_on_build_number_changed
+	):
+		BuildManager.build_number_changed.connect(
+			_on_build_number_changed
+		)
+
+	refresh_build_number_display()
+	
+func _on_build_number_changed(
+	_major: int,
+	_minor: int,
+	_patch: int
+) -> void:
+	refresh_build_number_display()
+	
+func refresh_build_number_display() -> void:
+	build_label.text = (
+		"BUILD "
+		+ BuildManager.get_build_number_text()
+	)
+
+	build_label.tooltip_text = (
+		"Current Index 99 system build."
 	)
 
 	# ---------------------------------------------------------------
@@ -851,8 +880,20 @@ func setup_game_state_connections() -> void:
 		GameState.server_load_changed.connect(
 			_on_server_load_changed
 		)
+
+	if not ServerManager.maximum_safe_load_level_changed.is_connected(
+		_on_resource_maximum_safe_load_level_changed
+	):
+		ServerManager.maximum_safe_load_level_changed.connect(
+			_on_resource_maximum_safe_load_level_changed
+		)
 		
-		
+func _on_resource_maximum_safe_load_level_changed(
+	_new_level: int
+) -> void:
+	_on_server_load_changed(
+		GameState.server_load
+	)
 
 		
 func refresh_resource_displays() -> void:
@@ -889,12 +930,28 @@ func _on_reputation_changed(new_value: float) -> void:
 func _on_server_load_changed(
 	new_value: float
 ) -> void:
+	var maximum_safe_load: float = (
+		CrawlerManager.get_effective_maximum_safe_load()
+	)
+
+	var safe_load: float = clampf(
+		new_value,
+		0.0,
+		maximum_safe_load
+	)
+
 	server_load_display.set_display_value(
-		format_percentage(new_value)
+		"%d%% / %d%%"
+		% [
+			roundi(safe_load),
+			roundi(maximum_safe_load)
+		]
 	)
 
 	server_load_display.set_display_value_color(
-		get_server_load_display_color(new_value)
+		get_server_load_display_color(
+			safe_load
+		)
 	)
 
 	refresh_background_jobs_bar()
