@@ -292,17 +292,25 @@ var current_progression_tier: int = (
 	PROGRESSION_TIER_1
 )
 
-const TIER_2_MAX_ACTIVE_OBJECTIVES: int = 2
-
 const TIER_2_OBJECTIVE_ORDER: Array[StringName] = [
 	OBJECTIVE_T2_INDEX_2000_PAGES,
+	OBJECTIVE_T2_REACH_150_USERS,
 	OBJECTIVE_T2_COMPLETE_3_ACTIVITIES,
 	OBJECTIVE_T2_PURCHASE_3_SERVER_LEVELS,
-	OBJECTIVE_T2_COMPLETE_2_EXPANDED_CRAWLS,
-	OBJECTIVE_T2_REACH_150_USERS,
 	OBJECTIVE_T2_PURCHASE_2_RESEARCH_LEVELS,
+	OBJECTIVE_T2_COMPLETE_2_EXPANDED_CRAWLS,
 	OBJECTIVE_T2_EARN_250_REVENUE
 ]
+
+const TIER_2_CAPSTONE_DATA: Dictionary = {
+	"id": OBJECTIVE_T2_CAPSTONE,
+	"title": "Expanded Operations Test",
+	"description": (
+		"Complete one Expanded Crawl while Auto Crawl Assist "
+		+ "is active without triggering an overload."
+	),
+	"target": 1
+}
 
 var tier_2_reward_in_progress: bool = false
 
@@ -810,14 +818,11 @@ func begin_tier_2_tracking() -> void:
 	)
 	
 func start_tier_2_objective_sequence() -> void:
-	tier_2_active_objective_ids.clear()
 	tier_2_completed_objectives.clear()
-
-	tier_2_next_queue_index = 0
 
 	tier_2_standard_objectives_finished = false
 
-	fill_tier_2_active_objective_slots()
+	rebuild_tier_2_active_objectives()
 
 	emit_tier_2_active_objectives()
 
@@ -825,27 +830,14 @@ func start_tier_2_objective_sequence() -> void:
 		"evaluate_tier_2_active_objectives"
 	)
 
-func fill_tier_2_active_objective_slots() -> void:
-	while (
-		tier_2_active_objective_ids.size()
-		< TIER_2_MAX_ACTIVE_OBJECTIVES
-		and tier_2_next_queue_index
-		< TIER_2_OBJECTIVE_ORDER.size()
+
+func rebuild_tier_2_active_objectives() -> void:
+	tier_2_active_objective_ids.clear()
+
+	for objective_id: StringName in (
+		TIER_2_OBJECTIVE_ORDER
 	):
-		var objective_id: StringName = (
-			TIER_2_OBJECTIVE_ORDER[
-				tier_2_next_queue_index
-			]
-		)
-
-		tier_2_next_queue_index += 1
-
 		if tier_2_completed_objectives.has(
-			objective_id
-		):
-			continue
-
-		if tier_2_active_objective_ids.has(
 			objective_id
 		):
 			continue
@@ -853,6 +845,11 @@ func fill_tier_2_active_objective_slots() -> void:
 		tier_2_active_objective_ids.append(
 			objective_id
 		)
+
+	# Retained temporarily for save compatibility.
+	tier_2_next_queue_index = (
+		TIER_2_OBJECTIVE_ORDER.size()
+	)
 		
 func emit_tier_2_active_objectives() -> void:
 	tier_2_active_objectives_changed.emit()
@@ -1025,8 +1022,6 @@ func complete_tier_2_objective(
 		objective_id,
 		objective_title
 	)
-
-	fill_tier_2_active_objective_slots()
 
 	if (
 		tier_2_completed_objectives.size()
@@ -1337,6 +1332,49 @@ func is_tier_2_objective_requirement_met(
 			objective_id
 		)
 		>= target
+	)
+	
+func get_tier_2_all_objectives() -> Array[Dictionary]:
+	var objectives: Array[Dictionary] = []
+
+	for objective_id: StringName in (
+		TIER_2_OBJECTIVE_ORDER
+	):
+		var objective: Dictionary = (
+			get_tier_2_objective_by_id(
+				objective_id
+			)
+		)
+
+		if objective.is_empty():
+			continue
+
+		objectives.append(
+			objective
+		)
+
+	return objectives
+
+
+func is_tier_2_objective_completed(
+	objective_id: StringName
+) -> bool:
+	return tier_2_completed_objectives.has(
+		objective_id
+	)
+
+
+func get_tier_2_completed_count() -> int:
+	return tier_2_completed_objectives.size()
+
+
+func are_tier_2_standard_objectives_complete() -> bool:
+	return tier_2_standard_objectives_finished
+
+
+func get_tier_2_capstone_data() -> Dictionary:
+	return TIER_2_CAPSTONE_DATA.duplicate(
+		true
 	)
 
 
@@ -1725,13 +1763,10 @@ func restore_tier_2_saved_state(
 		GameState.revenue
 	)
 
-	# Older saves will not contain Tier 2 queue data.
-	# Start those saves at the beginning of the new
-	# Tier 2 objective structure.
+	# Older saves without Tier 2 objective data
+	# simply begin with all objectives available.
 	if data.is_empty():
-		tier_2_next_queue_index = 0
-
-		fill_tier_2_active_objective_slots()
+		rebuild_tier_2_active_objectives()
 
 		return
 
@@ -1785,17 +1820,6 @@ func restore_tier_2_saved_state(
 		0.0
 	)
 
-	tier_2_next_queue_index = clampi(
-		int(
-			data.get(
-				"next_queue_index",
-				0
-			)
-		),
-		0,
-		TIER_2_OBJECTIVE_ORDER.size()
-	)
-
 	var raw_completed_ids: Variant = (
 		data.get(
 			"completed_objective_ids",
@@ -1820,40 +1844,6 @@ func restore_tier_2_saved_state(
 				objective_id
 			] = true
 
-	var raw_active_ids: Variant = (
-		data.get(
-			"active_objective_ids",
-			[]
-		)
-	)
-
-	if typeof(raw_active_ids) == TYPE_ARRAY:
-		for raw_id: Variant in raw_active_ids:
-			var objective_id: StringName = (
-				StringName(
-					str(raw_id)
-				)
-			)
-
-			if not TIER_2_OBJECTIVE_ORDER.has(
-				objective_id
-			):
-				continue
-
-			if tier_2_completed_objectives.has(
-				objective_id
-			):
-				continue
-
-			if tier_2_active_objective_ids.has(
-				objective_id
-			):
-				continue
-
-			tier_2_active_objective_ids.append(
-				objective_id
-			)
-
 	tier_2_standard_objectives_finished = (
 		bool(
 			data.get(
@@ -1868,6 +1858,10 @@ func restore_tier_2_saved_state(
 	if tier_2_standard_objectives_finished:
 		tier_2_active_objective_ids.clear()
 
+		tier_2_next_queue_index = (
+			TIER_2_OBJECTIVE_ORDER.size()
+		)
+
 		return
 
-	fill_tier_2_active_objective_slots()
+	rebuild_tier_2_active_objectives()

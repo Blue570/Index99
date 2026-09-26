@@ -860,7 +860,7 @@ theme_override_constants/separation = 10
 [node name="CurrentObjectivePanel" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn" unique_id=570147225 instance=ExtResource("4_l3cfh")]
 layout_mode = 2
 size_flags_vertical = 3
-section_title = "Current Objective"
+section_title = "Objectives"
 status_text = "ACTIVE"
 show_status = true
 status_color = Color(0.77254903, 0.5411765, 0.07450981, 1)
@@ -920,6 +920,24 @@ layout_mode = 2
 [node name="Objective2ProgressLabel" type="Label" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/CurrentObjectiveLayout/Objective2Container" unique_id=1244936925]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
+
+[node name="Tier2ObjectiveScroll" type="ScrollContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer" parent_id_path=PackedInt32Array(570147225, 287423228) index="1" unique_id=1408477784]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Tier2ObjectiveMargin" type="MarginContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/Tier2ObjectiveScroll" unique_id=1006125814]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 2
+
+[node name="Tier2ObjectiveList" type="VBoxContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/DashboardPage/DashboardMargin/DashboardLayout/DashboardColumns/RightColumn/CurrentObjectivePanel/PanelLayout/ContentPanel/ContentMargin/ContentContainer/Tier2ObjectiveScroll/Tier2ObjectiveMargin" unique_id=1875586311]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
 
 [node name="CrawlerPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=261853772]
 visible = false

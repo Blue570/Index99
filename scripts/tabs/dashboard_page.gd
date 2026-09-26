@@ -302,6 +302,39 @@ const OBJECTIVE_TARGET: int = 100
 	+ "Objective2ProgressLabel"
 ) as Label
 
+@onready var current_objective_layout: VBoxContainer = get_node(
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CurrentObjectiveLayout"
+) as VBoxContainer
+
+@onready var tier_2_objective_scroll: ScrollContainer = get_node(
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "Tier2ObjectiveScroll"
+) as ScrollContainer
+
+@onready var tier_2_objective_list: VBoxContainer = get_node(
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "Tier2ObjectiveScroll/"
+	+ "Tier2ObjectiveMargin/"
+	+ "Tier2ObjectiveList"
+) as VBoxContainer
+
+var tier_2_objective_rows: Dictionary = {}
+
+var tier_2_capstone_nodes: Dictionary = {}
+
 
 func _ready() -> void:
 	connect_game_state_signals()
@@ -550,13 +583,21 @@ func connect_objective_signals() -> void:
 		
 func refresh_current_objective() -> void:
 	if ObjectiveManager.is_tier_2_tracking_active():
+		current_objective_layout.visible = false
+		tier_2_objective_scroll.visible = true
+
 		refresh_tier_2_objectives()
+
 		return
+
+	tier_2_objective_scroll.visible = false
+	current_objective_layout.visible = true
 
 	objective_2_container.visible = false
 
 	if ObjectiveManager.sequence_completed:
 		_on_all_objectives_completed()
+
 		return
 
 	_on_objective_changed(
@@ -656,46 +697,567 @@ func _on_tier_2_active_objectives_changed() -> void:
 
 
 func _on_tier_2_objective_progress_changed(
-	_objective_id: StringName,
+	objective_id: StringName,
 	_current_value: float,
 	_target_value: float
 ) -> void:
-	refresh_tier_2_objectives()
-	
-func refresh_tier_2_objectives() -> void:
-	var active_objectives: Array[Dictionary] = (
-		ObjectiveManager.get_tier_2_active_objectives()
-	)
-
-	if active_objectives.is_empty():
-		show_tier_2_standard_complete_state()
+	if not ObjectiveManager.is_tier_2_tracking_active():
 		return
 
-	current_objective_panel.set_status(
-		"%d ACTIVE" % active_objectives.size(),
-		ThemeManager.STATUS_INFORMATION
+	build_tier_2_objective_rows()
+
+	refresh_tier_2_objective_row(
+		objective_id
+	)
+	
+func refresh_tier_2_objectives() -> void:
+	current_objective_layout.visible = false
+	tier_2_objective_scroll.visible = true
+
+	build_tier_2_objective_rows()
+
+	var completed_count: int = (
+		ObjectiveManager.get_tier_2_completed_count()
 	)
 
-	refresh_tier_2_objective_slot(
-		active_objectives[0],
-		objective_title_label,
-		objective_description_label,
-		objective_progress_bar,
-		objective_progress_label
+	var objective_count: int = (
+		ObjectiveManager.TIER_2_OBJECTIVE_ORDER.size()
 	)
 
-	if active_objectives.size() >= 2:
-		objective_2_container.visible = true
-
-		refresh_tier_2_objective_slot(
-			active_objectives[1],
-			objective_2_title_label,
-			objective_2_description_label,
-			objective_2_progress_bar,
-			objective_2_progress_label
+	if completed_count >= objective_count:
+		current_objective_panel.set_status(
+			"%d / %d COMPLETE"
+			% [
+				completed_count,
+				objective_count
+			],
+			ThemeManager.STATUS_SUCCESS
 		)
 	else:
-		objective_2_container.visible = false
+		current_objective_panel.set_status(
+			"%d / %d COMPLETE"
+			% [
+				completed_count,
+				objective_count
+			],
+			ThemeManager.STATUS_INFORMATION
+		)
+
+	for objective: Dictionary in (
+		ObjectiveManager.get_tier_2_all_objectives()
+	):
+		var objective_id: StringName = StringName(
+			objective.get(
+				"id",
+				&""
+			)
+		)
+
+		refresh_tier_2_objective_row(
+			objective_id
+		)
+
+	refresh_tier_2_capstone_row()
+	
+func build_tier_2_objective_rows() -> void:
+	print(
+		"Dashboard: Building Tier 2 objective rows."
+	)
+
+	print(
+		"Dashboard: Tier 2 objective count = ",
+		ObjectiveManager.get_tier_2_all_objectives().size()
+	)
+
+	print(
+		"Dashboard: Scroll size = ",
+		tier_2_objective_scroll.size
+	)
+
+	print(
+		"Dashboard: List size = ",
+		tier_2_objective_list.size
+	)
+
+	if not tier_2_objective_rows.is_empty():
+		print(
+			"Dashboard: Rows already exist = ",
+			tier_2_objective_rows.size()
+		)
+
+		return
+
+	for objective: Dictionary in (
+		ObjectiveManager.get_tier_2_all_objectives()
+	):
+		create_tier_2_objective_row(
+			objective
+		)
+
+	create_tier_2_capstone_row()
+	
+func create_tier_2_objective_row(
+	objective: Dictionary
+) -> void:
+	var objective_id: StringName = StringName(
+		objective.get(
+			"id",
+			&""
+		)
+	)
+
+	if objective_id == &"":
+		return
+
+	var row: VBoxContainer = VBoxContainer.new()
+
+	row.name = (
+		"Objective_%s"
+		% str(objective_id)
+	)
+
+	row.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
+	row.add_theme_constant_override(
+		"separation",
+		3
+	)
+
+	var title_row: HBoxContainer = (
+		HBoxContainer.new()
+	)
+
+	title_row.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
+	var title_label: Label = Label.new()
+
+	title_label.text = str(
+		objective.get(
+			"title",
+			"Objective"
+		)
+	)
+
+	title_label.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
+	title_label.add_theme_font_size_override(
+		"font_size",
+		14
+	)
+
+	title_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_PRIMARY
+	)
+
+	var status_label: Label = Label.new()
+
+	status_label.custom_minimum_size = Vector2(
+		80.0,
+		0.0
+	)
+
+	status_label.horizontal_alignment = (
+		HORIZONTAL_ALIGNMENT_RIGHT
+	)
+
+	status_label.add_theme_font_size_override(
+		"font_size",
+		11
+	)
+
+	title_row.add_child(
+		title_label
+	)
+
+	title_row.add_child(
+		status_label
+	)
+
+	var description_label: Label = Label.new()
+
+	description_label.text = str(
+		objective.get(
+			"description",
+			""
+		)
+	)
+
+	description_label.autowrap_mode = (
+		TextServer.AUTOWRAP_WORD_SMART
+	)
+
+	description_label.add_theme_font_size_override(
+		"font_size",
+		11
+	)
+
+	description_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_SECONDARY
+	)
+
+	var progress_bar: ProgressBar = (
+		ProgressBar.new()
+	)
+
+	progress_bar.custom_minimum_size = Vector2(
+		0.0,
+		18.0
+	)
+
+	progress_bar.min_value = 0.0
+	progress_bar.max_value = 100.0
+	progress_bar.show_percentage = false
+
+	var progress_label: Label = Label.new()
+
+	progress_label.horizontal_alignment = (
+		HORIZONTAL_ALIGNMENT_RIGHT
+	)
+
+	progress_label.add_theme_font_size_override(
+		"font_size",
+		11
+	)
+
+	progress_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_SECONDARY
+	)
+
+	row.add_child(
+		title_row
+	)
+
+	row.add_child(
+		description_label
+	)
+
+	row.add_child(
+		progress_bar
+	)
+
+	row.add_child(
+		progress_label
+	)
+
+	tier_2_objective_list.add_child(
+		row
+	)
+
+	var separator: HSeparator = HSeparator.new()
+
+	tier_2_objective_list.add_child(
+		separator
+	)
+
+	tier_2_objective_rows[
+		objective_id
+	] = {
+		"title": title_label,
+		"status": status_label,
+		"description": description_label,
+		"progress_bar": progress_bar,
+		"progress_label": progress_label
+	}
+	
+func refresh_tier_2_objective_row(
+	objective_id: StringName
+) -> void:
+	if not tier_2_objective_rows.has(
+		objective_id
+	):
+		return
+
+	var row_nodes: Dictionary = (
+		tier_2_objective_rows[
+			objective_id
+		]
+	)
+
+	var title_label: Label = (
+		row_nodes.get(
+			"title"
+		) as Label
+	)
+
+	var status_label: Label = (
+		row_nodes.get(
+			"status"
+		) as Label
+	)
+
+	var progress_bar: ProgressBar = (
+		row_nodes.get(
+			"progress_bar"
+		) as ProgressBar
+	)
+
+	var progress_label: Label = (
+		row_nodes.get(
+			"progress_label"
+		) as Label
+	)
+
+	var completed: bool = (
+		ObjectiveManager
+			.is_tier_2_objective_completed(
+				objective_id
+			)
+	)
+
+	var current_value: float = (
+		ObjectiveManager
+			.get_tier_2_objective_progress(
+				objective_id
+			)
+	)
+
+	var target_value: float = (
+		ObjectiveManager
+			.get_tier_2_objective_target(
+				objective_id
+			)
+	)
+
+	if completed:
+		status_label.text = "COMPLETE"
+
+		status_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_SUCCESS
+		)
+
+		title_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_SUCCESS
+		)
+	else:
+		status_label.text = "ACTIVE"
+
+		status_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_INFORMATION
+		)
+
+		title_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.TEXT_PRIMARY
+		)
+
+	if target_value <= 0.0:
+		progress_bar.value = 0.0
+		progress_label.text = "0 / 0"
+
+		return
+
+	var safe_current: float = minf(
+		current_value,
+		target_value
+	)
+
+	if completed:
+		safe_current = target_value
+
+	var progress_percent: float = clampf(
+		safe_current
+		/ target_value
+		* 100.0,
+		0.0,
+		100.0
+	)
+
+	progress_bar.value = progress_percent
+
+	if (
+		objective_id
+		== ObjectiveManager
+			.OBJECTIVE_T2_EARN_250_REVENUE
+	):
+		progress_label.text = (
+			"$%.0f / $%.0f"
+			% [
+				safe_current,
+				target_value
+			]
+		)
+
+		return
+
+	progress_label.text = (
+		"%d / %d"
+		% [
+			floori(safe_current),
+			floori(target_value)
+		]
+	)
+	
+func create_tier_2_capstone_row() -> void:
+	var capstone_heading: Label = Label.new()
+
+	capstone_heading.text = (
+		"TIER 2 CAPSTONE"
+	)
+
+	capstone_heading.add_theme_font_size_override(
+		"font_size",
+		12
+	)
+
+	capstone_heading.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_SECONDARY
+	)
+
+	tier_2_objective_list.add_child(
+		capstone_heading
+	)
+
+	var title_row: HBoxContainer = (
+		HBoxContainer.new()
+	)
+
+	var title_label: Label = Label.new()
+
+	title_label.text = (
+		"Expanded Operations Test"
+	)
+
+	title_label.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
+	title_label.add_theme_font_size_override(
+		"font_size",
+		14
+	)
+
+	var status_label: Label = Label.new()
+
+	status_label.custom_minimum_size = Vector2(
+		80.0,
+		0.0
+	)
+
+	status_label.horizontal_alignment = (
+		HORIZONTAL_ALIGNMENT_RIGHT
+	)
+
+	status_label.add_theme_font_size_override(
+		"font_size",
+		11
+	)
+
+	title_row.add_child(
+		title_label
+	)
+
+	title_row.add_child(
+		status_label
+	)
+
+	var description_label: Label = Label.new()
+
+	description_label.autowrap_mode = (
+		TextServer.AUTOWRAP_WORD_SMART
+	)
+
+	description_label.add_theme_font_size_override(
+		"font_size",
+		11
+	)
+	
+	description_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_SECONDARY
+	)
+
+	tier_2_objective_list.add_child(
+		title_row
+	)
+
+	tier_2_objective_list.add_child(
+		description_label
+	)
+
+	tier_2_capstone_nodes = {
+		"title": title_label,
+		"status": status_label,
+		"description": description_label
+	}
+	
+func refresh_tier_2_capstone_row() -> void:
+	if tier_2_capstone_nodes.is_empty():
+		return
+
+	var title_label: Label = (
+		tier_2_capstone_nodes.get(
+			"title"
+		) as Label
+	)
+
+	var status_label: Label = (
+		tier_2_capstone_nodes.get(
+			"status"
+		) as Label
+	)
+
+	var description_label: Label = (
+		tier_2_capstone_nodes.get(
+			"description"
+		) as Label
+	)
+
+	if (
+		ObjectiveManager
+			.are_tier_2_standard_objectives_complete()
+	):
+		status_label.text = "READY"
+
+		status_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.STATUS_WARNING
+		)
+
+		title_label.add_theme_color_override(
+			"font_color",
+			ThemeManager.TEXT_PRIMARY
+		)
+
+		description_label.text = str(
+			ObjectiveManager
+				.get_tier_2_capstone_data()
+				.get(
+					"description",
+					""
+				)
+		)
+
+		return
+
+	status_label.text = "LOCKED"
+
+	status_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_DISABLED
+	)
+
+	title_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.TEXT_DISABLED
+	)
+
+	description_label.text = (
+		"Complete all seven standard Tier 2 "
+		+ "objectives to unlock."
+	)
 		
 func refresh_tier_2_objective_slot(
 	objective: Dictionary,
