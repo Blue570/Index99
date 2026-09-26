@@ -228,6 +228,13 @@ var current_page_id: StringName = &""
 	) as TabButton
 )
 
+@onready var tech_tab := (
+	get_node(
+		"MainApplicationWindow/MainLayout/TabBar/"
+		+ "TabRow/TechTab"
+	) as TabButton
+)
+
 @onready var dashboard_page := (
 	get_node(
 		"MainApplicationWindow/MainLayout/PageArea/"
@@ -282,6 +289,13 @@ var current_page_id: StringName = &""
 		"MainApplicationWindow/MainLayout/PageArea/"
 		+ "PageStack/ActivitiesPage"
 	) as PanelContainer
+)
+
+@onready var tech_tree_page := (
+	get_node(
+		"MainApplicationWindow/MainLayout/PageArea/"
+		+ "PageStack/TechTreePage"
+	) as Control
 )
 
 @onready var background_jobs_bar: PanelContainer = (
@@ -773,6 +787,7 @@ func _ready() -> void:
 	setup_application_menus()
 	setup_tabs()
 	setup_activities_unlock()
+	setup_tech_tree_unlock()
 	setup_placeholder_jobs()
 	setup_application_menu_popup_theme()
 	setup_session_statistics_window()
@@ -783,7 +798,7 @@ func _ready() -> void:
 	setup_game_state_connections()
 	refresh_resource_displays()
 	setup_resource_tooltips()
-	
+
 	setup_build_number_display()
 
 	open_page(
@@ -1971,7 +1986,8 @@ func setup_tabs() -> void:
 		&"servers": servers_tab,
 		&"research": research_tab,
 		&"upgrades": upgrades_tab,
-		&"activities": activities_tab
+		&"activities": activities_tab,
+		&"tech": tech_tab
 	}
 
 	pages = {
@@ -1982,7 +1998,8 @@ func setup_tabs() -> void:
 		&"servers": servers_page,
 		&"research": research_page,
 		&"upgrades": upgrades_page,
-		&"activities": activities_page
+		&"activities": activities_page,
+		&"tech": tech_tree_page
 	}
 
 	for tab_id: StringName in tab_buttons:
@@ -2065,6 +2082,12 @@ func open_page(
 	if (
 		page_id == &"activities"
 		and not is_activities_unlocked()
+	):
+		return
+
+	if (
+		page_id == &"tech"
+		and not is_tech_tree_unlocked()
 	):
 		return
 
@@ -2293,4 +2316,51 @@ func _on_background_crawler_progress_changed(
 
 func _on_background_crawl_job_completed() -> void:
 	refresh_background_jobs_bar()
+	
+# -------------------------------------------------------------------
+# Tech Tree Unlock
+# -------------------------------------------------------------------
+
+func setup_tech_tree_unlock() -> void:
+	if not ObjectiveManager.progression_tier_changed.is_connected(
+		_on_progression_tier_changed_for_tech_tree
+	):
+		ObjectiveManager.progression_tier_changed.connect(
+			_on_progression_tier_changed_for_tech_tree
+		)
+
+	refresh_tech_tree_tab_unlock_state()
+
+
+func _on_progression_tier_changed_for_tech_tree(
+	_new_tier: int
+) -> void:
+	refresh_tech_tree_tab_unlock_state()
+
+
+func is_tech_tree_unlocked() -> bool:
+	return ObjectiveManager.is_progression_tier_unlocked(
+		ObjectiveManager.PROGRESSION_TIER_3
+	)
+
+
+func refresh_tech_tree_tab_unlock_state() -> void:
+	var tech_tree_unlocked: bool = (
+		is_tech_tree_unlocked()
+	)
+
+	tech_tab.disabled = (
+		not tech_tree_unlocked
+	)
+
+	if tech_tree_unlocked:
+		tech_tab.tooltip_text = (
+			"Open the Technology Tree."
+		)
+
+		return
+
+	tech_tab.tooltip_text = (
+		"Tech Tree unlocks at Progression Tier 3."
+	)
 	

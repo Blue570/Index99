@@ -31,6 +31,7 @@ AutomationManager="*uid://cbpuw2oijn5jh"
 SessionStatsManager="*uid://b6poibkuybava"
 ActivityStatsManager="*uid://ck01mmu53du83"
 BuildManager="*uid://cwan2o0fws0t0"
+TechTreeManager="*uid://b58ogyybd860u"
 SaveManager="*uid://dph2koncc6egq"
 
 [display]

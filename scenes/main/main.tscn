@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://cm10rhl32a5ti" path="res://scenes/components/upgrade_card.tscn" id="12_7smn1"]
 [ext_resource type="Script" uid="uid://ujgyrhxhd1ev" path="res://scripts/tabs/activities_page.gd" id="13_raeie"]
 [ext_resource type="PackedScene" uid="uid://c48y3wwlf2xjt" path="res://scenes/components/activity_card.tscn" id="14_hxu8e"]
+[ext_resource type="PackedScene" uid="uid://bo6f7e25lrtmt" path="res://scenes/tabs/TechTreePage.tscn" id="15_nvumn"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gwxi"]
 bg_color = Color(0.9254902, 0.9254902, 0.9254902, 1)
@@ -286,6 +287,12 @@ text = "Activities"
 tab_id = &"activities"
 tab_text = "Activities"
 
+[node name="TechTab" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1931907658 instance=ExtResource("3_k2fmo")]
+layout_mode = 2
+text = "Tech"
+tab_id = &"tech"
+tab_text = "Tech"
+
 [node name="TabFill" type="Control" parent="MainApplicationWindow/MainLayout/TabBar/TabRow" unique_id=1482285346]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -301,6 +308,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_6gwxi")
 layout_mode = 2
 
 [node name="DashboardPage" type="PanelContainer" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=374740521]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -3094,6 +3102,15 @@ layout_mode = 2
 
 [node name="BrokenLinkCleanupCard" parent="MainApplicationWindow/MainLayout/PageArea/PageStack/ActivitiesPage/ActivitiesMargin/ActivitiesPageLayout/ActivitiesScroll/ActivitiesCatalog" unique_id=1217706826 instance=ExtResource("14_hxu8e")]
 layout_mode = 2
+
+[node name="TechTreePage" parent="MainApplicationWindow/MainLayout/PageArea/PageStack" unique_id=468746683 instance=ExtResource("15_nvumn")]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="BackgroundJobsBar" type="PanelContainer" parent="MainApplicationWindow/MainLayout" unique_id=1989258494]
 custom_minimum_size = Vector2(0, 48)

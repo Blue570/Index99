@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bo6f7e25lrtmt"]
+
+[ext_resource type="Script" uid="uid://c6kkuvcl6blmb" path="res://scripts/tabs/tech_tree_page.gd" id="1_had5l"]
+
+[node name="TechTreePage" type="Control" unique_id=468746683]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_had5l")

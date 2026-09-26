@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cqj73pu62k3rf"]
+
+[ext_resource type="Script" uid="uid://cl1e6csm3a3e0" path="res://scripts/tech_tree/tech_node.gd" id="1_wer8j"]
+
+[node name="TechNode" type="Button" unique_id=654935672]
+script = ExtResource("1_wer8j")

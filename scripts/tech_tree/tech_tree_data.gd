@@ -1,0 +1,219 @@
+class_name TechTreeData
+extends RefCounted
+
+
+# -------------------------------------------------------------------
+# Grid Settings
+# -------------------------------------------------------------------
+
+const GRID_COLUMNS: int = 10
+const GRID_ROWS: int = 6
+
+
+# -------------------------------------------------------------------
+# Tech Identifiers
+# -------------------------------------------------------------------
+
+const TECH_CRAWLER_CACHE: StringName = (
+	&"crawler_cache"
+)
+
+const TECH_PACKET_COMPRESSION: StringName = (
+	&"packet_compression"
+)
+
+const TECH_COOLING_PROTOCOLS: StringName = (
+	&"cooling_protocols"
+)
+
+const TECH_AUDIENCE_ANALYTICS: StringName = (
+	&"audience_analytics"
+)
+
+const TECH_AUTOMATED_ROUTING: StringName = (
+	&"automated_routing"
+)
+
+
+# -------------------------------------------------------------------
+# Tech Definitions
+#
+# grid_position:
+#     x = column
+#     y = row
+#
+# Cost growth is calculated automatically for each level.
+#
+# Example:
+#     Base money cost = $250
+#     Growth = 1.50
+#
+#     Level 1 = $250
+#     Level 2 = $375
+#     Level 3 = $563
+# -------------------------------------------------------------------
+
+const TECH_NODES: Dictionary = {
+	TECH_CRAWLER_CACHE: {
+		"name": "Crawler Cache",
+		"description": (
+			"Improves temporary crawler data caching."
+		),
+		"category": "Crawler",
+
+		"grid_position": Vector2i(
+			0,
+			0
+		),
+
+		"max_level": 5,
+
+		"base_money_cost": 250.0,
+		"money_cost_growth": 1.50,
+
+		"base_research_cost": 0.0,
+		"research_cost_growth": 1.0,
+
+		"base_tech_cost": 0,
+		"tech_cost_growth": 1.0,
+
+		"effect_id": &"crawler_speed_percent",
+		"effect_per_level": 5.0,
+
+		"required_tier": 3,
+
+		"prerequisites": []
+	},
+
+	TECH_PACKET_COMPRESSION: {
+		"name": "Packet Compression",
+		"description": (
+			"Reduces crawler server load through "
+			+ "improved data compression."
+		),
+		"category": "Crawler",
+
+		"grid_position": Vector2i(
+			1,
+			0
+		),
+
+		"max_level": 5,
+
+		"base_money_cost": 400.0,
+		"money_cost_growth": 1.55,
+
+		"base_research_cost": 5.0,
+		"research_cost_growth": 1.35,
+
+		"base_tech_cost": 0,
+		"tech_cost_growth": 1.0,
+
+		"effect_id": &"crawler_load_reduction_percent",
+		"effect_per_level": 3.0,
+
+		"required_tier": 3,
+
+		"prerequisites": [
+			TECH_CRAWLER_CACHE
+		]
+	},
+
+	TECH_COOLING_PROTOCOLS: {
+		"name": "Cooling Protocols",
+		"description": (
+			"Improves automated server cooling routines."
+		),
+		"category": "Infrastructure",
+
+		"grid_position": Vector2i(
+			0,
+			2
+		),
+
+		"max_level": 5,
+
+		"base_money_cost": 350.0,
+		"money_cost_growth": 1.50,
+
+		"base_research_cost": 0.0,
+		"research_cost_growth": 1.0,
+
+		"base_tech_cost": 0,
+		"tech_cost_growth": 1.0,
+
+		"effect_id": &"cooling_speed_percent",
+		"effect_per_level": 4.0,
+
+		"required_tier": 3,
+
+		"prerequisites": []
+	},
+
+	TECH_AUDIENCE_ANALYTICS: {
+		"name": "Audience Analytics",
+		"description": (
+			"Improves identification of useful "
+			+ "audience growth patterns."
+		),
+		"category": "Growth",
+
+		"grid_position": Vector2i(
+			0,
+			4
+		),
+
+		"max_level": 3,
+
+		"base_money_cost": 500.0,
+		"money_cost_growth": 1.65,
+
+		"base_research_cost": 10.0,
+		"research_cost_growth": 1.50,
+
+		"base_tech_cost": 0,
+		"tech_cost_growth": 1.0,
+
+		"effect_id": &"active_user_growth_percent",
+		"effect_per_level": 5.0,
+
+		"required_tier": 3,
+
+		"prerequisites": []
+	},
+
+	TECH_AUTOMATED_ROUTING: {
+		"name": "Automated Routing",
+		"description": (
+			"Introduces advanced routing logic "
+			+ "for automated crawler operations."
+		),
+		"category": "Automation",
+
+		"grid_position": Vector2i(
+			2,
+			2
+		),
+
+		"max_level": 3,
+
+		"base_money_cost": 750.0,
+		"money_cost_growth": 1.75,
+
+		"base_research_cost": 15.0,
+		"research_cost_growth": 1.50,
+
+		"base_tech_cost": 1,
+		"tech_cost_growth": 1.0,
+
+		"effect_id": &"automation_efficiency_percent",
+		"effect_per_level": 5.0,
+
+		"required_tier": 3,
+
+		"prerequisites": [
+			TECH_PACKET_COMPRESSION,
+			TECH_COOLING_PROTOCOLS
+		]
+	}
+}
