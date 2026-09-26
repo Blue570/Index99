@@ -36,6 +36,7 @@ var name_label: Label
 var level_label: Label
 var category_label: Label
 var cost_label: Label
+var effect_label: Label
 
 var level_boxes_row: HBoxContainer
 
@@ -123,42 +124,42 @@ func apply_tech_node_theme() -> void:
 	)
 
 func build_interface() -> void:
-	var margin_container: MarginContainer = (
+	var content_margin: MarginContainer = (
 		MarginContainer.new()
 	)
 
-	margin_container.name = "MarginContainer"
+	content_margin.name = "ContentMargin"
 
-	margin_container.set_anchors_and_offsets_preset(
+	content_margin.set_anchors_and_offsets_preset(
 		Control.PRESET_FULL_RECT
 	)
 
-	margin_container.mouse_filter = (
-		Control.MOUSE_FILTER_IGNORE
-	)
-
-	margin_container.add_theme_constant_override(
+	content_margin.add_theme_constant_override(
 		"margin_left",
 		4
 	)
 
-	margin_container.add_theme_constant_override(
+	content_margin.add_theme_constant_override(
 		"margin_right",
 		4
 	)
 
-	margin_container.add_theme_constant_override(
+	content_margin.add_theme_constant_override(
 		"margin_top",
 		3
 	)
 
-	margin_container.add_theme_constant_override(
+	content_margin.add_theme_constant_override(
 		"margin_bottom",
 		3
 	)
 
+	content_margin.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
 	add_child(
-		margin_container
+		content_margin
 	)
 
 	var main_layout: VBoxContainer = (
@@ -167,8 +168,12 @@ func build_interface() -> void:
 
 	main_layout.name = "MainLayout"
 
-	main_layout.mouse_filter = (
-		Control.MOUSE_FILTER_IGNORE
+	main_layout.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
+	main_layout.size_flags_vertical = (
+		Control.SIZE_EXPAND_FILL
 	)
 
 	main_layout.add_theme_constant_override(
@@ -176,21 +181,17 @@ func build_interface() -> void:
 		1
 	)
 
-	margin_container.add_child(
+	main_layout.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	content_margin.add_child(
 		main_layout
 	)
 
 	name_label = Label.new()
 
 	name_label.name = "NameLabel"
-
-	name_label.text = "TECH NODE"
-
-	name_label.clip_text = true
-
-	name_label.text_overrun_behavior = (
-		TextServer.OVERRUN_TRIM_ELLIPSIS
-	)
 
 	name_label.add_theme_font_size_override(
 		"font_size",
@@ -201,6 +202,8 @@ func build_interface() -> void:
 		"font_color",
 		ThemeManager.TEXT_PRIMARY
 	)
+
+	name_label.clip_text = true
 
 	name_label.mouse_filter = (
 		Control.MOUSE_FILTER_IGNORE
@@ -216,6 +219,10 @@ func build_interface() -> void:
 
 	information_row.name = "InformationRow"
 
+	information_row.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
 	information_row.mouse_filter = (
 		Control.MOUSE_FILTER_IGNORE
 	)
@@ -228,13 +235,9 @@ func build_interface() -> void:
 
 	category_label.name = "CategoryLabel"
 
-	category_label.text = "CATEGORY"
-
 	category_label.size_flags_horizontal = (
 		Control.SIZE_EXPAND_FILL
 	)
-
-	category_label.clip_text = true
 
 	category_label.add_theme_font_size_override(
 		"font_size",
@@ -258,7 +261,9 @@ func build_interface() -> void:
 
 	level_label.name = "LevelLabel"
 
-	level_label.text = "Lv 0/5"
+	level_label.horizontal_alignment = (
+		HORIZONTAL_ALIGNMENT_RIGHT
+	)
 
 	level_label.add_theme_font_size_override(
 		"font_size",
@@ -267,7 +272,7 @@ func build_interface() -> void:
 
 	level_label.add_theme_color_override(
 		"font_color",
-		ThemeManager.TEXT_SECONDARY
+		ThemeManager.STATUS_INFORMATION
 	)
 
 	level_label.mouse_filter = (
@@ -278,17 +283,33 @@ func build_interface() -> void:
 		level_label
 	)
 
+	effect_label = Label.new()
+
+	effect_label.name = "EffectLabel"
+
+	effect_label.add_theme_font_size_override(
+		"font_size",
+		8
+	)
+
+	effect_label.add_theme_color_override(
+		"font_color",
+		ThemeManager.STATUS_INFORMATION
+	)
+
+	effect_label.clip_text = true
+
+	effect_label.mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+	)
+
+	main_layout.add_child(
+		effect_label
+	)
+
 	cost_label = Label.new()
 
 	cost_label.name = "CostLabel"
-
-	cost_label.text = "LOCKED"
-
-	cost_label.clip_text = true
-
-	cost_label.text_overrun_behavior = (
-		TextServer.OVERRUN_TRIM_ELLIPSIS
-	)
 
 	cost_label.add_theme_font_size_override(
 		"font_size",
@@ -297,7 +318,7 @@ func build_interface() -> void:
 
 	cost_label.add_theme_color_override(
 		"font_color",
-		ThemeManager.TEXT_SECONDARY
+		ThemeManager.TEXT_PRIMARY
 	)
 
 	cost_label.mouse_filter = (
@@ -328,6 +349,10 @@ func build_interface() -> void:
 
 	level_boxes_row.name = "LevelBoxesRow"
 
+	level_boxes_row.size_flags_horizontal = (
+		Control.SIZE_EXPAND_FILL
+	)
+
 	level_boxes_row.add_theme_constant_override(
 		"separation",
 		2
@@ -356,7 +381,6 @@ func configure(
 
 func refresh_tech_node() -> void:
 	if tech_id == &"":
-		visible = false
 		return
 
 	var tech_data: Dictionary = (
@@ -366,22 +390,7 @@ func refresh_tech_node() -> void:
 	)
 
 	if tech_data.is_empty():
-		visible = false
 		return
-
-	visible = true
-
-	var current_level: int = (
-		TechTreeManager.get_current_level(
-			tech_id
-		)
-	)
-
-	var maximum_level: int = (
-		TechTreeManager.get_max_level(
-			tech_id
-		)
-	)
 
 	name_label.text = str(
 		tech_data.get(
@@ -395,7 +404,19 @@ func refresh_tech_node() -> void:
 			"category",
 			"General"
 		)
-	).to_upper()
+	)
+
+	var current_level: int = (
+		TechTreeManager.get_current_level(
+			tech_id
+		)
+	)
+
+	var maximum_level: int = (
+		TechTreeManager.get_max_level(
+			tech_id
+		)
+	)
 
 	level_label.text = (
 		"Lv %d/%d"
@@ -405,17 +426,20 @@ func refresh_tech_node() -> void:
 		]
 	)
 
-	tooltip_text = str(
-		tech_data.get(
-			"description",
-			""
+	effect_label.text = (
+		TechTreeManager.get_compact_effect_text(
+			tech_id
+		)
+	)
+
+	tooltip_text = (
+		TechTreeManager.get_tech_tooltip_text(
+			tech_id
 		)
 	)
 
 	refresh_cost_display()
-
 	refresh_level_boxes()
-
 	refresh_visual_state()
 
 

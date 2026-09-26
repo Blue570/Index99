@@ -280,6 +280,9 @@ func build_save_data() -> Dictionary:
 		
 		"technical_points":
 			TechnicalPointsManager.get_save_data(),
+			
+		"tech_tree":
+			TechTreeManager.get_save_data(),
 
 		"objective": {
 			"current_objective_index":
@@ -754,6 +757,17 @@ func restore_save_data(
 		technical_points_data = save_data[
 		"technical_points"
 		]
+		
+	var tech_tree_data: Dictionary = {}
+
+	if (
+		save_data.has("tech_tree")
+		and typeof(save_data["tech_tree"])
+		== TYPE_DICTIONARY
+	):
+		tech_tree_data = save_data[
+		"tech_tree"
+	]
 
 	var build_data: Dictionary = {}
 
@@ -776,6 +790,10 @@ func restore_save_data(
 	
 	TechnicalPointsManager.restore_saved_state(
 		technical_points_data
+	)
+	
+	TechTreeManager.restore_saved_state(
+		tech_tree_data
 	)
 
 	restore_game_state(
@@ -1589,6 +1607,13 @@ func connect_event_autosave_signals() -> void:
 			_on_activity_completed_for_save
 		)
 		
+	if not TechTreeManager.tech_purchased.is_connected(
+		_on_tech_purchased_for_save
+	):
+		TechTreeManager.tech_purchased.connect(
+			_on_tech_purchased_for_save
+	)
+		
 func _on_activity_completed_for_save(
 	_activity_type: StringName,
 	_type_total: int,
@@ -1600,6 +1625,15 @@ func _on_server_upgrade_purchased_for_save(
 	_upgrade_id: StringName,
 	_new_level: int,
 	_revenue_spent: float
+) -> void:
+	request_event_autosave()
+	
+func _on_tech_purchased_for_save(
+	_tech_id: StringName,
+	_new_level: int,
+	_money_spent: float,
+	_research_points_spent: float,
+	_technical_points_spent: int
 ) -> void:
 	request_event_autosave()
 
@@ -1765,6 +1799,7 @@ func reset_to_new_game() -> bool:
 		return false
 		
 	TechnicalPointsManager.reset_technical_points()
+	TechTreeManager.reset_tech_tree()
 	save_actions_blocked = true
 	event_autosave_queued = false
 

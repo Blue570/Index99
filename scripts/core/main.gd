@@ -391,6 +391,11 @@ var current_page_id: StringName = &""
 	+ "ResourceRow/ReputationDisplay"
 ) as ResourceDisplay
 
+@onready var technical_points_display: ResourceDisplay = get_node(
+	"MainApplicationWindow/MainLayout/ResourceBar/"
+	+ "ResourceRow/TechnicalPointsDisplay"
+) as ResourceDisplay
+
 @onready var server_load_display: ResourceDisplay = get_node(
 	"MainApplicationWindow/MainLayout/ResourceBar/"
 	+ "ResourceRow/ServerLoadDisplay"
@@ -902,6 +907,13 @@ func setup_game_state_connections() -> void:
 		ServerManager.maximum_safe_load_level_changed.connect(
 			_on_resource_maximum_safe_load_level_changed
 		)
+
+	if not TechnicalPointsManager.technical_points_changed.is_connected(
+		_on_technical_points_changed
+	):
+		TechnicalPointsManager.technical_points_changed.connect(
+			_on_technical_points_changed
+		)
 		
 func _on_resource_maximum_safe_load_level_changed(
 	_new_level: int
@@ -912,11 +924,29 @@ func _on_resource_maximum_safe_load_level_changed(
 
 		
 func refresh_resource_displays() -> void:
-	_on_revenue_changed(GameState.revenue)
-	_on_active_users_changed(GameState.active_users)
-	_on_indexed_pages_changed(GameState.indexed_pages)
-	_on_reputation_changed(GameState.reputation)
-	_on_server_load_changed(GameState.server_load)
+	_on_revenue_changed(
+		GameState.revenue
+	)
+
+	_on_active_users_changed(
+		GameState.active_users
+	)
+
+	_on_indexed_pages_changed(
+		GameState.indexed_pages
+	)
+
+	_on_reputation_changed(
+		GameState.reputation
+	)
+
+	_on_technical_points_changed(
+		TechnicalPointsManager.get_technical_points()
+	)
+
+	_on_server_load_changed(
+		GameState.server_load
+	)
 	
 func _on_revenue_changed(new_value: float) -> void:
 	revenue_display.set_display_value(
@@ -939,6 +969,15 @@ func _on_indexed_pages_changed(new_value: int) -> void:
 func _on_reputation_changed(new_value: float) -> void:
 	reputation_display.set_display_value(
 		"%.1f" % new_value
+	)
+	
+func _on_technical_points_changed(
+	new_value: int
+) -> void:
+	technical_points_display.set_display_value(
+		format_whole_number(
+			new_value
+		)
 	)
 
 
@@ -1193,6 +1232,12 @@ func setup_resource_tooltips() -> void:
 		"Reputation\n\n"
 		+ "Represents the overall standing and credibility "
 		+ "of the search service."
+	)
+
+	technical_points_display.tooltip_text = (
+		"Technical Points\n\n"
+		+ "A rare Tier 3 resource used to unlock and improve "
+		+ "advanced technologies in the Tech Tree."
 	)
 
 	server_load_display.tooltip_text = (
@@ -2351,6 +2396,10 @@ func refresh_tech_tree_tab_unlock_state() -> void:
 
 	tech_tab.disabled = (
 		not tech_tree_unlocked
+	)
+
+	technical_points_display.visible = (
+		tech_tree_unlocked
 	)
 
 	if tech_tree_unlocked:

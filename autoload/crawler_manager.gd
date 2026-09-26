@@ -188,19 +188,19 @@ var current_crawler_priority: StringName = (
 
 func _ready() -> void:
 	connect_research_signals()
+	connect_tech_tree_signals()
 
 	apply_research_crawler_rate()
 
 	create_crawler_timer()
 	create_server_load_timer()
-	
+
 	if not ObjectiveManager.progression_tier_changed.is_connected(
 		_on_progression_tier_changed
-):
+	):
 		ObjectiveManager.progression_tier_changed.connect(
 			_on_progression_tier_changed
-	)
-	
+		)
 	
 func connect_research_signals() -> void:
 	if not ResearchManager.research_upgrade_level_changed.is_connected(
@@ -209,6 +209,20 @@ func connect_research_signals() -> void:
 		ResearchManager.research_upgrade_level_changed.connect(
 			_on_research_upgrade_level_changed
 		)
+		
+func connect_tech_tree_signals() -> void:
+	if not TechTreeManager.tech_level_changed.is_connected(
+		_on_tech_level_changed
+	):
+		TechTreeManager.tech_level_changed.connect(
+			_on_tech_level_changed
+		)
+		
+func _on_tech_level_changed(
+	_tech_id: StringName,
+	_new_level: int
+) -> void:
+	apply_research_crawler_rate()
 		
 func _on_research_upgrade_level_changed(
 	_upgrade_id: StringName,
@@ -221,9 +235,26 @@ func apply_research_crawler_rate() -> void:
 		ResearchManager.get_crawler_optimization_bonus()
 	)
 
-	var effective_crawler_rate: float = (
+	var base_with_research: float = (
 		BASE_CRAWLER_RATE
 		+ research_bonus
+	)
+
+	var tech_speed_bonus_percent: float = (
+		TechTreeManager.get_total_effect_value(
+			&"crawler_speed_percent"
+		)
+	)
+
+	var tech_speed_multiplier: float = (
+		1.0
+		+ tech_speed_bonus_percent
+		/ 100.0
+	)
+
+	var effective_crawler_rate: float = (
+		base_with_research
+		* tech_speed_multiplier
 	)
 
 	GameState.set_crawler_rate(

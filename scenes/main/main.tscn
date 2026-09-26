@@ -230,6 +230,11 @@ icon_text = "★"
 accent_color = Color(0.77254903, 0.5411765, 0.07450981, 1)
 value_color = Color(0.77254903, 0.5411765, 0.07450981, 1)
 
+[node name="TechnicalPointsDisplay" parent="MainApplicationWindow/MainLayout/ResourceBar/ResourceRow" unique_id=1024711534 instance=ExtResource("2_iuonh")]
+layout_mode = 2
+display_name = "Tech Points"
+icon_text = "TP"
+
 [node name="ServerLoadDisplay" parent="MainApplicationWindow/MainLayout/ResourceBar/ResourceRow" unique_id=1758662249 instance=ExtResource("2_iuonh")]
 layout_mode = 2
 display_name = "Server Load"

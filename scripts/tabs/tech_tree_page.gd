@@ -540,41 +540,90 @@ func _on_tech_selected(
 		)
 	)
 
-	var description: String = str(
-		tech_data.get(
-			"description",
-			""
+	if TechTreeManager.is_tech_maxed(
+		tech_id
+	):
+		selection_label.text = (
+			"%s — Maximum level reached."
+			% tech_name
+		)
+
+		return
+
+	if not TechTreeManager.can_afford_tech(
+		tech_id
+	):
+		var money_cost: float = (
+			TechTreeManager.get_next_money_cost(
+				tech_id
+			)
+		)
+
+		var research_cost: float = (
+			TechTreeManager.get_next_research_cost(
+				tech_id
+			)
+		)
+
+		var tech_cost: int = (
+			TechTreeManager.get_next_tech_cost(
+				tech_id
+			)
+		)
+
+		selection_label.text = (
+			"%s — Requires $%d + %d RP + %d TP."
+			% [
+				tech_name,
+				roundi(money_cost),
+				roundi(research_cost),
+				tech_cost
+			]
+		)
+
+		return
+
+	var purchase_successful: bool = (
+		TechTreeManager.purchase_tech(
+			tech_id
+		)
+	)
+
+	if not purchase_successful:
+		selection_label.text = (
+			"%s — Purchase failed."
+			% tech_name
+		)
+
+		return
+
+	var new_level: int = (
+		TechTreeManager.get_current_level(
+			tech_id
+		)
+	)
+
+	var maximum_level: int = (
+		TechTreeManager.get_max_level(
+			tech_id
 		)
 	)
 
 	selection_label.text = (
-		"%s — %s"
+		"%s upgraded — Level %d/%d."
 		% [
 			tech_name,
-			description
+			new_level,
+			maximum_level
 		]
 	)
 
 
 func _on_tech_level_changed(
-	tech_id: StringName,
+	_tech_id: StringName,
 	_new_level: int
 ) -> void:
-	if not tech_nodes.has(
-		tech_id
-	):
-		return
-
-	var tech_node: TechNode = (
-		tech_nodes[
-			tech_id
-		] as TechNode
-	)
-
-	if tech_node == null:
-		return
-
-	tech_node.refresh_tech_node()
+	refresh_all_tech_nodes()
 
 
 func _on_progression_tier_changed(
