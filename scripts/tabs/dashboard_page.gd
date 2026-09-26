@@ -248,6 +248,60 @@ const OBJECTIVE_TARGET: int = 100
 	+ "ObjectiveProgressLabel"
 ) as Label
 
+@onready var objective_2_container: VBoxContainer = get_node(
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CurrentObjectiveLayout/"
+	+ "Objective2Container"
+) as VBoxContainer
+
+@onready var objective_2_title_label: Label = get_node(
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CurrentObjectiveLayout/"
+	+ "Objective2Container/"
+	+ "Objective2TitleLabel"
+) as Label
+
+@onready var objective_2_description_label: Label = get_node(
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CurrentObjectiveLayout/"
+	+ "Objective2Container/"
+	+ "Objective2DescriptionLabel"
+) as Label
+
+@onready var objective_2_progress_bar: ProgressBar = get_node(
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CurrentObjectiveLayout/"
+	+ "Objective2Container/"
+	+ "Objective2ProgressBar"
+) as ProgressBar
+
+@onready var objective_2_progress_label: Label = get_node(
+	"DashboardMargin/DashboardLayout/"
+	+ "DashboardColumns/RightColumn/"
+	+ "CurrentObjectivePanel/"
+	+ "PanelLayout/ContentPanel/"
+	+ "ContentMargin/ContentContainer/"
+	+ "CurrentObjectiveLayout/"
+	+ "Objective2Container/"
+	+ "Objective2ProgressLabel"
+) as Label
+
 
 func _ready() -> void:
 	connect_game_state_signals()
@@ -480,7 +534,27 @@ func connect_objective_signals() -> void:
 			_on_all_objectives_completed
 		)
 		
+	if not ObjectiveManager.tier_2_active_objectives_changed.is_connected(
+		_on_tier_2_active_objectives_changed
+	):
+		ObjectiveManager.tier_2_active_objectives_changed.connect(
+			_on_tier_2_active_objectives_changed
+		)
+
+	if not ObjectiveManager.tier_2_objective_progress_changed.is_connected(
+		_on_tier_2_objective_progress_changed
+	):
+		ObjectiveManager.tier_2_objective_progress_changed.connect(
+			_on_tier_2_objective_progress_changed
+		)
+		
 func refresh_current_objective() -> void:
+	if ObjectiveManager.is_tier_2_tracking_active():
+		refresh_tier_2_objectives()
+		return
+
+	objective_2_container.visible = false
+
 	if ObjectiveManager.sequence_completed:
 		_on_all_objectives_completed()
 		return
@@ -500,6 +574,9 @@ func _on_objective_changed(
 	current_value: int,
 	target_value: int
 ) -> void:
+	if ObjectiveManager.is_tier_2_tracking_active():
+		refresh_tier_2_objectives()
+		return
 	objective_title_label.text = title
 	objective_description_label.text = description
 
@@ -567,6 +644,179 @@ func _on_all_objectives_completed() -> void:
 
 	objective_progress_label.text = (
 		"COMPLETE"
+	)
+
+	current_objective_panel.set_status(
+		"COMPLETE",
+		ThemeManager.STATUS_SUCCESS
+	)
+	
+func _on_tier_2_active_objectives_changed() -> void:
+	refresh_tier_2_objectives()
+
+
+func _on_tier_2_objective_progress_changed(
+	_objective_id: StringName,
+	_current_value: float,
+	_target_value: float
+) -> void:
+	refresh_tier_2_objectives()
+	
+func refresh_tier_2_objectives() -> void:
+	var active_objectives: Array[Dictionary] = (
+		ObjectiveManager.get_tier_2_active_objectives()
+	)
+
+	if active_objectives.is_empty():
+		show_tier_2_standard_complete_state()
+		return
+
+	current_objective_panel.set_status(
+		"%d ACTIVE" % active_objectives.size(),
+		ThemeManager.STATUS_INFORMATION
+	)
+
+	refresh_tier_2_objective_slot(
+		active_objectives[0],
+		objective_title_label,
+		objective_description_label,
+		objective_progress_bar,
+		objective_progress_label
+	)
+
+	if active_objectives.size() >= 2:
+		objective_2_container.visible = true
+
+		refresh_tier_2_objective_slot(
+			active_objectives[1],
+			objective_2_title_label,
+			objective_2_description_label,
+			objective_2_progress_bar,
+			objective_2_progress_label
+		)
+	else:
+		objective_2_container.visible = false
+		
+func refresh_tier_2_objective_slot(
+	objective: Dictionary,
+	title_label: Label,
+	description_label: Label,
+	progress_bar: ProgressBar,
+	progress_label: Label
+) -> void:
+	var objective_id: StringName = StringName(
+		objective.get(
+			"id",
+			&""
+		)
+	)
+
+	var title: String = str(
+		objective.get(
+			"title",
+			"Objective"
+		)
+	)
+
+	var description: String = str(
+		objective.get(
+			"description",
+			""
+		)
+	)
+
+	var current_value: float = (
+		ObjectiveManager.get_tier_2_objective_progress(
+			objective_id
+		)
+	)
+
+	var target_value: float = (
+		ObjectiveManager.get_tier_2_objective_target(
+			objective_id
+		)
+	)
+
+	title_label.text = title
+	description_label.text = description
+
+	update_tier_2_objective_progress(
+		objective_id,
+		progress_bar,
+		progress_label,
+		current_value,
+		target_value
+	)
+	
+func update_tier_2_objective_progress(
+	objective_id: StringName,
+	progress_bar: ProgressBar,
+	progress_label: Label,
+	current_value: float,
+	target_value: float
+) -> void:
+	if target_value <= 0.0:
+		progress_bar.value = 0.0
+		progress_label.text = "0 / 0"
+		return
+
+	var safe_current: float = minf(
+		current_value,
+		target_value
+	)
+
+	var progress_percent: float = clampf(
+		safe_current
+		/ target_value
+		* 100.0,
+		0.0,
+		100.0
+	)
+
+	progress_bar.min_value = 0.0
+	progress_bar.max_value = 100.0
+	progress_bar.value = progress_percent
+
+	if (
+		objective_id
+		== ObjectiveManager.OBJECTIVE_T2_EARN_250_REVENUE
+	):
+		progress_label.text = (
+			"$%.0f / $%.0f"
+			% [
+				safe_current,
+				target_value
+			]
+		)
+
+		return
+
+	progress_label.text = (
+		"%d / %d"
+		% [
+			floori(safe_current),
+			floori(target_value)
+		]
+	)
+	
+func show_tier_2_standard_complete_state() -> void:
+	objective_2_container.visible = false
+
+	objective_title_label.text = (
+		"Tier 2 Standard Objectives Complete"
+	)
+
+	objective_description_label.text = (
+		"All seven Tier 2 objectives have been completed. "
+		+ "The Tier 2 Capstone is ready."
+	)
+
+	objective_progress_bar.min_value = 0.0
+	objective_progress_bar.max_value = 100.0
+	objective_progress_bar.value = 100.0
+
+	objective_progress_label.text = (
+		"7 / 7 COMPLETE"
 	)
 
 	current_objective_panel.set_status(
