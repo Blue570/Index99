@@ -277,6 +277,9 @@ func build_save_data() -> Dictionary:
 					.UPGRADE_AUDIENCE_DISCOVERY
 				)
 		},
+		
+		"technical_points":
+			TechnicalPointsManager.get_save_data(),
 
 		"objective": {
 			"current_objective_index":
@@ -740,6 +743,17 @@ func restore_save_data(
 		tutorial_data = save_data[
 			"tutorial"
 		]
+		
+	var technical_points_data: Dictionary = {}
+
+	if (
+		save_data.has("technical_points")
+		and typeof(save_data["technical_points"])
+		== TYPE_DICTIONARY
+	):
+		technical_points_data = save_data[
+		"technical_points"
+		]
 
 	var build_data: Dictionary = {}
 
@@ -758,6 +772,10 @@ func restore_save_data(
 
 	restore_research(
 		research_data
+	)
+	
+	TechnicalPointsManager.restore_saved_state(
+		technical_points_data
 	)
 
 	restore_game_state(
@@ -1745,7 +1763,8 @@ func reset_to_new_game() -> bool:
 		)
 
 		return false
-
+		
+	TechnicalPointsManager.reset_technical_points()
 	save_actions_blocked = true
 	event_autosave_queued = false
 
