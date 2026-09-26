@@ -272,7 +272,9 @@ const TIER_2_OBJECTIVES: Array[Dictionary] = [
 
 const PROGRESSION_TIER_1: int = 1
 const PROGRESSION_TIER_2: int = 2
-const MAX_PROGRESSION_TIER: int = 2
+const PROGRESSION_TIER_3: int = 3
+
+const MAX_PROGRESSION_TIER: int = 3
 
 
 # -------------------------------------------------------------------
@@ -925,9 +927,15 @@ func begin_tier_2_tracking() -> void:
 	)
 	
 func start_tier_2_objective_sequence() -> void:
+	tier_2_reward_in_progress = false
+
 	tier_2_completed_objectives.clear()
 
 	tier_2_standard_objectives_finished = false
+
+	tier_2_capstone_completed = false
+	tier_2_capstone_attempt_active = false
+	tier_2_capstone_attempt_failed = false
 
 	rebuild_tier_2_active_objectives()
 
@@ -1352,7 +1360,16 @@ func complete_tier_2_capstone() -> void:
 		"Expanded Operations Test"
 	)
 
+	set_progression_tier(
+		PROGRESSION_TIER_3
+	)
+
 	tier_2_active_objectives_changed.emit()
+
+	print(
+		"ObjectiveManager: "
+		+ "Tier 3 unlocked."
+	)
 
 
 func finish_objective_sequence() -> void:
@@ -1370,7 +1387,7 @@ func is_tier_2_tracking_active() -> bool:
 	return (
 		tier_2_tracking_started
 		and current_progression_tier
-			>= PROGRESSION_TIER_2
+			== PROGRESSION_TIER_2
 	)
 	
 func get_tier_2_objective_progress(
@@ -1897,6 +1914,8 @@ func get_tier_2_save_data() -> Dictionary:
 	}
 	
 func reset_tier_2_objective_state() -> void:
+	tier_2_reward_in_progress = false
+
 	tier_2_tracking_started = false
 
 	tier_2_activities_completed = 0
@@ -1922,6 +1941,7 @@ func reset_tier_2_objective_state() -> void:
 	tier_2_next_queue_index = 0
 
 	tier_2_standard_objectives_finished = false
+
 	tier_2_capstone_completed = false
 	tier_2_capstone_attempt_active = false
 	tier_2_capstone_attempt_failed = false
@@ -1942,7 +1962,7 @@ func restore_tier_2_saved_state(
 	)
 
 	# Older saves without Tier 2 objective data
-	# simply begin with all objectives available.
+	# begin with all Tier 2 objectives available.
 	if data.is_empty():
 		rebuild_tier_2_active_objectives()
 
@@ -2033,14 +2053,7 @@ func restore_tier_2_saved_state(
 			>= TIER_2_OBJECTIVE_ORDER.size()
 	)
 
-	if tier_2_standard_objectives_finished:
-		tier_2_active_objective_ids.clear()
-
-		tier_2_next_queue_index = (
-			TIER_2_OBJECTIVE_ORDER.size()
-		)
-		
-		tier_2_capstone_completed = bool(
+	tier_2_capstone_completed = bool(
 		data.get(
 			"capstone_completed",
 			false
@@ -2061,14 +2074,23 @@ func restore_tier_2_saved_state(
 		)
 	)
 
-	if tier_2_capstone_completed:
-		tier_2_capstone_attempt_active = false
-		tier_2_capstone_attempt_failed = false
+	if tier_2_standard_objectives_finished:
+		tier_2_active_objective_ids.clear()
 
-	if not tier_2_standard_objectives_finished:
-		tier_2_capstone_attempt_active = false
-		tier_2_capstone_attempt_failed = false
+		tier_2_next_queue_index = (
+			TIER_2_OBJECTIVE_ORDER.size()
+		)
+
+		if tier_2_capstone_completed:
+			tier_2_capstone_attempt_active = false
+			tier_2_capstone_attempt_failed = false
 
 		return
+
+	# Capstone cannot have active state before
+	# all seven standard objectives are complete.
+	tier_2_capstone_completed = false
+	tier_2_capstone_attempt_active = false
+	tier_2_capstone_attempt_failed = false
 
 	rebuild_tier_2_active_objectives()

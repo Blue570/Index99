@@ -566,7 +566,7 @@ func connect_objective_signals() -> void:
 		ObjectiveManager.all_objectives_completed.connect(
 			_on_all_objectives_completed
 		)
-		
+
 	if not ObjectiveManager.tier_2_active_objectives_changed.is_connected(
 		_on_tier_2_active_objectives_changed
 	):
@@ -580,6 +580,18 @@ func connect_objective_signals() -> void:
 		ObjectiveManager.tier_2_objective_progress_changed.connect(
 			_on_tier_2_objective_progress_changed
 		)
+
+	if not SaveManager.new_game_reset.is_connected(
+		_on_dashboard_new_game_reset
+	):
+		SaveManager.new_game_reset.connect(
+			_on_dashboard_new_game_reset
+		)
+		
+func _on_dashboard_new_game_reset() -> void:
+	refresh_dashboard()
+
+	refresh_current_objective()
 		
 func refresh_current_objective() -> void:
 	if ObjectiveManager.is_tier_2_tracking_active():

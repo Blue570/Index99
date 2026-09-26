@@ -712,10 +712,38 @@ func _on_upgrade_card_requested(
 ) -> void:
 	match upgrade_id:
 		&"auto_throttle":
+			var previous_level: int = (
+				AutomationManager.get_auto_throttle_level()
+			)
+
 			AutomationManager.purchase_auto_throttle_upgrade()
 
+			var new_level: int = (
+				AutomationManager.get_auto_throttle_level()
+			)
+
+			if new_level > previous_level:
+				BuildManager.add_build_progress(
+					1
+				)
+
 		&"scheduler_optimization":
+			var previous_level: int = (
+				AutomationManager
+					.get_scheduler_optimization_level()
+			)
+
 			AutomationManager.purchase_scheduler_optimization_upgrade()
+
+			var new_level: int = (
+				AutomationManager
+					.get_scheduler_optimization_level()
+			)
+
+			if new_level > previous_level:
+				BuildManager.add_build_progress(
+					1
+				)
 
 		_:
 			return
