@@ -1006,9 +1006,29 @@ func get_effective_server_load_generation() -> float:
 
 
 func get_effective_maximum_safe_load() -> float:
-	return (
+	var server_upgrade_bonus: float = (
+		ServerManager.get_maximum_safe_load_bonus()
+	)
+
+	var load_after_server_upgrades: float = (
 		SERVER_LOAD_MAXIMUM
-		+ ServerManager.get_maximum_safe_load_bonus()
+		+ server_upgrade_bonus
+	)
+
+	var tech_bonus: float = (
+		TechTreeManager.get_total_effect_value(
+			&"maximum_safe_load_bonus"
+		)
+	)
+
+	var effective_maximum_safe_load: float = (
+		load_after_server_upgrades
+		+ tech_bonus
+	)
+
+	return maxf(
+		effective_maximum_safe_load,
+		1.0
 	)
 
 
