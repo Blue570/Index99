@@ -49,6 +49,10 @@ const CRAWL_JOB_BASIC: StringName = &"basic"
 const CRAWL_JOB_EXPANDED: StringName = &"expanded"
 const CRAWL_JOB_DEEP: StringName = &"deep"
 
+const CRAWL_JOB_TECHNICAL: StringName = &"technical"
+
+const CRAWL_JOB_EXPERIMENTAL: StringName = &"experimental"
+
 const CRAWL_JOBS: Dictionary = {
 	CRAWL_JOB_BASIC: {
 		"display_name": "Basic Crawl",
@@ -56,7 +60,8 @@ const CRAWL_JOBS: Dictionary = {
 			"A small general-purpose crawl with a short "
 			+ "completion time.",
 		"target_pages": 100,
-		"required_tier": 1
+		"required_tier": 1,
+		"technical_point_reward": 0
 	},
 
 	CRAWL_JOB_EXPANDED: {
@@ -65,7 +70,8 @@ const CRAWL_JOBS: Dictionary = {
 			"A broader crawl that searches more linked "
 			+ "domains and takes longer to finish.",
 		"target_pages": 250,
-		"required_tier": 2
+		"required_tier": 2,
+		"technical_point_reward": 0
 	},
 
 	CRAWL_JOB_DEEP: {
@@ -74,14 +80,39 @@ const CRAWL_JOBS: Dictionary = {
 			"A long crawl that follows deeper link paths "
 			+ "for sustained indexing.",
 		"target_pages": 500,
-		"required_tier": 2
+		"required_tier": 2,
+		"technical_point_reward": 0
+	},
+
+	CRAWL_JOB_TECHNICAL: {
+		"display_name": "Technical Crawl",
+		"description":
+			"A focused technical scan of network systems, "
+			+ "protocols, and infrastructure. Completing "
+			+ "the crawl awards 1 Technical Point.",
+		"target_pages": 750,
+		"required_tier": 3,
+		"technical_point_reward": 1
+	},
+
+	CRAWL_JOB_EXPERIMENTAL: {
+		"display_name": "Experimental Crawl",
+		"description":
+			"A large experimental crawl through difficult "
+			+ "and poorly mapped sections of the network. "
+			+ "Completing the crawl awards 2 Technical Points.",
+		"target_pages": 1500,
+		"required_tier": 3,
+		"technical_point_reward": 2
 	}
 }
 
 const CRAWL_JOB_ORDER: Array[StringName] = [
 	CRAWL_JOB_BASIC,
 	CRAWL_JOB_EXPANDED,
-	CRAWL_JOB_DEEP
+	CRAWL_JOB_DEEP,
+	CRAWL_JOB_TECHNICAL,
+	CRAWL_JOB_EXPERIMENTAL
 ]
 
 const QUICK_CRAWL_SLOT_COUNT: int = 3
@@ -436,6 +467,28 @@ func get_crawl_job_required_tier(
 			"required_tier",
 			1
 		)
+	)
+	
+func get_crawl_job_technical_point_reward(
+	job_id: StringName
+) -> int:
+	if not CRAWL_JOBS.has(
+		job_id
+	):
+		return 0
+
+	var job_data: Dictionary = (
+		CRAWL_JOBS[job_id]
+	)
+
+	return maxi(
+		int(
+			job_data.get(
+				"technical_point_reward",
+				0
+			)
+		),
+		0
 	)
 	
 # -------------------------------------------------------------------
@@ -1748,7 +1801,7 @@ func complete_current_job() -> void:
 	current_job_pages = (
 		current_job_target_pages
 	)
-	
+
 	paused_for_auto_throttle = false
 
 	crawler_timer.stop()
@@ -1762,6 +1815,31 @@ func complete_current_job() -> void:
 	)
 
 	emit_current_progress()
+
+	var technical_point_reward: int = (
+		get_crawl_job_technical_point_reward(
+			selected_job_id
+		)
+	)
+
+	if technical_point_reward > 0:
+		TechnicalPointsManager.award_technical_points(
+			technical_point_reward,
+			"%s Completed"
+			% get_job_display_name(
+				selected_job_id
+			)
+		)
+
+		print(
+			"CrawlerManager: %s awarded %d TP."
+			% [
+				get_job_display_name(
+					selected_job_id
+				),
+				technical_point_reward
+			]
+		)
 
 	crawl_job_completed.emit()
 	

@@ -794,6 +794,13 @@ func connect_crawler_signals() -> void:
 			_on_crawl_job_completed
 		)
 
+	if not CrawlerManager.quick_crawl_jobs_changed.is_connected(
+		_on_quick_crawl_jobs_changed
+	):
+		CrawlerManager.quick_crawl_jobs_changed.connect(
+			_on_quick_crawl_jobs_changed
+		)
+
 	if not AutomationManager.auto_crawl_assist_level_changed.is_connected(
 		_on_auto_crawl_assist_level_changed
 	):
@@ -1020,13 +1027,31 @@ func refresh_crawl_job_selection() -> void:
 		CrawlerManager.get_selected_job_display_name()
 	)
 
-	crawl_job_selection_info_label.text = (
-		"Selected: %s | Target: %d pages"
-		% [
-			selected_name,
-			current_target
-		]
+	var technical_point_reward: int = (
+		CrawlerManager
+			.get_crawl_job_technical_point_reward(
+				selected_job_id
+			)
 	)
+
+	if technical_point_reward > 0:
+		crawl_job_selection_info_label.text = (
+			"Selected: %s | Target: %d pages | Reward: %d TP"
+			% [
+				selected_name,
+				current_target,
+				technical_point_reward
+			]
+		)
+
+	else:
+		crawl_job_selection_info_label.text = (
+			"Selected: %s | Target: %d pages"
+			% [
+				selected_name,
+				current_target
+			]
+		)
 
 	refresh_crawl_job_button(
 		quick_crawl_slot_1_button,

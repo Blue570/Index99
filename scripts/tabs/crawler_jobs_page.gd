@@ -202,17 +202,94 @@ func _ready() -> void:
 func setup_scheduler_autonomous_options() -> void:
 	scheduler_autonomous_job_option_button.clear()
 
-	scheduler_autonomous_job_option_button.add_item(
-		"Basic Crawl"
+	var job_ids: Array[StringName] = (
+		CrawlerManager.get_all_crawl_job_ids()
 	)
 
-	scheduler_autonomous_job_option_button.add_item(
-		"Expanded Crawl"
-	)
+	for job_id: StringName in job_ids:
+		var job_name: String = (
+			CrawlerManager.get_job_display_name(
+				job_id
+			)
+		)
 
-	scheduler_autonomous_job_option_button.add_item(
-		"Deep Crawl"
-	)
+		var required_tier: int = (
+			CrawlerManager.get_crawl_job_required_tier(
+				job_id
+			)
+		)
+
+		var unlocked: bool = (
+			CrawlerManager.is_crawl_job_unlocked(
+				job_id
+			)
+		)
+
+		var item_text: String = job_name
+
+		if not unlocked:
+			item_text = (
+				"%s - TIER %d"
+				% [
+					job_name,
+					required_tier
+				]
+			)
+
+		scheduler_autonomous_job_option_button.add_item(
+			item_text
+		)
+
+		var item_index: int = (
+			scheduler_autonomous_job_option_button
+				.item_count
+			- 1
+		)
+
+		scheduler_autonomous_job_option_button.set_item_metadata(
+			item_index,
+			str(job_id)
+		)
+
+		scheduler_autonomous_job_option_button.set_item_disabled(
+			item_index,
+			not unlocked
+		)
+		
+func select_scheduler_autonomous_job_option(
+	job_id: StringName
+) -> void:
+	for item_index: int in range(
+		scheduler_autonomous_job_option_button.item_count
+	):
+		var metadata_value: Variant = (
+			scheduler_autonomous_job_option_button
+				.get_item_metadata(
+					item_index
+				)
+		)
+
+		var item_job_id: StringName = StringName(
+			str(metadata_value)
+		)
+
+		if item_job_id != job_id:
+			continue
+
+		scheduler_autonomous_job_option_button.select(
+			item_index
+		)
+
+		return
+
+	if (
+		scheduler_autonomous_job_option_button
+			.item_count
+		> 0
+	):
+		scheduler_autonomous_job_option_button.select(
+			0
+		)
 	
 func setup_scheduler_priority_options() -> void:
 	scheduler_priority_option_button.clear()
@@ -419,6 +496,8 @@ func apply_page_theme() -> void:
 # -------------------------------------------------------------------
 
 func refresh_jobs_page() -> void:
+	setup_scheduler_autonomous_options()
+
 	refresh_available_crawls()
 	refresh_quick_crawls()
 	refresh_scheduler_controls()
@@ -478,6 +557,13 @@ func add_available_crawl_entry(
 		CrawlerManager.get_crawl_job_required_tier(
 			job_id
 		)
+	)
+
+	var technical_point_reward: int = (
+		CrawlerManager
+			.get_crawl_job_technical_point_reward(
+				job_id
+			)
 	)
 
 	var entry_panel: PanelContainer = PanelContainer.new()
@@ -589,13 +675,24 @@ func add_available_crawl_entry(
 
 	var metadata_label: Label = Label.new()
 
-	metadata_label.text = (
-		"%d pages | Tier %d"
-		% [
-			target_pages,
-			required_tier
-		]
-	)
+	if technical_point_reward > 0:
+		metadata_label.text = (
+			"%d pages | Tier %d | Reward: %d TP"
+			% [
+				target_pages,
+				required_tier,
+				technical_point_reward
+			]
+		)
+
+	else:
+		metadata_label.text = (
+			"%d pages | Tier %d"
+			% [
+				target_pages,
+				required_tier
+			]
+		)
 
 	metadata_label.size_flags_horizontal = (
 		Control.SIZE_EXPAND_FILL
@@ -905,10 +1002,6 @@ func refresh_scheduler_autonomous_controls() -> void:
 
 		scheduler_autonomous_job_option_button.disabled = true
 
-		scheduler_autonomous_job_option_button.select(
-			0
-		)
-
 		scheduler_autonomous_label.tooltip_text = (
 			"Unlock Autonomous Scheduler at "
 			+ "Scheduler Optimization Level 4."
@@ -922,6 +1015,11 @@ func refresh_scheduler_autonomous_controls() -> void:
 			"Autonomous Scheduler is not yet unlocked."
 		)
 
+		select_scheduler_autonomous_job_option(
+			AutomationManager
+				.get_scheduler_autonomous_job_id()
+		)
+
 		return
 
 	scheduler_autonomous_label.text = (
@@ -929,6 +1027,7 @@ func refresh_scheduler_autonomous_controls() -> void:
 	)
 
 	scheduler_autonomous_toggle_button.disabled = false
+
 	scheduler_autonomous_job_option_button.disabled = false
 
 	if AutomationManager.is_scheduler_autonomous_enabled():
@@ -952,30 +1051,10 @@ func refresh_scheduler_autonomous_controls() -> void:
 		+ "Scheduler queue is empty."
 	)
 
-	var autonomous_job_id: StringName = (
-		AutomationManager.get_scheduler_autonomous_job_id()
+	select_scheduler_autonomous_job_option(
+		AutomationManager
+			.get_scheduler_autonomous_job_id()
 	)
-
-	match autonomous_job_id:
-		CrawlerManager.CRAWL_JOB_BASIC:
-			scheduler_autonomous_job_option_button.select(
-				0
-			)
-
-		CrawlerManager.CRAWL_JOB_EXPANDED:
-			scheduler_autonomous_job_option_button.select(
-				1
-			)
-
-		CrawlerManager.CRAWL_JOB_DEEP:
-			scheduler_autonomous_job_option_button.select(
-				2
-			)
-
-		_:
-			scheduler_autonomous_job_option_button.select(
-				0
-			)
 
 
 # -------------------------------------------------------------------
@@ -1288,35 +1367,41 @@ func _on_scheduler_autonomous_job_selected(
 		refresh_scheduler_autonomous_controls()
 		return
 
-	var selected_job_id: StringName = (
-		CrawlerManager.CRAWL_JOB_BASIC
+	if (
+		option_index < 0
+		or option_index
+			>= scheduler_autonomous_job_option_button.item_count
+	):
+		refresh_scheduler_autonomous_controls()
+		return
+
+	var metadata_value: Variant = (
+		scheduler_autonomous_job_option_button
+			.get_item_metadata(
+				option_index
+			)
 	)
 
-	match option_index:
-		0:
-			selected_job_id = (
-				CrawlerManager.CRAWL_JOB_BASIC
-			)
+	var selected_job_id: StringName = StringName(
+		str(metadata_value)
+	)
 
-		1:
-			selected_job_id = (
-				CrawlerManager.CRAWL_JOB_EXPANDED
-			)
+	if selected_job_id == &"":
+		refresh_scheduler_autonomous_controls()
+		return
 
-		2:
-			selected_job_id = (
-				CrawlerManager.CRAWL_JOB_DEEP
-			)
-
-		_:
-			refresh_scheduler_autonomous_controls()
-			return
+	if not CrawlerManager.is_crawl_job_unlocked(
+		selected_job_id
+	):
+		refresh_scheduler_autonomous_controls()
+		return
 
 	AutomationManager.set_scheduler_autonomous_job(
 		selected_job_id
 	)
 
 	refresh_scheduler_autonomous_controls()
+	
 	
 func _on_scheduler_priority_option_selected(
 	option_index: int

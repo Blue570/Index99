@@ -301,7 +301,10 @@ func build_save_data() -> Dictionary:
 				ObjectiveManager.current_progression_tier,
 
 			"tier_2":
-				ObjectiveManager.get_tier_2_save_data()
+				ObjectiveManager.get_tier_2_save_data(),
+				
+			"tier_3":
+				ObjectiveManager.get_tier_3_save_data()
 		},
 
 		"build":
@@ -1217,7 +1220,7 @@ func restore_objective(
 		"current_progression_tier",
 		default_progression_tier
 	)
-	
+
 	var saved_tier_2_data: Dictionary = {}
 
 	if data.has("tier_2"):
@@ -1235,12 +1238,30 @@ func restore_objective(
 				+ "Tier 2 objective data is invalid."
 			)
 
+	var saved_tier_3_data: Dictionary = {}
+
+	if data.has("tier_3"):
+		var raw_tier_3_data: Variant = (
+			data["tier_3"]
+		)
+
+		if typeof(raw_tier_3_data) == TYPE_DICTIONARY:
+			saved_tier_3_data = (
+				raw_tier_3_data
+			)
+		else:
+			push_warning(
+				"SaveManager: "
+				+ "Tier 3 objective data is invalid."
+			)
+
 	ObjectiveManager.restore_saved_state(
 		saved_index,
 		saved_event_progress,
 		saved_sequence_completed,
 		saved_progression_tier,
-		saved_tier_2_data
+		saved_tier_2_data,
+		saved_tier_3_data
 	)
 	
 func restore_activity_stats(

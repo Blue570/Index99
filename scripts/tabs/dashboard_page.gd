@@ -756,6 +756,10 @@ func _on_all_objectives_completed() -> void:
 	)
 	
 func _on_tier_2_active_objectives_changed() -> void:
+	if not ObjectiveManager.is_tier_2_tracking_active():
+		refresh_current_objective()
+		return
+
 	refresh_tier_2_objectives()
 
 

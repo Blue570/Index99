@@ -129,6 +129,51 @@ const OBJECTIVE_T2_CAPSTONE: StringName = (
 
 
 # -------------------------------------------------------------------
+# Tier 3 Objective Identifiers
+# -------------------------------------------------------------------
+
+const OBJECTIVE_T3_TECHNICAL_INITIATIVE: StringName = (
+	&"t3_technical_initiative"
+)
+
+const OBJECTIVE_T3_DEPLOY_NEW_TECHNOLOGY: StringName = (
+	&"t3_deploy_new_technology"
+)
+
+const OBJECTIVE_T3_DIVERSIFY_NETWORK: StringName = (
+	&"t3_diversify_network"
+)
+
+const OBJECTIVE_T3_DEEP_WEB_EXPEDITION: StringName = (
+	&"t3_deep_web_expedition"
+)
+
+const OBJECTIVE_T3_OPERATOR_INTERVENTION: StringName = (
+	&"t3_operator_intervention"
+)
+
+const OBJECTIVE_T3_AUTOMATED_WORKFLOW: StringName = (
+	&"t3_automated_workflow"
+)
+
+const OBJECTIVE_T3_CONTROLLED_DEEP_CRAWL: StringName = (
+	&"t3_controlled_deep_crawl"
+)
+
+const OBJECTIVE_T3_TECHNICAL_INVESTMENT: StringName = (
+	&"t3_technical_investment"
+)
+
+const OBJECTIVE_T3_OPTIMIZED_OPERATIONS: StringName = (
+	&"t3_optimized_operations"
+)
+
+const OBJECTIVE_T3_AUTONOMOUS_OPERATIONS_TRIAL: StringName = (
+	&"t3_autonomous_operations_trial"
+)
+
+
+# -------------------------------------------------------------------
 # Objective sequence
 # -------------------------------------------------------------------
 
@@ -267,6 +312,140 @@ const TIER_2_OBJECTIVES: Array[Dictionary] = [
 ]
 
 # -------------------------------------------------------------------
+# Tier 3 Objectives
+# -------------------------------------------------------------------
+
+const TIER_3_OBJECTIVES: Array[Dictionary] = [
+	{
+		"id": OBJECTIVE_T3_TECHNICAL_INITIATIVE,
+		"title": "Technical Initiative",
+		"description": (
+			"Earn 2 Technical Points after entering Tier 3."
+		),
+		"target": 2
+	},
+	{
+		"id": OBJECTIVE_T3_DEPLOY_NEW_TECHNOLOGY,
+		"title": "Deploy New Technology",
+		"description": (
+			"Purchase one Tech Tree level."
+		),
+		"target": 1
+	},
+	{
+		"id": OBJECTIVE_T3_DIVERSIFY_NETWORK,
+		"title": "Diversify the Network",
+		"description": (
+			"Own technology from two different "
+			+ "Tech Tree branches."
+		),
+		"target": 2
+	},
+	{
+		"id": OBJECTIVE_T3_DEEP_WEB_EXPEDITION,
+		"title": "Deep Web Expedition",
+		"description": (
+			"Successfully complete two Deep Crawls."
+		),
+		"target": 2
+	},
+	{
+		"id": OBJECTIVE_T3_OPERATOR_INTERVENTION,
+		"title": "Operator Intervention",
+		"description": (
+			"Complete five Activities using at least "
+			+ "two different Activity types."
+		),
+		"target": 5
+	},
+	{
+		"id": OBJECTIVE_T3_AUTOMATED_WORKFLOW,
+		"title": "Automated Workflow",
+		"description": (
+			"Allow automation to start and complete "
+			+ "three crawler jobs."
+		),
+		"target": 3
+	},
+	{
+		"id": OBJECTIVE_T3_CONTROLLED_DEEP_CRAWL,
+		"title": "Controlled Deep Crawl",
+		"description": (
+			"Complete one Deep Crawl without "
+			+ "triggering a server overload."
+		),
+		"target": 1
+	},
+	{
+		"id": OBJECTIVE_T3_TECHNICAL_INVESTMENT,
+		"title": "Technical Investment",
+		"description": (
+			"Purchase five Tech Tree levels "
+			+ "during Tier 3."
+		),
+		"target": 5
+	},
+	{
+		"id": OBJECTIVE_T3_OPTIMIZED_OPERATIONS,
+		"title": "Optimized Operations",
+		"description": (
+			"Complete a Deep Crawl while Auto Crawl Assist "
+			+ "and Tech Tree enhancements are active."
+		),
+		"target": 1
+	},
+	{
+		"id": OBJECTIVE_T3_AUTONOMOUS_OPERATIONS_TRIAL,
+		"title": "Autonomous Operations Trial",
+		"description": (
+			"Complete three consecutive automated crawls, "
+			+ "including one Deep Crawl, without overload."
+		),
+		"target": 3
+	}
+]
+
+func get_owned_tech_branch_count() -> int:
+	var owned_branches: Dictionary = {}
+
+	for tech_id: StringName in (
+		TechTreeManager.get_all_tech_ids()
+	):
+		var current_level: int = (
+			TechTreeManager.get_current_level(
+				tech_id
+			)
+		)
+
+		if current_level <= 0:
+			continue
+
+		var tech_data: Dictionary = (
+			TechTreeManager.get_tech_data(
+				tech_id
+			)
+		)
+
+		if tech_data.is_empty():
+			continue
+
+		var branch_name: String = str(
+			tech_data.get(
+				"category",
+				""
+			)
+		).strip_edges()
+
+		if branch_name.is_empty():
+			continue
+
+		owned_branches[
+			branch_name
+		] = true
+
+	return owned_branches.size()
+
+# -------------------------------------------------------------------
 # Progression Tiers
 # -------------------------------------------------------------------
 
@@ -356,6 +535,21 @@ var tier_2_standard_objectives_finished: bool = false
 
 
 # -------------------------------------------------------------------
+# Tier 3 Tracking State
+# -------------------------------------------------------------------
+
+var tier_3_tracking_started: bool = false
+
+var tier_3_current_objective_index: int = 0
+
+var tier_3_technical_points_earned: int = 0
+
+var tier_3_last_observed_technical_points: int = 0
+
+var tier_3_tech_levels_purchased: int = 0
+
+
+# -------------------------------------------------------------------
 # Setup
 # -------------------------------------------------------------------
 
@@ -405,40 +599,54 @@ func connect_objective_signals() -> void:
 		ResearchManager.research_upgrade_purchased.connect(
 			_on_research_upgrade_purchased
 		)
-	
+
 	if not CrawlerManager.crawl_job_completed.is_connected(
 		_on_crawl_job_completed
 	):
-			CrawlerManager.crawl_job_completed.connect(
-				_on_crawl_job_completed
+		CrawlerManager.crawl_job_completed.connect(
+			_on_crawl_job_completed
 		)
-		
+
 	if not ActivityStatsManager.activity_completed.is_connected(
 		_on_activity_completed_for_tier_2
 	):
 		ActivityStatsManager.activity_completed.connect(
 			_on_activity_completed_for_tier_2
 		)
-		
+
 	if not CrawlerManager.crawl_job_completed.is_connected(
 		_on_crawl_job_completed_for_tier_2
 	):
 		CrawlerManager.crawl_job_completed.connect(
 			_on_crawl_job_completed_for_tier_2
 		)
-		
+
 	if not GameState.revenue_changed.is_connected(
 		_on_revenue_changed_for_tier_2
 	):
 		GameState.revenue_changed.connect(
 			_on_revenue_changed_for_tier_2
 		)
-		
+
 	if not CrawlerManager.crawler_state_changed.is_connected(
 		_on_crawler_state_changed_for_tier_2_capstone
 	):
 		CrawlerManager.crawler_state_changed.connect(
 			_on_crawler_state_changed_for_tier_2_capstone
+		)
+
+	if not TechnicalPointsManager.technical_points_changed.is_connected(
+		_on_technical_points_changed_for_tier_3
+	):
+		TechnicalPointsManager.technical_points_changed.connect(
+			_on_technical_points_changed_for_tier_3
+		)
+
+	if not TechTreeManager.tech_purchased.is_connected(
+		_on_tech_purchased_for_tier_3
+	):
+		TechTreeManager.tech_purchased.connect(
+			_on_tech_purchased_for_tier_3
 		)
 
 
@@ -447,11 +655,19 @@ func connect_objective_signals() -> void:
 # -------------------------------------------------------------------
 
 func get_current_objective() -> Dictionary:
-	if (
-		tier_2_tracking_started
-		and current_progression_tier
-			>= PROGRESSION_TIER_2
-	):
+	if is_tier_3_tracking_active():
+		if (
+			tier_3_current_objective_index < 0
+			or tier_3_current_objective_index
+				>= TIER_3_OBJECTIVES.size()
+		):
+			return {}
+
+		return TIER_3_OBJECTIVES[
+			tier_3_current_objective_index
+		]
+
+	if is_tier_2_tracking_active():
 		if tier_2_active_objective_ids.is_empty():
 			return {}
 
@@ -751,12 +967,27 @@ func get_current_progress() -> int:
 	var objective_id: StringName = (
 		get_current_objective_id()
 	)
-	
-	if (
-		tier_2_tracking_started
-		and current_progression_tier
-			>= PROGRESSION_TIER_2
-	):
+
+	if is_tier_3_tracking_active():
+		match objective_id:
+			OBJECTIVE_T3_TECHNICAL_INITIATIVE:
+				return (
+					tier_3_technical_points_earned
+				)
+
+			OBJECTIVE_T3_DEPLOY_NEW_TECHNOLOGY:
+				return (
+					tier_3_tech_levels_purchased
+				)
+				
+			OBJECTIVE_T3_DIVERSIFY_NETWORK:
+				return (
+					get_owned_tech_branch_count()
+				)
+
+		return 0
+
+	if is_tier_2_tracking_active():
 		return floori(
 			get_tier_2_objective_progress(
 				objective_id
@@ -804,6 +1035,7 @@ func get_current_progress() -> int:
 			return GameState.indexed_pages
 
 	return 0
+	
 	
 func has_completed_tier_2_server_upgrade() -> bool:
 	return (
@@ -859,8 +1091,15 @@ func evaluate_current_objective() -> void:
 
 	emit_current_progress()
 
-	if current_progress >= target:
-		complete_current_objective()
+	if current_progress < target:
+		return
+
+	if is_tier_3_tracking_active():
+		complete_tier_3_current_objective()
+		return
+
+	complete_current_objective()
+	
 		
 func _on_revenue_changed_for_tier_2(
 	new_revenue: float
@@ -1364,6 +1603,8 @@ func complete_tier_2_capstone() -> void:
 		PROGRESSION_TIER_3
 	)
 
+	start_tier_3_objective_sequence()
+
 	tier_2_active_objectives_changed.emit()
 
 	print(
@@ -1693,6 +1934,234 @@ func _on_research_upgrade_purchased(
 		== OBJECTIVE_COMPLETE_TIER_2_RESEARCH
 	):
 		evaluate_current_objective()
+		
+		
+# -------------------------------------------------------------------
+# Tier 3 Tracking
+# -------------------------------------------------------------------
+
+func is_tier_3_tracking_active() -> bool:
+	return (
+		tier_3_tracking_started
+		and current_progression_tier
+			== PROGRESSION_TIER_3
+	)
+
+
+func start_tier_3_objective_sequence() -> void:
+	if tier_3_tracking_started:
+		return
+
+	tier_3_tracking_started = true
+
+	tier_3_current_objective_index = 0
+
+	tier_3_technical_points_earned = 0
+
+	tier_3_tech_levels_purchased = 0
+
+	tier_3_last_observed_technical_points = (
+		TechnicalPointsManager.get_technical_points()
+	)
+
+	print(
+		"ObjectiveManager: Tier 3 objective sequence started."
+	)
+
+	emit_current_objective()
+	emit_current_progress()
+
+	call_deferred(
+		"evaluate_current_objective"
+	)
+
+
+func _on_technical_points_changed_for_tier_3(
+	new_points: int
+) -> void:
+	if suppress_objective_evaluation:
+		return
+
+	if not is_tier_3_tracking_active():
+		return
+
+	var safe_points: int = maxi(
+		new_points,
+		0
+	)
+
+	var points_gained: int = maxi(
+		safe_points
+		- tier_3_last_observed_technical_points,
+		0
+	)
+
+	tier_3_last_observed_technical_points = (
+		safe_points
+	)
+
+	if points_gained <= 0:
+		return
+
+	tier_3_technical_points_earned += (
+		points_gained
+	)
+
+	print(
+		"Tier 3 Technical Points Earned: ",
+		tier_3_technical_points_earned,
+		" / 2"
+	)
+
+	if (
+		get_current_objective_id()
+		== OBJECTIVE_T3_TECHNICAL_INITIATIVE
+	):
+		evaluate_current_objective()
+		
+
+func _on_tech_purchased_for_tier_3(
+	_tech_id: StringName,
+	_new_level: int,
+	_money_spent: float,
+	_research_points_spent: float,
+	_technical_points_spent: int
+) -> void:
+	if suppress_objective_evaluation:
+		return
+
+	if not is_tier_3_tracking_active():
+		return
+
+	tier_3_tech_levels_purchased += 1
+
+	print(
+		"Tier 3 Tech Levels Purchased: ",
+		tier_3_tech_levels_purchased
+	)
+
+	var objective_id: StringName = (
+		get_current_objective_id()
+	)
+
+	if (
+		objective_id
+		== OBJECTIVE_T3_DEPLOY_NEW_TECHNOLOGY
+		or objective_id
+		== OBJECTIVE_T3_DIVERSIFY_NETWORK
+	):
+		evaluate_current_objective()
+
+
+func complete_tier_3_current_objective() -> void:
+	if not is_tier_3_tracking_active():
+		return
+
+	if objective_completion_in_progress:
+		return
+
+	if (
+		tier_3_current_objective_index < 0
+		or tier_3_current_objective_index
+			>= TIER_3_OBJECTIVES.size()
+	):
+		return
+
+	var objective: Dictionary = (
+		TIER_3_OBJECTIVES[
+			tier_3_current_objective_index
+		]
+	)
+
+	var objective_id: StringName = StringName(
+		objective.get(
+			"id",
+			&""
+		)
+	)
+
+	var objective_title: String = str(
+		objective.get(
+			"title",
+			"Tier 3 Objective"
+		)
+	)
+
+	if objective_id == &"":
+		return
+
+	objective_completion_in_progress = true
+
+	tier_3_current_objective_index += 1
+
+	grant_tier_3_objective_reward(
+		objective_id
+	)
+
+	print(
+		"ObjectiveManager: Tier 3 objective complete: ",
+		objective_title
+	)
+
+	objective_completed.emit(
+		objective_id,
+		objective_title
+	)
+
+	objective_completion_in_progress = false
+
+	if (
+		tier_3_current_objective_index
+		>= TIER_3_OBJECTIVES.size()
+	):
+		print(
+			"ObjectiveManager: "
+			+ "All Tier 3 objectives complete."
+		)
+
+		return
+
+	emit_current_objective()
+	emit_current_progress()
+
+	call_deferred(
+		"evaluate_current_objective"
+	)
+
+
+func grant_tier_3_objective_reward(
+	objective_id: StringName
+) -> void:
+	match objective_id:
+		OBJECTIVE_T3_TECHNICAL_INITIATIVE:
+			GameState.set_revenue(
+				GameState.revenue + 300.0
+			)
+
+			ResearchManager.award_research_points(
+				15.0,
+				"Tier 3 Objective: Technical Initiative"
+			)
+
+		OBJECTIVE_T3_DEPLOY_NEW_TECHNOLOGY:
+			GameState.set_revenue(
+				GameState.revenue + 400.0
+			)
+
+			TechnicalPointsManager.award_technical_points(
+				1,
+				"Tier 3 Objective: Deploy New Technology"
+			)
+
+		OBJECTIVE_T3_DIVERSIFY_NETWORK:
+			GameState.set_revenue(
+				GameState.revenue + 500.0
+			)
+
+			ResearchManager.award_research_points(
+				20.0,
+				"Tier 3 Objective: Diversify the Network"
+			)
 	
 # -------------------------------------------------------------------
 # Progression Tiers
@@ -1760,14 +2229,28 @@ func reset_objectives() -> void:
 	current_objective_index = 0
 	current_event_progress = 0
 	sequence_completed = false
-	
+
 	reset_tier_2_objective_state()
+	reset_tier_3_objective_state()
 
 	set_progression_tier(
 		PROGRESSION_TIER_1
 	)
 
 	activate_current_objective()
+	
+func reset_tier_3_objective_state() -> void:
+	tier_3_tracking_started = false
+
+	tier_3_current_objective_index = 0
+
+	tier_3_technical_points_earned = 0
+
+	tier_3_tech_levels_purchased = 0
+
+	tier_3_last_observed_technical_points = (
+		TechnicalPointsManager.get_technical_points()
+	)
 	
 # -------------------------------------------------------------------
 # Save / load support
@@ -1782,7 +2265,8 @@ func restore_saved_state(
 	saved_event_progress: int,
 	saved_sequence_completed: bool,
 	saved_progression_tier: int,
-	saved_tier_2_data: Dictionary = {}
+	saved_tier_2_data: Dictionary = {},
+	saved_tier_3_data: Dictionary = {}
 ) -> void:
 	current_objective_index = clampi(
 		saved_objective_index,
@@ -1807,8 +2291,6 @@ func restore_saved_state(
 		MAX_PROGRESSION_TIER
 	)
 
-	# Older completed saves should migrate into
-	# the new Tier 2 objective structure.
 	if sequence_completed:
 		restored_tier = maxi(
 			restored_tier,
@@ -1827,16 +2309,28 @@ func restore_saved_state(
 		restored_tier
 	)
 
+	restore_tier_3_saved_state(
+		saved_tier_3_data,
+		restored_tier
+	)
+
 	set_progression_tier(
 		restored_tier
 	)
 
 	suppress_objective_evaluation = false
 
-	if (
-		restored_tier >= PROGRESSION_TIER_2
-		and tier_2_tracking_started
-	):
+	if is_tier_3_tracking_active():
+		emit_current_objective()
+		emit_current_progress()
+
+		call_deferred(
+			"evaluate_current_objective"
+		)
+
+		return
+
+	if is_tier_2_tracking_active():
 		tier_2_active_objectives_changed.emit()
 
 		emit_current_objective()
@@ -1854,6 +2348,7 @@ func restore_saved_state(
 
 	emit_current_objective()
 	emit_current_progress()
+	
 	
 func get_tier_2_save_data() -> Dictionary:
 	var active_ids: Array[String] = []
@@ -1912,6 +2407,70 @@ func get_tier_2_save_data() -> Dictionary:
 		"capstone_attempt_failed":
 			tier_2_capstone_attempt_failed,
 	}
+	
+func get_tier_3_save_data() -> Dictionary:
+	return {
+		"tracking_started":
+			tier_3_tracking_started,
+
+		"current_objective_index":
+			tier_3_current_objective_index,
+
+		"technical_points_earned":
+			tier_3_technical_points_earned,
+
+		"tech_levels_purchased":
+			tier_3_tech_levels_purchased
+	}
+	
+func restore_tier_3_saved_state(
+	data: Dictionary,
+	restored_tier: int
+) -> void:
+	reset_tier_3_objective_state()
+
+	if restored_tier < PROGRESSION_TIER_3:
+		return
+
+	tier_3_tracking_started = true
+
+	tier_3_last_observed_technical_points = (
+		TechnicalPointsManager.get_technical_points()
+	)
+
+	if data.is_empty():
+		return
+
+	tier_3_current_objective_index = clampi(
+		int(
+			data.get(
+				"current_objective_index",
+				0
+			)
+		),
+		0,
+		TIER_3_OBJECTIVES.size()
+	)
+
+	tier_3_technical_points_earned = maxi(
+		int(
+			data.get(
+				"technical_points_earned",
+				0
+			)
+		),
+		0
+	)
+
+	tier_3_tech_levels_purchased = maxi(
+		int(
+			data.get(
+				"tech_levels_purchased",
+				0
+			)
+		),
+		0
+	)
 	
 func reset_tier_2_objective_state() -> void:
 	tier_2_reward_in_progress = false
