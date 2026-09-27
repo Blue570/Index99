@@ -38,12 +38,44 @@ const TECH_LOAD_DISTRIBUTION: StringName = (
 	&"load_distribution"
 )
 
+const TECH_THERMAL_RECOVERY: StringName = (
+	&"thermal_recovery"
+)
+
+const TECH_SERVER_VIRTUALIZATION: StringName = (
+	&"server_virtualization"
+)
+
 const TECH_AUDIENCE_ANALYTICS: StringName = (
 	&"audience_analytics"
 )
 
+const TECH_SEARCH_MONETIZATION_ENGINE: StringName = (
+	&"search_monetization_engine"
+)
+
+const TECH_QUERY_FORECASTING: StringName = (
+	&"query_forecasting"
+)
+
+const TECH_AD_MATCHING: StringName = (
+	&"ad_matching"
+)
+
 const TECH_AUTOMATED_ROUTING: StringName = (
 	&"automated_routing"
+)
+
+const TECH_BATCH_PROCESSING: StringName = (
+	&"batch_processing"
+)
+
+const TECH_SCHEDULER_HEURISTICS: StringName = (
+	&"scheduler_heuristics"
+)
+
+const TECH_AUTONOMOUS_LOAD_CONTROLLER: StringName = (
+	&"autonomous_load_controller"
 )
 
 
@@ -354,6 +386,136 @@ TECH_PROTOCOL_OPTIMIZATION: {
 	]
 },
 
+TECH_THERMAL_RECOVERY: {
+	"name":
+		"Thermal Recovery",
+
+	"description":
+		"Improves heat dissipation and recovery routines, "
+		+ "allowing overloaded servers to cool and return "
+		+ "to normal operation more quickly.",
+
+	"category":
+		"Infrastructure",
+
+	"grid_position":
+		Vector2i(
+			2,
+			3
+		),
+
+	"max_level":
+		3,
+
+	"base_money_cost":
+		950.0,
+
+	"money_cost_growth":
+		1.70,
+
+	"base_research_cost":
+		18.0,
+
+	"research_cost_growth":
+		1.50,
+
+	"base_technical_point_cost":
+		1.0,
+
+	"technical_point_cost_growth":
+		1.0,
+
+	"effect_id":
+		&"cooling_speed_percent",
+
+	"effect_display_name":
+		"Cooling Speed",
+
+	"effect_short_name":
+		"Cooling",
+
+	"effect_sign":
+		"+",
+
+	"effect_per_level":
+		6.0,
+
+	"route":
+		"Server Infrastructure",
+
+	"required_tier":
+		3,
+
+	"prerequisites": [
+		TECH_LOAD_DISTRIBUTION
+	]
+},
+
+TECH_SERVER_VIRTUALIZATION: {
+	"name":
+		"Server Virtualization",
+
+	"description":
+		"Virtualizes server workloads and isolates crawler "
+		+ "processes, reducing the amount of server load "
+		+ "generated during active crawling.",
+
+	"category":
+		"Infrastructure",
+
+	"grid_position":
+		Vector2i(
+			3,
+			3
+		),
+
+	"max_level":
+		3,
+
+	"base_money_cost":
+		1200.0,
+
+	"money_cost_growth":
+		1.75,
+
+	"base_research_cost":
+		22.0,
+
+	"research_cost_growth":
+		1.55,
+
+	"base_technical_point_cost":
+		2.0,
+
+	"technical_point_cost_growth":
+		1.0,
+
+	"effect_id":
+		&"crawler_load_reduction_percent",
+
+	"effect_display_name":
+		"Crawler Load",
+
+	"effect_short_name":
+		"Load",
+
+	"effect_sign":
+		"-",
+
+	"effect_per_level":
+		4.0,
+
+	"route":
+		"Server Infrastructure",
+
+	"required_tier":
+		3,
+
+	"prerequisites": [
+		TECH_THERMAL_RECOVERY
+	]
+},
+
 	TECH_AUDIENCE_ANALYTICS: {
 		"name": "Audience Analytics",
 		"description": (
@@ -384,6 +546,201 @@ TECH_PROTOCOL_OPTIMIZATION: {
 		"required_tier": 3,
 		"prerequisites": []
 	},
+	
+	TECH_SEARCH_MONETIZATION_ENGINE: {
+	"name":
+		"Search Monetization Engine",
+
+	"description":
+		"Improves the commercial value of indexed content "
+		+ "through better query matching and advertising "
+		+ "placement, increasing revenue earned per page.",
+
+	"category":
+		"Growth",
+
+	"grid_position":
+		Vector2i(
+			1,
+			4
+		),
+
+	"max_level":
+		3,
+
+	"base_money_cost":
+		800.0,
+
+	"money_cost_growth":
+		1.65,
+
+	"base_research_cost":
+		15.0,
+
+	"research_cost_growth":
+		1.50,
+
+	"base_technical_point_cost":
+		1.0,
+
+	"technical_point_cost_growth":
+		1.0,
+
+	"effect_id":
+		&"revenue_per_page_percent",
+
+	"effect_display_name":
+		"Revenue Per Page",
+
+	"effect_short_name":
+		"Revenue",
+
+	"effect_sign":
+		"+",
+
+	"effect_per_level":
+		5.0,
+
+	"route":
+		"Growth & Monetization",
+
+	"required_tier":
+		3,
+
+	"prerequisites": [
+		TECH_AUDIENCE_ANALYTICS
+	]
+},
+
+TECH_QUERY_FORECASTING: {
+	"name":
+		"Query Forecasting",
+
+	"description":
+		"Analyzes emerging search patterns and anticipated "
+		+ "user interests, improving the rate at which "
+		+ "new indexed content attracts active users.",
+
+	"category":
+		"Growth",
+
+	"grid_position":
+		Vector2i(
+			2,
+			4
+		),
+
+	"max_level":
+		3,
+
+	"base_money_cost":
+		1000.0,
+
+	"money_cost_growth":
+		1.70,
+
+	"base_research_cost":
+		20.0,
+
+	"research_cost_growth":
+		1.50,
+
+	"base_technical_point_cost":
+		1.0,
+
+	"technical_point_cost_growth":
+		1.0,
+
+	"effect_id":
+		&"active_user_growth_percent",
+
+	"effect_display_name":
+		"Active User Growth",
+
+	"effect_short_name":
+		"Users",
+
+	"effect_sign":
+		"+",
+
+	"effect_per_level":
+		6.0,
+
+	"route":
+		"Growth & Monetization",
+
+	"required_tier":
+		3,
+
+	"prerequisites": [
+		TECH_SEARCH_MONETIZATION_ENGINE
+	]
+},
+
+TECH_AD_MATCHING: {
+	"name":
+		"Ad Matching",
+
+	"description":
+		"Uses indexed content and search behavior to improve "
+		+ "advertisement relevance, increasing the revenue "
+		+ "generated from each indexed page.",
+
+	"category":
+		"Growth",
+
+	"grid_position":
+		Vector2i(
+			3,
+			4
+		),
+
+	"max_level":
+		3,
+
+	"base_money_cost":
+		1300.0,
+
+	"money_cost_growth":
+		1.75,
+
+	"base_research_cost":
+		25.0,
+
+	"research_cost_growth":
+		1.55,
+
+	"base_technical_point_cost":
+		2.0,
+
+	"technical_point_cost_growth":
+		1.0,
+
+	"effect_id":
+		&"revenue_per_page_percent",
+
+	"effect_display_name":
+		"Revenue Per Page",
+
+	"effect_short_name":
+		"Revenue",
+
+	"effect_sign":
+		"+",
+
+	"effect_per_level":
+		6.0,
+
+	"route":
+		"Growth & Monetization",
+
+	"required_tier":
+		3,
+
+	"prerequisites": [
+		TECH_QUERY_FORECASTING
+	]
+},
 
 	TECH_AUTOMATED_ROUTING: {
 	"name": "Automated Routing",
@@ -419,5 +776,200 @@ TECH_PROTOCOL_OPTIMIZATION: {
 		TECH_PACKET_COMPRESSION,
 		TECH_COOLING_PROTOCOLS
 	]
-}
+	},
+	
+	TECH_BATCH_PROCESSING: {
+	"name":
+		"Batch Processing",
+
+	"description":
+		"Groups automated crawler operations into optimized "
+		+ "processing batches, increasing the amount of work "
+		+ "completed by Auto Crawl Assist.",
+
+	"category":
+		"Automation",
+
+	"grid_position":
+		Vector2i(
+			3,
+			2
+		),
+
+	"max_level":
+		3,
+
+	"base_money_cost":
+		1100.0,
+
+	"money_cost_growth":
+		1.70,
+
+	"base_research_cost":
+		20.0,
+
+	"research_cost_growth":
+		1.50,
+
+	"base_technical_point_cost":
+		1.0,
+
+	"technical_point_cost_growth":
+		1.0,
+
+	"effect_id":
+		&"automation_efficiency_percent",
+
+	"effect_display_name":
+		"Automation Efficiency",
+
+	"effect_short_name":
+		"Automation",
+
+	"effect_sign":
+		"+",
+
+	"effect_per_level":
+		6.0,
+
+	"route":
+		"Automation",
+
+	"required_tier":
+		3,
+
+	"prerequisites": [
+		TECH_AUTOMATED_ROUTING
+	]
+},
+
+TECH_SCHEDULER_HEURISTICS: {
+	"name":
+		"Scheduler Heuristics",
+
+	"description":
+		"Analyzes queued crawler workloads and selects "
+		+ "more efficient execution patterns, increasing "
+		+ "crawler speed for scheduler-started jobs.",
+
+	"category":
+		"Automation",
+
+	"grid_position":
+		Vector2i(
+			4,
+			2
+		),
+
+	"max_level":
+		3,
+
+	"base_money_cost":
+		1500.0,
+
+	"money_cost_growth":
+		1.75,
+
+	"base_research_cost":
+		30.0,
+
+	"research_cost_growth":
+		1.55,
+
+	"base_technical_point_cost":
+		2.0,
+
+	"technical_point_cost_growth":
+		1.0,
+
+	"effect_id":
+		&"scheduler_crawl_speed_percent",
+
+	"effect_display_name":
+		"Scheduled Crawl Speed",
+
+	"effect_short_name":
+		"Sched. Speed",
+
+	"effect_sign":
+		"+",
+
+	"effect_per_level":
+		5.0,
+
+	"route":
+		"Automation",
+
+	"required_tier":
+		3,
+
+	"prerequisites": [
+		TECH_BATCH_PROCESSING
+	]
+},
+
+TECH_AUTONOMOUS_LOAD_CONTROLLER: {
+	"name":
+		"Autonomous Load Controller",
+
+	"description":
+		"Monitors scheduler-controlled crawler workloads "
+		+ "and dynamically redistributes processing, reducing "
+		+ "server load generated by scheduled operations.",
+
+	"category":
+		"Automation",
+
+	"grid_position":
+		Vector2i(
+			5,
+			2
+		),
+
+	"max_level":
+		3,
+
+	"base_money_cost":
+		2000.0,
+
+	"money_cost_growth":
+		1.80,
+
+	"base_research_cost":
+		35.0,
+
+	"research_cost_growth":
+		1.60,
+
+	"base_technical_point_cost":
+		2.0,
+
+	"technical_point_cost_growth":
+		1.0,
+
+	"effect_id":
+		&"scheduler_load_reduction_percent",
+
+	"effect_display_name":
+		"Scheduled Crawl Load",
+
+	"effect_short_name":
+		"Sched. Load",
+
+	"effect_sign":
+		"-",
+
+	"effect_per_level":
+		5.0,
+
+	"route":
+		"Automation",
+
+	"required_tier":
+		3,
+
+	"prerequisites": [
+		TECH_SCHEDULER_HEURISTICS
+	]
+},
 }

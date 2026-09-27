@@ -2727,43 +2727,7 @@ func restore_auto_throttle_state(
 			successful_auto_throttle_interventions
 		)
 		
-# -------------------------------------------------------------------
-# Tech Tree Automation Effects
-# -------------------------------------------------------------------
 
-func get_automation_efficiency_percent() -> float:
-	return maxf(
-		TechTreeManager.get_total_effect_value(
-			&"automation_efficiency_percent"
-		),
-		0.0
-	)
-
-
-func get_automation_work_multiplier() -> float:
-	var efficiency_percent: float = (
-		get_automation_efficiency_percent()
-	)
-
-	return (
-		1.0
-		+ efficiency_percent
-		/ 100.0
-	)
-
-
-func get_automation_load_multiplier() -> float:
-	var efficiency_percent: float = clampf(
-		get_automation_efficiency_percent(),
-		0.0,
-		95.0
-	)
-
-	return (
-		1.0
-		- efficiency_percent
-		/ 100.0
-	)
 
 
 # -------------------------------------------------------------------
@@ -2814,9 +2778,21 @@ func get_auto_assist_work_per_second() -> float:
 		* CrawlerManager.get_priority_crawl_multiplier()
 	)
 
+	var tech_bonus_percent: float = (
+		TechTreeManager.get_total_effect_value(
+			&"automation_efficiency_percent"
+		)
+	)
+
+	var tech_multiplier: float = (
+		1.0
+		+ tech_bonus_percent
+		/ 100.0
+	)
+
 	return (
 		priority_adjusted_work
-		* get_automation_work_multiplier()
+		* tech_multiplier
 	)
 
 
@@ -2832,9 +2808,30 @@ func get_auto_assist_load_per_second() -> float:
 		* CrawlerManager.get_priority_load_multiplier()
 	)
 
+	if not was_current_crawl_started_by_scheduler():
+		return priority_adjusted_load
+
+	var scheduler_reduction_percent: float = (
+		TechTreeManager.get_total_effect_value(
+			&"scheduler_load_reduction_percent"
+		)
+	)
+
+	var safe_scheduler_reduction: float = clampf(
+		scheduler_reduction_percent,
+		0.0,
+		95.0
+	)
+
+	var scheduler_multiplier: float = (
+		1.0
+		- safe_scheduler_reduction
+		/ 100.0
+	)
+
 	return (
 		priority_adjusted_load
-		* get_automation_load_multiplier()
+		* scheduler_multiplier
 	)
 
 

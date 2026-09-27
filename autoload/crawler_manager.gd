@@ -262,19 +262,37 @@ func apply_research_crawler_rate() -> void:
 	)
 	
 func get_effective_revenue_per_page() -> float:
-	var bonus_percent: float = (
+	var research_bonus_percent: float = (
 		ResearchManager
 		.get_search_monetization_bonus_percent()
 	)
 
-	var multiplier: float = (
+	var research_multiplier: float = (
 		1.0
-		+ bonus_percent / 100.0
+		+ research_bonus_percent
+		/ 100.0
+	)
+
+	var revenue_after_research: float = (
+		REVENUE_PER_PAGE
+		* research_multiplier
+	)
+
+	var tech_bonus_percent: float = (
+		TechTreeManager.get_total_effect_value(
+			&"revenue_per_page_percent"
+		)
+	)
+
+	var tech_multiplier: float = (
+		1.0
+		+ tech_bonus_percent
+		/ 100.0
 	)
 
 	return (
-		REVENUE_PER_PAGE
-		* multiplier
+		revenue_after_research
+		* tech_multiplier
 	)
 
 
@@ -919,9 +937,29 @@ func get_priority_load_multiplier() -> float:
 
 
 func get_effective_automatic_crawl_rate() -> float:
-	return (
+	var priority_adjusted_rate: float = (
 		GameState.crawler_rate
 		* get_priority_crawl_multiplier()
+	)
+
+	if not AutomationManager.was_current_crawl_started_by_scheduler():
+		return priority_adjusted_rate
+
+	var scheduler_bonus_percent: float = (
+		TechTreeManager.get_total_effect_value(
+			&"scheduler_crawl_speed_percent"
+		)
+	)
+
+	var scheduler_multiplier: float = (
+		1.0
+		+ scheduler_bonus_percent
+		/ 100.0
+	)
+
+	return (
+		priority_adjusted_rate
+		* scheduler_multiplier
 	)
 	
 # -------------------------------------------------------------------
@@ -999,8 +1037,37 @@ func get_effective_server_load_generation() -> float:
 		* tech_multiplier
 	)
 
+	if not AutomationManager.was_current_crawl_started_by_scheduler():
+		return maxf(
+			effective_load,
+			0.1
+		)
+
+	var scheduler_reduction_percent: float = (
+		TechTreeManager.get_total_effect_value(
+			&"scheduler_load_reduction_percent"
+		)
+	)
+
+	var safe_scheduler_reduction: float = clampf(
+		scheduler_reduction_percent,
+		0.0,
+		95.0
+	)
+
+	var scheduler_multiplier: float = (
+		1.0
+		- safe_scheduler_reduction
+		/ 100.0
+	)
+
+	var scheduled_effective_load: float = (
+		effective_load
+		* scheduler_multiplier
+	)
+
 	return maxf(
-		effective_load,
+		scheduled_effective_load,
 		0.1
 	)
 
