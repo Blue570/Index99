@@ -801,6 +801,20 @@ func connect_crawler_signals() -> void:
 			_on_auto_crawl_assist_level_changed
 		)
 
+	if not AutomationManager.auto_restart_unlock_changed.is_connected(
+		_on_auto_restart_unlock_changed
+	):
+		AutomationManager.auto_restart_unlock_changed.connect(
+			_on_auto_restart_unlock_changed
+		)
+
+	if not AutomationManager.auto_restart_enabled_changed.is_connected(
+		_on_auto_restart_enabled_changed
+	):
+		AutomationManager.auto_restart_enabled_changed.connect(
+			_on_auto_restart_enabled_changed
+		)
+
 	if not TechTreeManager.tech_level_changed.is_connected(
 		_on_tech_level_changed
 	):

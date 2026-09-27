@@ -69,6 +69,22 @@ const OBJECTIVE_TARGET: int = 100
 	+ "CrawlerRateValueLabel"
 ) as Label
 
+@onready var crawler_revenue_per_page_name_label: Label = get_node(
+	"DashboardMargin/DashboardLayout/OverviewRow/"
+	+ "OverviewLeftGroup/CrawlerOverview/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerOverviewLayout/CrawlerQueueRow/"
+	+ "CrawlerQueueNameLabel"
+) as Label
+
+@onready var crawler_revenue_per_page_value_label: Label = get_node(
+	"DashboardMargin/DashboardLayout/OverviewRow/"
+	+ "OverviewLeftGroup/CrawlerOverview/PanelLayout/"
+	+ "ContentPanel/ContentMargin/ContentContainer/"
+	+ "CrawlerOverviewLayout/CrawlerQueueRow/"
+	+ "CrawlerQueueValueLabel"
+) as Label
+
 
 # -------------------------------------------------------------------
 # Server Overview
@@ -1553,6 +1569,20 @@ func connect_game_state_signals() -> void:
 		ServerManager.maximum_safe_load_level_changed.connect(
 			_on_dashboard_maximum_safe_load_level_changed
 		)
+
+	if not ResearchManager.research_upgrade_level_changed.is_connected(
+		_on_dashboard_research_upgrade_level_changed
+	):
+		ResearchManager.research_upgrade_level_changed.connect(
+			_on_dashboard_research_upgrade_level_changed
+		)
+
+	if not TechTreeManager.tech_level_changed.is_connected(
+		_on_dashboard_tech_level_changed
+	):
+		TechTreeManager.tech_level_changed.connect(
+			_on_dashboard_tech_level_changed
+		)
 		
 func _on_dashboard_maximum_safe_load_level_changed(
 	_new_level: int
@@ -1560,6 +1590,19 @@ func _on_dashboard_maximum_safe_load_level_changed(
 	_on_server_load_changed(
 		GameState.server_load
 	)
+	
+func _on_dashboard_research_upgrade_level_changed(
+	_upgrade_id: StringName,
+	_new_level: int
+) -> void:
+	refresh_crawler_revenue_per_page()
+
+
+func _on_dashboard_tech_level_changed(
+	_tech_id: StringName,
+	_new_level: int
+) -> void:
+	refresh_crawler_revenue_per_page()
 
 
 # -------------------------------------------------------------------
@@ -1579,6 +1622,8 @@ func refresh_dashboard() -> void:
 	_on_crawler_rate_changed(
 		GameState.crawler_rate
 	)
+
+	refresh_crawler_revenue_per_page()
 
 
 # -------------------------------------------------------------------
@@ -1627,6 +1672,17 @@ func _on_crawler_state_changed(is_running: bool) -> void:
 func _on_crawler_rate_changed(new_value: float) -> void:
 	crawler_rate_value_label.text = format_crawler_rate(
 		new_value
+	)
+	
+func refresh_crawler_revenue_per_page() -> void:
+	crawler_revenue_per_page_name_label.text = (
+		"Revenue / Page"
+	)
+
+	crawler_revenue_per_page_value_label.text = (
+		format_money(
+			CrawlerManager.get_effective_revenue_per_page()
+		)
 	)
 
 
