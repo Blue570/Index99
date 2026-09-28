@@ -570,6 +570,12 @@ var tier_3_technical_points_earned: int = 0
 
 var tier_3_tech_levels_purchased: int = 0
 
+var tier_3_deep_crawls_completed: int = 0
+
+var tier_3_activities_completed: int = 0
+
+var tier_3_activity_types_completed: Dictionary = {}
+
 var tier_3_last_observed_technical_points: int = 0
 
 
@@ -684,6 +690,20 @@ func connect_objective_signals() -> void:
 	):
 		TechTreeManager.tech_purchased.connect(
 			_on_tech_purchased_for_tier_3
+		)
+		
+	if not CrawlerManager.crawl_job_completed.is_connected(
+		_on_crawl_job_completed_for_tier_3
+	):
+		CrawlerManager.crawl_job_completed.connect(
+			_on_crawl_job_completed_for_tier_3
+		)
+		
+	if not ActivityStatsManager.activity_completed.is_connected(
+		_on_activity_completed_for_tier_3
+	):
+		ActivityStatsManager.activity_completed.connect(
+			_on_activity_completed_for_tier_3
 		)
 
 
@@ -849,6 +869,33 @@ func _on_activity_completed_for_tier_2(
 	
 	evaluate_tier_2_active_objectives()
 	
+func _on_activity_completed_for_tier_3(
+	activity_type: StringName,
+	_type_total: int,
+	_overall_total: int
+) -> void:
+	if not is_tier_3_tracking_active():
+		return
+
+	if tier_3_standard_objectives_finished:
+		return
+
+	tier_3_activities_completed += 1
+
+	tier_3_activity_types_completed[
+		activity_type
+	] = true
+
+	print(
+		"Tier 3 Activities: %d / 5 | Types: %d / 2"
+		% [
+			tier_3_activities_completed,
+			tier_3_activity_types_completed.size()
+		]
+	)
+
+	evaluate_tier_3_active_objectives()
+	
 func _on_crawl_job_completed_for_tier_2() -> void:
 	if not is_tier_2_tracking_active():
 		return
@@ -962,6 +1009,29 @@ func _on_crawler_state_changed_for_tier_2_capstone(
 		)
 
 		tier_2_active_objectives_changed.emit()
+		
+func _on_crawl_job_completed_for_tier_3() -> void:
+	if not is_tier_3_tracking_active():
+		return
+
+	if (
+		CrawlerManager.get_selected_job_id()
+		!= CrawlerManager.CRAWL_JOB_DEEP
+	):
+		return
+
+	if tier_3_standard_objectives_finished:
+		return
+
+	tier_3_deep_crawls_completed += 1
+
+	print(
+		"Tier 3 Deep Crawls: ",
+		tier_3_deep_crawls_completed,
+		" / 2"
+	)
+
+	evaluate_tier_3_active_objectives()
 
 
 # -------------------------------------------------------------------
@@ -1846,9 +1916,8 @@ func evaluate_tier_3_active_objectives() -> void:
 			target_value
 		)
 
-		if (
-			target_value > 0.0
-			and current_value >= target_value
+		if is_tier_3_objective_requirement_met(
+			objective_id
 		):
 			objective_to_complete = (
 				objective_id
@@ -1861,6 +1930,8 @@ func evaluate_tier_3_active_objectives() -> void:
 			objective_to_complete
 		)
 
+func get_tier_3_activity_type_count() -> int:
+	return tier_3_activity_types_completed.size()
 
 # -------------------------------------------------------------------
 # Indexed pages
@@ -2030,6 +2101,12 @@ func start_tier_3_objective_sequence() -> void:
 	tier_3_technical_points_earned = 0
 
 	tier_3_tech_levels_purchased = 0
+
+	tier_3_deep_crawls_completed = 0
+	
+	tier_3_activities_completed = 0
+
+	tier_3_activity_types_completed.clear()
 
 	tier_3_last_observed_technical_points = (
 		TechnicalPointsManager.get_technical_points()
@@ -2247,6 +2324,31 @@ func grant_tier_3_objective_reward(
 				"Tier 3 Objective: Diversify the Network"
 			)
 
+		OBJECTIVE_T3_DEEP_WEB_EXPEDITION:
+			GameState.set_revenue(
+				GameState.revenue + 600.0
+			)
+
+			ResearchManager.award_research_points(
+				20.0,
+				"Tier 3 Objective: Deep Web Expedition"
+			)
+
+			TechnicalPointsManager.award_technical_points(
+				1,
+				"Tier 3 Objective: Deep Web Expedition"
+			)
+			
+		OBJECTIVE_T3_OPERATOR_INTERVENTION:
+			GameState.set_revenue(
+				GameState.revenue + 500.0
+			)
+
+			ResearchManager.award_research_points(
+				25.0,
+				"Tier 3 Objective: Operator Intervention"
+			)
+
 	tier_3_reward_in_progress = false
 	
 	
@@ -2269,7 +2371,45 @@ func get_tier_3_objective_progress(
 				get_owned_tech_branch_count()
 			)
 
+		OBJECTIVE_T3_DEEP_WEB_EXPEDITION:
+			return float(
+				tier_3_deep_crawls_completed
+			)
+
+		OBJECTIVE_T3_OPERATOR_INTERVENTION:
+			return float(
+				tier_3_activities_completed
+			)
+
 	return 0.0
+	
+func is_tier_3_objective_requirement_met(
+	objective_id: StringName
+) -> bool:
+	if (
+		objective_id
+		== OBJECTIVE_T3_OPERATOR_INTERVENTION
+	):
+		return (
+			tier_3_activities_completed >= 5
+			and tier_3_activity_types_completed.size() >= 2
+		)
+
+	var target: float = (
+		get_tier_3_objective_target(
+			objective_id
+		)
+	)
+
+	if target <= 0.0:
+		return false
+
+	return (
+		get_tier_3_objective_progress(
+			objective_id
+		)
+		>= target
+	)
 
 
 func get_tier_3_objective_target(
@@ -2462,6 +2602,12 @@ func reset_tier_3_objective_state() -> void:
 
 	tier_3_tech_levels_purchased = 0
 
+	tier_3_deep_crawls_completed = 0
+	
+	tier_3_activities_completed = 0
+
+	tier_3_activity_types_completed.clear()
+
 	tier_3_last_observed_technical_points = (
 		TechnicalPointsManager.get_technical_points()
 	)
@@ -2640,6 +2786,15 @@ func get_tier_3_save_data() -> Dictionary:
 		completed_ids.append(
 			str(objective_id_variant)
 		)
+		
+	var activity_types: Array[String] = []
+
+	for activity_type_variant: Variant in (
+		tier_3_activity_types_completed.keys()
+	):
+		activity_types.append(
+			str(activity_type_variant)
+		)
 
 	return {
 		"tracking_started":
@@ -2651,6 +2806,9 @@ func get_tier_3_save_data() -> Dictionary:
 		"tech_levels_purchased":
 			tier_3_tech_levels_purchased,
 
+		"deep_crawls_completed":
+			tier_3_deep_crawls_completed,
+
 		"completed_objective_ids":
 			completed_ids,
 
@@ -2658,7 +2816,13 @@ func get_tier_3_save_data() -> Dictionary:
 			tier_3_standard_objectives_finished,
 
 		"capstone_completed":
-			tier_3_capstone_completed
+			tier_3_capstone_completed,
+			
+		"activities_completed":
+			tier_3_activities_completed,
+
+		"activity_types_completed":
+			activity_types,
 	}
 	
 func restore_tier_3_saved_state(
@@ -2700,6 +2864,52 @@ func restore_tier_3_saved_state(
 		0
 	)
 
+	tier_3_deep_crawls_completed = maxi(
+		int(
+			data.get(
+				"deep_crawls_completed",
+				0
+			)
+		),
+		0
+	)
+
+	tier_3_activities_completed = maxi(
+		int(
+			data.get(
+				"activities_completed",
+				0
+			)
+		),
+		0
+	)
+
+	tier_3_activity_types_completed.clear()
+
+	var raw_activity_types: Variant = (
+		data.get(
+			"activity_types_completed",
+			[]
+		)
+	)
+
+	if typeof(raw_activity_types) == TYPE_ARRAY:
+		for raw_activity_type: Variant in (
+			raw_activity_types
+		):
+			var activity_type: StringName = (
+				StringName(
+					str(raw_activity_type)
+				)
+			)
+
+			if activity_type == &"":
+				continue
+
+			tier_3_activity_types_completed[
+				activity_type
+			] = true
+
 	var raw_completed_ids: Variant = (
 		data.get(
 			"completed_objective_ids",
@@ -2709,8 +2919,10 @@ func restore_tier_3_saved_state(
 
 	if typeof(raw_completed_ids) == TYPE_ARRAY:
 		for raw_id: Variant in raw_completed_ids:
-			var objective_id: StringName = StringName(
-				str(raw_id)
+			var objective_id: StringName = (
+				StringName(
+					str(raw_id)
+				)
 			)
 
 			if not TIER_3_OBJECTIVE_ORDER.has(
@@ -2722,10 +2934,13 @@ func restore_tier_3_saved_state(
 				objective_id
 			] = true
 
-	# Migrate older sequential Tier 3 saves.
+	# Migration support for older sequential
+	# Tier 3 save data.
 	if (
 		tier_3_completed_objectives.is_empty()
-		and data.has("current_objective_index")
+		and data.has(
+			"current_objective_index"
+		)
 	):
 		var legacy_index: int = clampi(
 			int(

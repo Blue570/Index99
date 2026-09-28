@@ -1960,6 +1960,26 @@ func refresh_tier_3_objective_row(
 		0.0,
 		100.0
 	)
+	
+	if (
+		objective_id
+		== ObjectiveManager
+			.OBJECTIVE_T3_OPERATOR_INTERVENTION
+	):
+		progress_label.text = (
+			"%d / %d | Types: %d / 2"
+			% [
+				floori(safe_current),
+				floori(target_value),
+				mini(
+					ObjectiveManager
+						.get_tier_3_activity_type_count(),
+					2
+				)
+			]
+		)
+
+		return
 
 	progress_bar.value = progress_percent
 
